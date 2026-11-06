@@ -1,4 +1,4 @@
-import { WheelConfig, WheelSlice } from '../types/presentation';
+import { WheelConfig, WheelSlice } from '../types/presentation.ts';
 
 export const MAX_SLICES = 50;
 
