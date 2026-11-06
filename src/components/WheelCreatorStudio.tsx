@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import {
-  ArrowLeft,
   Sliders,
   Download,
   Upload,
@@ -10,7 +9,6 @@ import {
   Moon,
   Eye,
   EyeOff,
-  RotateCw,
   Shuffle,
   ArrowDownAZ,
   Image as ImageIcon,
@@ -29,6 +27,7 @@ import {
   RotateCcw,
   Palette,
   FilePlus,
+  FileText,
   Sparkles,
   ChevronDown,
 } from 'lucide-react';
@@ -105,6 +104,7 @@ interface WheelCreatorStudioProps {
   onSpinEnd: (slice: WheelSlice) => void;
   soundSettings: SoundSettings;
   onUpdateSoundSettings: (settings: SoundSettings) => void;
+  onOpenDocumentAnalyzer?: () => void;
 }
 
 export const WheelCreatorStudio: React.FC<WheelCreatorStudioProps> = ({
@@ -113,12 +113,14 @@ export const WheelCreatorStudio: React.FC<WheelCreatorStudioProps> = ({
   onSelectWheel,
   onUpdateWheel,
   onCreateWheel,
+  onDeleteWheel,
   onReturnToDeck,
   isSpinning: parentIsSpinning,
   onSpinStart: parentOnSpinStart,
   onSpinEnd: parentOnSpinEnd,
   soundSettings,
   onUpdateSoundSettings,
+  onOpenDocumentAnalyzer,
 }) => {
   const currentWheel = wheels.find((w) => w.id === activeWheelId) || wheels[0];
 
@@ -137,6 +139,8 @@ export const WheelCreatorStudio: React.FC<WheelCreatorStudioProps> = ({
   const [customizeTab, setCustomizeTab] = useState<'spin' | 'after' | 'appearance'>('spin');
   const [showTitleEditorModal, setShowTitleEditorModal] = useState(false);
   const [showResetModal, setShowResetModal] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [wheelToDelete, setWheelToDelete] = useState<WheelConfig | null>(null);
   const [showWinnerModal, setShowWinnerModal] = useState(false);
   const [winningSlice, setWinningSlice] = useState<WheelSlice | null>(null);
   const [showWheelsMenu, setShowWheelsMenu] = useState(false);
@@ -162,6 +166,23 @@ export const WheelCreatorStudio: React.FC<WheelCreatorStudioProps> = ({
       setToastMessage(null);
     }, 2400);
   }, []);
+
+  const targetWheelToDelete = wheelToDelete || currentWheel;
+
+  const handleConfirmDeleteWheel = () => {
+    if (wheels.length <= 1) {
+      showToast('Cannot remove the only remaining wheel.');
+      setShowDeleteModal(false);
+      return;
+    }
+    const idToDelete = targetWheelToDelete.id;
+    if (onDeleteWheel) {
+      onDeleteWheel(idToDelete);
+      showToast(`Removed "${targetWheelToDelete.name}"`);
+    }
+    setShowDeleteModal(false);
+    setWheelToDelete(null);
+  };
 
   // Settings for current wheel with fallbacks
   const spinDuration = currentWheel.spinDuration ?? 8;
@@ -1266,27 +1287,8 @@ export const WheelCreatorStudio: React.FC<WheelCreatorStudioProps> = ({
       {/* TOP NAVIGATION BAR */}
       <header className="sticky top-0 z-30 bg-white/90 dark:bg-slate-900/90 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 px-3 sm:px-6 py-2.5 shadow-xs shrink-0">
         <div className="max-w-[1600px] mx-auto flex flex-wrap items-center justify-between gap-2">
-          {/* Brand + Return to Slides + Editable Wheel Title */}
+          {/* Editable Wheel Title */}
           <div className="flex items-center gap-3 min-w-0">
-            <button
-              onClick={onReturnToDeck}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs shadow-xs transition-colors cursor-pointer shrink-0"
-              title="Return to Presentation Slides"
-            >
-              <ArrowLeft className="w-4 h-4" />
-              <span>Slides</span>
-            </button>
-
-            {/* Spinning Brand Icon */}
-            <div
-              className="w-9 h-9 rounded-xl bg-gradient-to-tr from-indigo-600 via-purple-500 to-pink-500 flex items-center justify-center shadow-md shadow-indigo-500/20 shrink-0 cursor-pointer"
-              onClick={triggerSpin}
-              title="Click to spin the wheel!"
-            >
-              <RotateCw className="w-5 h-5 text-white animate-spin" style={{ animationDuration: '14s' }} />
-            </div>
-
-            {/* Editable Title Display */}
             <div className="min-w-0 cursor-pointer group" onClick={() => setShowTitleEditorModal(true)}>
               <div className="flex items-center gap-2">
                 <h1 className="font-display font-bold text-sm sm:text-base text-slate-900 dark:text-white truncate">
@@ -1296,14 +1298,23 @@ export const WheelCreatorStudio: React.FC<WheelCreatorStudioProps> = ({
                   ✎
                 </span>
               </div>
-              <p className="text-[11px] text-slate-500 dark:text-slate-400 truncate">
-                {currentWheel.subtitle || 'Click the wheel or press Ctrl+Enter to spin!'}
-              </p>
             </div>
           </div>
 
           {/* Quick Action Toolbar */}
           <div className="flex items-center gap-1.5 sm:gap-2 flex-wrap">
+            {/* Analyze Word/Excel Document Button */}
+            {onOpenDocumentAnalyzer && (
+              <button
+                onClick={onOpenDocumentAnalyzer}
+                className="px-3 py-1.5 rounded-xl text-xs font-semibold bg-amber-500/10 hover:bg-amber-500/20 text-amber-500 border border-amber-500/30 transition flex items-center gap-1.5 cursor-pointer"
+                title="Analyze Word (.docx) or Excel (.xlsx) file and create wheels"
+              >
+                <FileText className="w-3.5 h-3.5 text-amber-500" />
+                <span className="hidden sm:inline">Analyze Word/Excel</span>
+              </button>
+            )}
+
             {/* New / Reset Button */}
             <button
               onClick={() => setShowResetModal(true)}
@@ -1462,26 +1473,58 @@ export const WheelCreatorStudio: React.FC<WheelCreatorStudioProps> = ({
                             : w.group === 'elementary' || !w.group
                         )
                         .map((w) => (
-                          <button
+                          <div
                             key={w.id}
-                            onClick={() => {
-                              onSelectWheel(w.id);
-                              setShowWheelsMenu(false);
-                            }}
-                            className={`w-full text-left px-3 py-2 rounded-lg text-xs font-bold transition flex items-center justify-between cursor-pointer ${
+                            className={`w-full px-2.5 py-2 rounded-lg text-xs font-bold transition flex items-center justify-between group ${
                               w.id === activeWheelId
                                 ? 'bg-amber-500 text-slate-950 font-black'
                                 : 'text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800'
                             }`}
                           >
-                            <span>{w.name}</span>
-                            {w.id === activeWheelId && <Check className="w-3.5 h-3.5" />}
-                          </button>
+                            <button
+                              onClick={() => {
+                                onSelectWheel(w.id);
+                                setShowWheelsMenu(false);
+                              }}
+                              className="flex-1 text-left truncate cursor-pointer mr-2"
+                            >
+                              {w.name}
+                            </button>
+                            {w.id === activeWheelId && <Check className="w-3.5 h-3.5 shrink-0 mr-1" />}
+                            {wheels.length > 1 && (
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  setWheelToDelete(w);
+                                  setShowDeleteModal(true);
+                                  setShowWheelsMenu(false);
+                                }}
+                                className="p-1 rounded hover:bg-rose-500/20 text-rose-500 transition cursor-pointer shrink-0"
+                                title={`Delete ${w.name}`}
+                              >
+                                <Trash2 className="w-3 h-3" />
+                              </button>
+                            )}
+                          </div>
                         ))}
                     </div>
                   </>
                 )}
               </div>
+
+              {/* Remove Current Wheel Button */}
+              <button
+                onClick={() => {
+                  setWheelToDelete(currentWheel);
+                  setShowDeleteModal(true);
+                }}
+                disabled={wheels.length <= 1}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-rose-50 hover:bg-rose-100 dark:bg-rose-950/40 dark:hover:bg-rose-900/60 text-rose-600 dark:text-rose-300 border border-rose-200/70 dark:border-rose-800/60 text-xs font-bold transition shadow-xs cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
+                title={wheels.length <= 1 ? 'Cannot remove the only remaining wheel' : `Remove "${currentWheel.name}"`}
+              >
+                <Trash2 className="w-3.5 h-3.5 text-rose-500" />
+                <span>Remove Wheel</span>
+              </button>
             </div>
 
             {/* Countdown Timer Duration for Current Wheel */}
@@ -1764,37 +1807,6 @@ export const WheelCreatorStudio: React.FC<WheelCreatorStudioProps> = ({
                   </button>
                 </div>
               )}
-
-              {/* Quick Preset Wheels Footer Bar */}
-              <div className="pt-2 border-t border-slate-200 dark:border-slate-800 flex items-center justify-between gap-2 text-[11px] text-slate-500 dark:text-slate-400 shrink-0">
-                <span>Quick Presets:</span>
-                <div className="flex items-center gap-1 overflow-x-auto py-0.5">
-                  <button
-                    onClick={() => applyPreset('lunch')}
-                    className="px-2 py-0.5 rounded bg-slate-100 dark:bg-slate-800 hover:bg-indigo-50 dark:hover:bg-indigo-950 hover:text-indigo-500 transition whitespace-nowrap cursor-pointer"
-                  >
-                    🍔 Lunch
-                  </button>
-                  <button
-                    onClick={() => applyPreset('classroom')}
-                    className="px-2 py-0.5 rounded bg-slate-100 dark:bg-slate-800 hover:bg-indigo-50 dark:hover:bg-indigo-950 hover:text-indigo-500 transition whitespace-nowrap cursor-pointer"
-                  >
-                    👥 Classroom
-                  </button>
-                  <button
-                    onClick={() => applyPreset('weighted')}
-                    className="px-2 py-0.5 rounded bg-slate-100 dark:bg-slate-800 hover:bg-indigo-50 dark:hover:bg-indigo-950 hover:text-indigo-500 transition whitespace-nowrap cursor-pointer"
-                  >
-                    🎟️ Weighted
-                  </button>
-                  <button
-                    onClick={() => applyPreset('yesno')}
-                    className="px-2 py-0.5 rounded bg-slate-100 dark:bg-slate-800 hover:bg-indigo-50 dark:hover:bg-indigo-950 hover:text-indigo-500 transition whitespace-nowrap cursor-pointer"
-                  >
-                    ⚖️ Yes/No
-                  </button>
-                </div>
-              </div>
             </div>
           ) : (
             /* TAB 2: RESULTS CONTENT */
@@ -1932,7 +1944,7 @@ export const WheelCreatorStudio: React.FC<WheelCreatorStudioProps> = ({
                 onClick={() => setShowWinnerModal(false)}
                 className="px-4 py-2 rounded-xl font-semibold text-xs sm:text-sm bg-slate-200 hover:bg-slate-300 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 transition cursor-pointer"
               >
-                Keep & Close
+                Close
               </button>
               <button
                 onClick={handleRemoveWinningWord}
@@ -2518,6 +2530,42 @@ export const WheelCreatorStudio: React.FC<WheelCreatorStudioProps> = ({
                 className="flex-1 py-2.5 rounded-xl font-semibold text-xs sm:text-sm bg-indigo-600 hover:bg-indigo-500 text-white transition cursor-pointer"
               >
                 Create
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ========================================================================= */}
+      {/* MODAL 5: DELETE / REMOVE WHEEL CONFIRMATION                                */}
+      {/* ========================================================================= */}
+      {showDeleteModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/70 backdrop-blur-xs p-4 animate-in fade-in duration-150">
+          <div className="w-full max-w-sm rounded-2xl bg-white dark:bg-slate-900 shadow-2xl border border-slate-200 dark:border-slate-800 overflow-hidden p-6 text-center space-y-4">
+            <div className="w-12 h-12 rounded-2xl bg-rose-500/10 text-rose-500 flex items-center justify-center mx-auto text-xl">
+              <Trash2 className="w-6 h-6" />
+            </div>
+            <h3 className="font-display font-bold text-base sm:text-lg text-slate-900 dark:text-white">
+              Remove Wheel?
+            </h3>
+            <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400">
+              Are you sure you want to remove <strong className="text-slate-800 dark:text-slate-200 font-bold">"{targetWheelToDelete.name}"</strong>? This will permanently delete this wheel.
+            </p>
+            <div className="flex items-center justify-center gap-2.5 pt-2">
+              <button
+                onClick={() => {
+                  setShowDeleteModal(false);
+                  setWheelToDelete(null);
+                }}
+                className="flex-1 py-2.5 rounded-xl font-semibold text-xs sm:text-sm bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 transition cursor-pointer"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleConfirmDeleteWheel}
+                className="flex-1 py-2.5 rounded-xl font-semibold text-xs sm:text-sm bg-rose-600 hover:bg-rose-500 text-white transition shadow-md shadow-rose-600/25 cursor-pointer"
+              >
+                Remove
               </button>
             </div>
           </div>

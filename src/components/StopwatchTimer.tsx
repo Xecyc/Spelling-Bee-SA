@@ -17,17 +17,19 @@ export const StopwatchTimer: React.FC<StopwatchTimerProps> = ({
   const [secondsRemaining, setSecondsRemaining] = useState(initialSeconds);
   const [isRunning, setIsRunning] = useState(false);
   const intervalRef = useRef<number | null>(null);
+  const lastTriggerRef = useRef(autoStartTrigger || 0);
 
-  // Sync when initialSeconds changes
+  // Sync when initialSeconds changes - always ensure stopped state
   useEffect(() => {
     setTotalSeconds(initialSeconds);
     setSecondsRemaining(initialSeconds);
     setIsRunning(false);
   }, [initialSeconds]);
 
-  // Handle auto-start trigger from winning word
+  // Handle auto-start trigger only when explicitly incremented by user action
   useEffect(() => {
-    if (autoStartTrigger && autoStartTrigger > 0) {
+    if (autoStartTrigger && autoStartTrigger > 0 && autoStartTrigger !== lastTriggerRef.current) {
+      lastTriggerRef.current = autoStartTrigger;
       setSecondsRemaining(totalSeconds);
       setIsRunning(true);
     }
@@ -89,24 +91,24 @@ export const StopwatchTimer: React.FC<StopwatchTimerProps> = ({
 
   return (
     <div className="w-full h-full flex items-center justify-center">
-      {/* Exact opaque pill-shaped container matching Image 3 */}
+      {/* Aesthetic minimalist timer widget matching presentation style */}
       <div
-        className={`w-full h-full flex items-center justify-between px-3 md:px-4 py-1.5 rounded-full border-2 shadow-2xl transition-all duration-200 select-none ${
+        className={`w-full h-full flex items-center justify-between px-3 md:px-4 py-1.5 rounded-full border transition-all duration-200 select-none ${
           isExpired
-            ? 'bg-rose-950 border-rose-500 text-rose-200 shadow-rose-900/60'
+            ? 'bg-rose-950/40 border-rose-500/60 text-rose-200'
             : isWarning
-            ? 'bg-amber-950 border-amber-500 text-amber-200 shadow-amber-900/60 animate-pulse'
-            : 'bg-[#E5E9EC] border-[#CBD5E1] text-[#292E33] shadow-slate-900/40'
+            ? 'bg-amber-950/40 border-amber-400/60 text-amber-200 animate-pulse'
+            : 'bg-transparent border-white/40 text-white'
         }`}
       >
         {/* Stopwatch Icon Circle */}
         <div
           className={`h-[72%] aspect-square rounded-full flex items-center justify-center border transition-colors shrink-0 ${
             isExpired
-              ? 'bg-rose-600 border-white text-white'
+              ? 'border-rose-400/60 text-rose-300 bg-transparent'
               : isWarning
-              ? 'bg-amber-500 border-amber-200 text-slate-900'
-              : 'bg-[#292E33] border-[#1E293B] text-white shadow-inner'
+              ? 'border-amber-400/60 text-amber-300 bg-transparent'
+              : 'border-white/40 text-white bg-transparent'
           }`}
           title="Spelling Bee Timer"
         >
@@ -121,19 +123,19 @@ export const StopwatchTimer: React.FC<StopwatchTimerProps> = ({
                 ? 'text-rose-400'
                 : isWarning
                 ? 'text-amber-300'
-                : 'text-[#292E33]'
+                : 'text-white'
             }`}
           >
             {formatTime(secondsRemaining)}
           </span>
         </div>
 
-        {/* Controls Container: Two stacked circular red buttons */}
+        {/* Controls Container: Two stacked circular solid white buttons */}
         <div className="flex flex-col gap-1 shrink-0 justify-center h-[82%]">
-          {/* Red Play / Pause Button */}
+          {/* Solid White Play / Pause Button */}
           <button
             onClick={toggleRunning}
-            className="h-[46%] aspect-square rounded-full bg-[#E82C4A] hover:bg-[#d02440] active:scale-90 text-white flex items-center justify-center shadow-xs transition-transform cursor-pointer"
+            className="h-[46%] aspect-square rounded-full bg-white hover:bg-slate-200 active:scale-90 text-[#061a3e] flex items-center justify-center transition-transform cursor-pointer shadow-none"
             title={isRunning ? 'Pause Timer' : 'Start Timer'}
             aria-label={isRunning ? 'Pause Timer' : 'Start Timer'}
           >
@@ -144,10 +146,10 @@ export const StopwatchTimer: React.FC<StopwatchTimerProps> = ({
             )}
           </button>
 
-          {/* Red Reset Button */}
+          {/* Solid White Reset Button */}
           <button
             onClick={handleReset}
-            className="h-[46%] aspect-square rounded-full bg-[#E82C4A] hover:bg-[#d02440] active:scale-90 text-white flex items-center justify-center shadow-xs transition-transform cursor-pointer"
+            className="h-[46%] aspect-square rounded-full bg-white hover:bg-slate-200 active:scale-90 text-[#061a3e] flex items-center justify-center transition-transform cursor-pointer shadow-none"
             title="Reset Timer"
             aria-label="Reset Timer"
           >

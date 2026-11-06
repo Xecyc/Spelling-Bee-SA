@@ -6,7 +6,6 @@ import {
 import confetti from 'canvas-confetti';
 import { PresentationSlideId, WheelConfig, WheelSlice } from '../types/presentation';
 import { WheelCanvas } from './WheelCanvas';
-import { StopwatchTimer } from './StopwatchTimer';
 
 interface PresentationDeckProps {
   currentSlide: PresentationSlideId;
@@ -94,28 +93,40 @@ export const PresentationDeck: React.FC<PresentationDeckProps> = ({
 
   return (
     <div className="relative w-screen h-screen overflow-hidden bg-[#061229] flex items-center justify-center select-none">
-      {/* 1. Left Navigation Arrow - Circular button only, NOT covering whole Y axis */}
+      {/* 1. Left Navigation Arrow with Transparent Hover-Zone */}
       {currentSlide > 0 && (
-        <button
-          onClick={goToPrev}
-          className="fixed left-4 top-1/2 -translate-y-1/2 z-40 w-11 h-11 sm:w-12 sm:h-12 rounded-full bg-slate-900/80 hover:bg-amber-500 text-white hover:text-slate-950 border border-white/20 shadow-2xl backdrop-blur-md flex items-center justify-center transition-all duration-200 hover:scale-110 active:scale-95 cursor-pointer opacity-70 hover:opacity-100"
-          aria-label="Previous Slide"
-          title="Previous Slide"
+        <div
+          className="fixed left-0 top-0 bottom-0 w-24 z-40 flex items-center justify-start pl-4 group pointer-events-auto"
+          title="Hover to reveal previous slide button"
         >
-          <ChevronLeft className="w-6 h-6 stroke-[2.5]" />
-        </button>
+          <button
+            onClick={goToPrev}
+            style={{ transition: 'opacity 0.3s ease, transform 0.2s ease, background-color 0.2s ease' }}
+            className="w-11 h-11 sm:w-12 sm:h-12 rounded-full bg-[#061a3e]/90 hover:bg-amber-400 text-blue-100 hover:text-[#061a3e] border border-blue-400/30 shadow-2xl backdrop-blur-md flex items-center justify-center hover:scale-110 active:scale-95 cursor-pointer opacity-0 group-hover:opacity-100 focus:opacity-100"
+            aria-label="Previous Slide"
+            title="Previous Slide"
+          >
+            <ChevronLeft className="w-6 h-6 stroke-[2.5]" />
+          </button>
+        </div>
       )}
 
-      {/* 2. Right Navigation Arrow - Circular button only, NOT covering whole Y axis */}
+      {/* 2. Right Navigation Arrow with Transparent Hover-Zone */}
       {currentSlide < 2 && (
-        <button
-          onClick={goToNext}
-          className="fixed right-4 top-1/2 -translate-y-1/2 z-40 w-11 h-11 sm:w-12 sm:h-12 rounded-full bg-slate-900/80 hover:bg-amber-500 text-white hover:text-slate-950 border border-white/20 shadow-2xl backdrop-blur-md flex items-center justify-center transition-all duration-200 hover:scale-110 active:scale-95 cursor-pointer opacity-70 hover:opacity-100"
-          aria-label="Next Slide"
-          title="Next Slide"
+        <div
+          className="fixed right-0 top-0 bottom-0 w-24 z-40 flex items-center justify-end pr-4 group pointer-events-auto"
+          title="Hover to reveal next slide button"
         >
-          <ChevronRight className="w-6 h-6 stroke-[2.5]" />
-        </button>
+          <button
+            onClick={goToNext}
+            style={{ transition: 'opacity 0.3s ease, transform 0.2s ease, background-color 0.2s ease' }}
+            className="w-11 h-11 sm:w-12 sm:h-12 rounded-full bg-[#061a3e]/90 hover:bg-amber-400 text-blue-100 hover:text-[#061a3e] border border-blue-400/30 shadow-2xl backdrop-blur-md flex items-center justify-center hover:scale-110 active:scale-95 cursor-pointer opacity-0 group-hover:opacity-100 focus:opacity-100"
+            aria-label="Next Slide"
+            title="Next Slide"
+          >
+            <ChevronRight className="w-6 h-6 stroke-[2.5]" />
+          </button>
+        </div>
       )}
 
       {/* 3. Responsive 16:9 Slide Stage */}
@@ -177,14 +188,14 @@ export const PresentationDeck: React.FC<PresentationDeckProps> = ({
               </div>
             </div>
 
-            {/* The Real Interactive Wheel Component in the center */}
+            {/* The Real Interactive Wheel Component in the center - Enlarged */}
             <div
               className="absolute flex items-center justify-center touch-manipulation"
               style={{
                 left: '50%',
-                top: '43%',
-                height: '68%',
-                maxHeight: 'calc(100% - 90px)',
+                top: '52%',
+                height: '84%',
+                maxHeight: 'calc(100% - 44px)',
                 aspectRatio: '1 / 1',
                 transform: 'translate(-50%, -50%)',
               }}
@@ -195,23 +206,6 @@ export const PresentationDeck: React.FC<PresentationDeckProps> = ({
                 onSpinStart={onSpinStart}
                 onSpinEnd={onSpinEnd}
                 pointerPosition="right"
-              />
-            </div>
-
-            {/* The Real Interactive Stopwatch Timer in the middle */}
-            <div
-              className="absolute z-20 flex items-center justify-center pointer-events-auto touch-manipulation"
-              style={{
-                left: '50%',
-                top: '88%',
-                width: 'clamp(250px, 28%, 340px)',
-                height: 'clamp(50px, 11%, 66px)',
-                transform: 'translate(-50%, -50%)',
-              }}
-            >
-              <StopwatchTimer
-                initialSeconds={activeWheel.timerDuration ?? 40}
-                autoStartTrigger={autoStartTimerTrigger}
               />
             </div>
           </div>

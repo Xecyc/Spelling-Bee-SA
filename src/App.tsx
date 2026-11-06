@@ -13,6 +13,7 @@ import { WheelCreatorStudio } from './components/WheelCreatorStudio';
 import { TopGeniallyBar } from './components/TopGeniallyBar';
 import { BottomGeniallyBar } from './components/BottomGeniallyBar';
 import { WinnerModal } from './components/WinnerModal';
+import { DocumentAnalyzerModal } from './components/DocumentAnalyzerModal';
 
 const SLIDE_TITLES = [
   'Welcome & Title',
@@ -79,15 +80,44 @@ export default function App() {
   const [winningSlice, setWinningSlice] = useState<WheelSlice | null>(null);
   const [showWinnerModal, setShowWinnerModal] = useState(false);
   const [autoStartTimerTrigger, setAutoStartTimerTrigger] = useState<number>(0);
+  const [showDocumentAnalyzer, setShowDocumentAnalyzer] = useState(false);
 
-  // Save wheels to localStorage
+  // Load shared wheels from server on mount (syncs across multiple PCs)
+  useEffect(() => {
+    fetch('/api/wheels')
+      .then((res) => res.json())
+      .then((data) => {
+        if (Array.isArray(data.wheels) && data.wheels.length > 0) {
+          setWheels(data.wheels);
+          localStorage.setItem('salto_angel_wheels_2026_v4', JSON.stringify(data.wheels));
+        }
+      })
+      .catch(() => {
+        // Offline or dev server fallback
+      });
+  }, []);
+
+  // Save wheels to localStorage and shared server endpoint
   useEffect(() => {
     try {
       localStorage.setItem('salto_angel_wheels_2026_v4', JSON.stringify(wheels));
+      fetch('/api/wheels', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ wheels }),
+      }).catch(() => {});
     } catch {
       // Ignore storage errors
     }
   }, [wheels]);
+
+  // Append newly analyzed wheels
+  const handleAppendWheels = (newWheels: WheelConfig[]) => {
+    setWheels((prev) => [...prev, ...newWheels]);
+    if (newWheels.length > 0) {
+      setActiveWheelId(newWheels[0].id);
+    }
+  };
 
   // Save sound settings
   useEffect(() => {
@@ -149,6 +179,16 @@ export default function App() {
     setActiveWheelId(newWheel.id);
   };
 
+  // Delete a wheel
+  const handleDeleteWheel = (wheelId: string) => {
+    if (wheels.length <= 1) return;
+    const remaining = wheels.filter((w) => w.id !== wheelId);
+    setWheels(remaining);
+    if (activeWheelId === wheelId) {
+      setActiveWheelId(remaining[0].id);
+    }
+  };
+
   // Spin lifecycle
   const handleSpinStart = () => {
     if (isWheelSpinning) return;
@@ -177,6 +217,7 @@ export default function App() {
         return w;
       })
     );
+    setWinningSlice(null);
     setShowWinnerModal(false);
   };
 
@@ -252,31 +293,43 @@ export default function App() {
           onSelectWheel={setActiveWheelId}
           onUpdateWheel={handleUpdateWheel}
           onCreateWheel={handleCreateWheel}
+          onDeleteWheel={handleDeleteWheel}
           onReturnToDeck={() => setCurrentMode('presentation')}
           isSpinning={isWheelSpinning}
           onSpinStart={handleSpinStart}
           onSpinEnd={handleSpinEnd}
           soundSettings={soundSettings}
           onUpdateSoundSettings={setSoundSettings}
+          onOpenDocumentAnalyzer={() => setShowDocumentAnalyzer(true)}
         />
       )}
 
       {/* Winner Celebration Modal */}
-      <WinnerModal
-        isOpen={showWinnerModal}
-        word={winningSlice?.text || null}
-        sliceColor={winningSlice?.color}
-        timerDuration={activeWheel.timerDuration ?? 40}
-        onClose={() => setShowWinnerModal(false)}
-        onRemoveWord={handleRemoveWinningWord}
-        onStartTimer={() => {
-          setAutoStartTimerTrigger((prev) => prev + 1);
-          // If in studio, switch back to slide 1 (the wheel slide)
-          if (currentMode === 'studio') {
-            setCurrentMode('presentation');
-            setCurrentSlide(1);
-          }
-        }}
+      {showWinnerModal && winningSlice && (
+        <WinnerModal
+          key={`winner-${activeWheel.id}-${winningSlice.id}`}
+          isOpen={showWinnerModal}
+          word={winningSlice.text}
+          sliceColor={winningSlice.color}
+          timerDuration={activeWheel.timerDuration ?? 40}
+          onClose={() => setShowWinnerModal(false)}
+          onRemoveWord={handleRemoveWinningWord}
+          onStartTimer={() => {
+            setAutoStartTimerTrigger((prev) => prev + 1);
+            // If in studio, switch back to slide 1 (the wheel slide)
+            if (currentMode === 'studio') {
+              setCurrentMode('presentation');
+              setCurrentSlide(1);
+            }
+          }}
+        />
+      )}
+
+      {/* Document Analyzer & Wheel Generator Modal */}
+      <DocumentAnalyzerModal
+        isOpen={showDocumentAnalyzer}
+        onClose={() => setShowDocumentAnalyzer(false)}
+        onAppendWheels={handleAppendWheels}
       />
     </div>
   );

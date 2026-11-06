@@ -414,15 +414,6 @@ export const WheelCanvas: React.FC<WheelCanvasProps> = ({
         ref={canvasRef}
         className="w-full h-full drop-shadow-2xl transition-transform duration-300 group-hover:scale-[1.01]"
       />
-
-      {/* Hover Instruction Overlay when idle */}
-      {!isSpinning && (
-        <div className="absolute inset-0 flex items-center justify-center pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity">
-          <div className="bg-slate-900/85 backdrop-blur-sm text-white text-xs font-semibold px-4 py-1.5 rounded-full shadow-lg border border-white/20">
-            Click to spin
-          </div>
-        </div>
-      )}
     </div>
   );
 };

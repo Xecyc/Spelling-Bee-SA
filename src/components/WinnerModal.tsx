@@ -76,42 +76,34 @@ export const WinnerModal: React.FC<WinnerModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 w-full h-full min-h-[100dvh] flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md animate-in fade-in duration-200">
+    <div className="fixed inset-0 z-50 w-full h-full min-h-[100dvh] flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-sm animate-in fade-in duration-200">
       <div
-        className="relative w-full max-w-xl sm:max-w-2xl my-auto bg-gradient-to-b from-slate-900 via-slate-900 to-slate-950 border-2 border-amber-400/50 rounded-3xl p-6 sm:p-8 text-center shadow-2xl overflow-hidden flex flex-col items-center justify-center"
+        className="relative w-full max-w-xl sm:max-w-2xl my-auto bg-[#061a3e] rounded-3xl p-8 sm:p-12 text-center shadow-[0_25px_60px_-15px_rgba(0,0,0,0.75)] overflow-hidden flex flex-col items-center justify-center"
         style={{ margin: 'auto' }}
       >
-        {/* Decorative background glow */}
-        <div
-          className="absolute -top-24 left-1/2 -translate-x-1/2 w-64 h-64 rounded-full blur-3xl opacity-30 pointer-events-none"
-          style={{ backgroundColor: sliceColor }}
-        />
-
-        {/* Clean Winning Word Display: Strictly on a single line */}
-        <div className="my-2 py-2 px-2 w-full flex items-center justify-center overflow-hidden">
+        {/* Winning Word Display: Crisp, solid golden-yellow with bold sans-serif, no glow */}
+        <div className="my-3 py-2 px-4 w-full flex items-center justify-center overflow-hidden">
           <h2
-            className={`${getWordFontSizeClass(word)} font-black tracking-wider text-transparent bg-clip-text bg-gradient-to-r from-amber-300 via-yellow-200 to-amber-400 drop-shadow-md whitespace-nowrap select-all`}
-            style={{
-              textShadow: '0 4px 25px rgba(251, 191, 36, 0.5)',
-            }}
+            className={`${getWordFontSizeClass(word)} font-sans font-black tracking-wider text-amber-400 whitespace-nowrap select-all uppercase`}
           >
             {word}
           </h2>
         </div>
 
         {/* Integrated Countdown Timer on the Window */}
-        <div className="my-3 flex items-center justify-center h-14 sm:h-16 w-full max-w-[280px] sm:max-w-[320px]">
+        <div className="my-5 flex items-center justify-center h-14 sm:h-16 w-full max-w-[280px] sm:max-w-[320px]">
           <StopwatchTimer
+            key={`timer-${word}-${timerDuration}`}
             initialSeconds={timerDuration}
             autoStartTrigger={modalTimerTrigger}
           />
         </div>
 
-        {/* Action Buttons */}
-        <div className="flex flex-col sm:flex-row items-center justify-center gap-3 mt-3 w-full">
+        {/* Action Buttons: Flat solid golden-yellow primary button, ghost secondary buttons */}
+        <div className="flex flex-col sm:flex-row items-center justify-center gap-3.5 mt-4 w-full">
           <button
             onClick={handleStartTimer}
-            className="w-full sm:w-auto flex-1 inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-sm shadow-lg shadow-amber-500/25 transition-all hover:scale-105 active:scale-95 cursor-pointer"
+            className="w-full sm:w-auto flex-1 inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl bg-amber-400 hover:bg-amber-300 text-[#061a3e] font-black text-sm tracking-wide shadow-none transition-all active:scale-95 cursor-pointer"
           >
             <Play className="w-4 h-4 fill-current" />
             <span>{isTimerRunning ? `Restart ${timerDuration}s Timer` : `Start ${timerDuration}s Timer`}</span>
@@ -119,19 +111,19 @@ export const WinnerModal: React.FC<WinnerModalProps> = ({
 
           <button
             onClick={onRemoveWord}
-            className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-rose-300 border border-rose-500/20 font-semibold text-sm transition-all hover:scale-105 active:scale-95 cursor-pointer"
+            className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-3.5 rounded-xl bg-transparent hover:bg-white/10 text-white border border-white/50 hover:border-white font-bold text-sm tracking-wide shadow-none transition-all active:scale-95 cursor-pointer"
             title="Remove this word from the wheel so it won't appear again"
           >
-            <Trash2 className="w-4 h-4 text-rose-400" />
+            <Trash2 className="w-4 h-4 text-white" />
             <span>Remove Word</span>
           </button>
 
           <button
             onClick={onClose}
-            className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold text-sm transition-all hover:scale-105 active:scale-95 cursor-pointer"
+            className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-3.5 rounded-xl bg-transparent hover:bg-white/10 text-white border border-white/50 hover:border-white font-bold text-sm tracking-wide shadow-none transition-all active:scale-95 cursor-pointer"
           >
-            <CheckCircle2 className="w-4 h-4 text-emerald-400" />
-            <span>Keep & Close</span>
+            <CheckCircle2 className="w-4 h-4 text-white" />
+            <span>Close</span>
           </button>
         </div>
       </div>
