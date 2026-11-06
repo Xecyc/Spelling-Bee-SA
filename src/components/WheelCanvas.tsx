@@ -8,7 +8,7 @@ interface WheelCanvasProps {
   onSpinStart: () => void;
   onSpinEnd: (slice: WheelSlice) => void;
   pointerPosition?: 'top' | 'right';
-  size?: number; // Canvas display size in pixels
+  size?: number;
   showCenterText?: boolean;
 }
 
@@ -17,25 +17,54 @@ export const WheelCanvas: React.FC<WheelCanvasProps> = ({
   isSpinning,
   onSpinStart,
   onSpinEnd,
-  pointerPosition = 'top',
-  size = 520,
+  pointerPosition = 'right',
+  size,
   showCenterText = true,
 }) => {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
-  const currentAngleRef = useRef<number>(0);
+  const wheelAngleRef = useRef<number>(0);
   const animFrameIdRef = useRef<number | null>(null);
-  const lastSliceIndexRef = useRef<number>(-1);
-  const [flipperAngle, setFlipperAngle] = useState(0);
+  const pointerDeflectionRef = useRef<number>(0);
+  const pointerVelocityRef = useRef<number>(0);
+  const lastSliceIdxRef = useRef<number>(-1);
 
-  const numSlices = Math.max(1, slices.length);
-  const sliceAngle = (2 * Math.PI) / numSlices;
+  const activeSlices = slices.length > 0
+    ? slices.filter((s) => s.enabled !== false && (s.text.trim() !== '' || s.image))
+    : [{ id: 'ph-1', text: 'WORD 1', color: '#FBBF24' }];
 
-  // The pointer angle in radians relative to center:
-  // Top pointer is at -PI / 2 (or 3PI/2)
-  // Right pointer is at 0
+  const totalWeight = activeSlices.reduce((acc, s) => acc + (s.weight || 1), 0);
+
+  // Compute slice angles with weights
+  const computedSlices = React.useMemo(() => {
+    let currentAngle = 0;
+    return activeSlices.map((slice, idx) => {
+      const weight = slice.weight || 1;
+      const arc = (weight / totalWeight) * (Math.PI * 2);
+      const res = {
+        slice,
+        index: idx,
+        startAngle: currentAngle,
+        endAngle: currentAngle + arc,
+        arcAngle: arc,
+        color: slice.color,
+      };
+      currentAngle += arc;
+      return res;
+    });
+  }, [activeSlices, totalWeight]);
+
+  // Pointer angle relative to center: right is 0, top is -PI/2
   const pointerAngle = pointerPosition === 'top' ? -Math.PI / 2 : 0;
 
-  // Draw wheel on canvas
+  const getLuminance = (hexColor: string) => {
+    const hex = hexColor.replace('#', '');
+    if (hex.length !== 6) return 0.5;
+    const r = parseInt(hex.substring(0, 2), 16) / 255;
+    const g = parseInt(hex.substring(2, 4), 16) / 255;
+    const b = parseInt(hex.substring(4, 6), 16) / 255;
+    return 0.299 * r + 0.587 * g + 0.114 * b;
+  };
+
   const drawWheel = useCallback((angle: number) => {
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -57,116 +86,203 @@ export const WheelCanvas: React.FC<WheelCanvasProps> = ({
 
     const centerX = width / 2;
     const centerY = height / 2;
-    const radius = Math.min(centerX, centerY) - 2;
+    const maxRadius = Math.min(centerX, centerY) - 24;
 
-    // Outer shadow / rim
+    // Outer glow / shadow
     ctx.save();
     ctx.beginPath();
-    ctx.arc(centerX, centerY, radius + 2, 0, 2 * Math.PI);
+    ctx.arc(centerX, centerY, maxRadius + 3, 0, Math.PI * 2);
+    ctx.shadowColor = 'rgba(15, 23, 42, 0.45)';
+    ctx.shadowBlur = 24;
+    ctx.shadowOffsetY = 8;
     ctx.fillStyle = '#1e293b';
-    ctx.shadowColor = 'rgba(0, 0, 0, 0.45)';
-    ctx.shadowBlur = 10;
-    ctx.shadowOffsetY = 4;
     ctx.fill();
     ctx.restore();
 
-    // Outer border ring
-    ctx.save();
-    ctx.beginPath();
-    ctx.arc(centerX, centerY, radius + 1, 0, 2 * Math.PI);
-    ctx.fillStyle = '#334155';
-    ctx.fill();
-    ctx.restore();
+    // Draw slices
+    computedSlices.forEach((cs) => {
+      const start = angle + cs.startAngle;
+      const end = angle + cs.endAngle;
+      const mid = start + cs.arcAngle / 2;
 
-    // Slices
-    for (let i = 0; i < numSlices; i++) {
-      const slice = slices[i];
-      const startAngle = angle + i * sliceAngle;
-      const endAngle = startAngle + sliceAngle;
-
-      ctx.save();
       ctx.beginPath();
       ctx.moveTo(centerX, centerY);
-      ctx.arc(centerX, centerY, radius, startAngle, endAngle);
+      ctx.arc(centerX, centerY, maxRadius, start, end);
       ctx.closePath();
-
-      ctx.fillStyle = slice?.color || '#cbd5e1';
+      ctx.fillStyle = cs.color;
       ctx.fill();
 
-      // Hairline slice dividers
-      ctx.strokeStyle = 'rgba(255, 255, 255, 0.45)';
-      ctx.lineWidth = numSlices > 35 ? 1 : 1.5;
-      ctx.stroke();
+      // Hairline divider
+      if (computedSlices.length > 1) {
+        ctx.lineWidth = computedSlices.length > 40 ? 0.8 : 1.5;
+        ctx.strokeStyle = 'rgba(255, 255, 255, 0.85)';
+        ctx.stroke();
+      }
 
-      // Text along the slice
-      if (slice?.text) {
+      // Slice label text
+      const label = (cs.slice.text || '').trim();
+      if (label) {
         ctx.save();
         ctx.translate(centerX, centerY);
-        ctx.rotate(startAngle + sliceAngle / 2);
+        ctx.rotate(mid);
 
-        // Optimal font scaling based on slice count and text length
-        const baseFontSize = numSlices > 36 ? 10 : numSlices > 24 ? 12 : numSlices > 14 ? 13 : 15;
-        const fontScale = radius / 240;
-        const fontSize = Math.max(8, Math.round(baseFontSize * fontScale));
+        const lum = getLuminance(cs.color);
+        ctx.fillStyle = lum > 0.58 ? '#0f172a' : '#ffffff';
 
-        ctx.font = `700 ${fontSize}px 'Outfit', sans-serif`;
-        ctx.fillStyle = '#1e293b';
+        const hubR = maxRadius * 0.16;
+        const outerPad = 16;
+        const innerPad = hubR + 14;
+        const availWidth = Math.max(25, maxRadius - outerPad - innerPad);
+
+        const chord = 2 * (maxRadius * 0.72) * Math.sin(Math.min(Math.PI / 2, cs.arcAngle / 2));
+        let fontSize = Math.min(20, chord * 0.52, maxRadius * 0.08);
+        fontSize = Math.max(8.5, fontSize);
+
+        ctx.font = `700 ${fontSize}px sans-serif`;
         ctx.textAlign = 'right';
         ctx.textBaseline = 'middle';
 
-        // Add subtle shadow for legibility
-        ctx.shadowColor = 'rgba(255, 255, 255, 0.6)';
-        ctx.shadowBlur = 2;
+        let displayStr = label;
+        if (ctx.measureText(displayStr).width > availWidth) {
+          while (displayStr.length > 1 && ctx.measureText(displayStr + '…').width > availWidth) {
+            displayStr = displayStr.slice(0, -1);
+          }
+          displayStr += '…';
+        }
 
-        const maxTextWidth = radius * 0.72;
-        const truncatedText = slice.text.length > 15 ? slice.text.slice(0, 14) + '…' : slice.text;
-        ctx.fillText(truncatedText, radius - 16, 0, maxTextWidth);
+        if (lum <= 0.58) {
+          ctx.shadowColor = 'rgba(0, 0, 0, 0.35)';
+          ctx.shadowBlur = 3;
+        }
 
+        ctx.fillText(displayStr, maxRadius - outerPad, 0);
         ctx.restore();
       }
+    });
 
+    // Outer metallic rim ring & peg studs
+    ctx.save();
+    ctx.beginPath();
+    ctx.arc(centerX, centerY, maxRadius, 0, Math.PI * 2);
+    ctx.lineWidth = 4;
+    ctx.strokeStyle = '#ffffff';
+    ctx.stroke();
+
+    if (computedSlices.length <= 60 && computedSlices.length > 1) {
+      computedSlices.forEach((cs) => {
+        const a = angle + cs.startAngle;
+        const px = centerX + Math.cos(a) * maxRadius;
+        const py = centerY + Math.sin(a) * maxRadius;
+        ctx.beginPath();
+        ctx.arc(px, py, 3, 0, Math.PI * 2);
+        ctx.fillStyle = '#f8fafc';
+        ctx.fill();
+        ctx.lineWidth = 1;
+        ctx.strokeStyle = '#334155';
+        ctx.stroke();
+      });
+    }
+    ctx.restore();
+
+    // Center Hub Cap
+    const hubR = maxRadius * 0.16;
+    ctx.save();
+    ctx.beginPath();
+    ctx.arc(centerX, centerY, hubR, 0, Math.PI * 2);
+    ctx.fillStyle = '#ffffff';
+    ctx.shadowColor = 'rgba(0, 0, 0, 0.25)';
+    ctx.shadowBlur = 12;
+    ctx.fill();
+    ctx.lineWidth = 3;
+    ctx.strokeStyle = '#e2e8f0';
+    ctx.stroke();
+
+    if (showCenterText) {
+      ctx.fillStyle = '#4f46e5';
+      ctx.font = `800 ${Math.max(10, Math.round(hubR * 0.38))}px sans-serif`;
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText(isSpinning ? '•••' : 'SPIN', centerX, centerY);
+    }
+    ctx.restore();
+
+    // Draw Spring-loaded Pointer Needle (Studio Version)
+    if (pointerPosition === 'right') {
+      const pivotX = centerX + maxRadius + 12;
+      const pivotY = centerY;
+      const pLen = 30;
+      const pHalf = 12;
+
+      ctx.save();
+      ctx.translate(pivotX, pivotY);
+      ctx.rotate(pointerDeflectionRef.current);
+      ctx.shadowColor = 'rgba(0, 0, 0, 0.35)';
+      ctx.shadowBlur = 8;
+      ctx.shadowOffsetY = 3;
+
+      ctx.beginPath();
+      ctx.moveTo(-pLen, 0);
+      ctx.lineTo(4, -pHalf);
+      ctx.arc(4, 0, pHalf, -Math.PI / 2, Math.PI / 2);
+      ctx.closePath();
+
+      const grad = ctx.createLinearGradient(-pLen, -pHalf, 10, pHalf);
+      grad.addColorStop(0, '#f43f5e');
+      grad.addColorStop(1, '#be123c');
+      ctx.fillStyle = grad;
+      ctx.fill();
+      ctx.lineWidth = 2;
+      ctx.strokeStyle = '#ffffff';
+      ctx.stroke();
+
+      ctx.beginPath();
+      ctx.arc(4, 0, 4.5, 0, Math.PI * 2);
+      ctx.fillStyle = '#ffffff';
+      ctx.fill();
+      ctx.restore();
+    } else {
+      // Top pointer with deflection
+      const pivotX = centerX;
+      const pivotY = centerY - maxRadius - 12;
+      const pLen = 30;
+      const pHalf = 12;
+
+      ctx.save();
+      ctx.translate(pivotX, pivotY);
+      ctx.rotate(pointerDeflectionRef.current);
+      ctx.shadowColor = 'rgba(0, 0, 0, 0.35)';
+      ctx.shadowBlur = 8;
+      ctx.shadowOffsetY = 3;
+
+      ctx.beginPath();
+      ctx.moveTo(0, pLen);
+      ctx.lineTo(-pHalf, -4);
+      ctx.arc(0, -4, pHalf, Math.PI, 0);
+      ctx.closePath();
+
+      const grad = ctx.createLinearGradient(-pHalf, -pLen, pHalf, 10);
+      grad.addColorStop(0, '#f43f5e');
+      grad.addColorStop(1, '#be123c');
+      ctx.fillStyle = grad;
+      ctx.fill();
+      ctx.lineWidth = 2;
+      ctx.strokeStyle = '#ffffff';
+      ctx.stroke();
+
+      ctx.beginPath();
+      ctx.arc(0, -4, 4.5, 0, Math.PI * 2);
+      ctx.fillStyle = '#ffffff';
+      ctx.fill();
       ctx.restore();
     }
 
-    // Inner center hub
-    const hubRadius = radius * 0.22;
-    ctx.save();
-    ctx.beginPath();
-    ctx.arc(centerX, centerY, hubRadius + 4, 0, 2 * Math.PI);
-    ctx.fillStyle = '#ffffff';
-    ctx.shadowColor = 'rgba(0, 0, 0, 0.25)';
-    ctx.shadowBlur = 10;
-    ctx.fill();
-
-    ctx.beginPath();
-    ctx.arc(centerX, centerY, hubRadius, 0, 2 * Math.PI);
-    ctx.fillStyle = '#f8fafc';
-    ctx.fill();
-    ctx.strokeStyle = '#e2e8f0';
-    ctx.lineWidth = 3;
-    ctx.stroke();
-
-    // Center hub icon / text
-    if (showCenterText) {
-      ctx.font = `800 ${Math.round(13 * (radius / 240))}px 'Outfit', sans-serif`;
-      ctx.fillStyle = isSpinning ? '#94a3b8' : '#0284c7';
-      ctx.textAlign = 'center';
-      ctx.textBaseline = 'middle';
-      ctx.fillText(isSpinning ? 'SPINNING' : 'SPIN', centerX, centerY);
-    }
-
     ctx.restore();
-    ctx.restore();
-  }, [slices, numSlices, sliceAngle, showCenterText, isSpinning]);
+  }, [computedSlices, pointerPosition, showCenterText, isSpinning]);
 
   // Initial and reactive redraw with resize support
   useEffect(() => {
-    drawWheel(currentAngleRef.current);
-
-    const handleResize = () => {
-      drawWheel(currentAngleRef.current);
-    };
-
+    drawWheel(wheelAngleRef.current);
+    const handleResize = () => drawWheel(wheelAngleRef.current);
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
   }, [drawWheel]);
@@ -174,71 +290,93 @@ export const WheelCanvas: React.FC<WheelCanvasProps> = ({
   // Physics animation loop
   useEffect(() => {
     if (!isSpinning) {
-      setFlipperAngle(0);
-      if (animFrameIdRef.current) {
-        cancelAnimationFrame(animFrameIdRef.current);
-        animFrameIdRef.current = null;
-      }
-      return;
+      pointerDeflectionRef.current = 0;
+      pointerVelocityRef.current = 0;
+      // Idle slow spin
+      const idleLoop = () => {
+        wheelAngleRef.current = (wheelAngleRef.current + 0.0022) % (Math.PI * 2);
+        drawWheel(wheelAngleRef.current);
+        animFrameIdRef.current = requestAnimationFrame(idleLoop);
+      };
+      animFrameIdRef.current = requestAnimationFrame(idleLoop);
+      return () => {
+        if (animFrameIdRef.current) cancelAnimationFrame(animFrameIdRef.current);
+      };
     }
 
-    // Determine target rotations: 5 to 8 full rotations + randomized slice target
-    const fullSpins = 5 + Math.random() * 3;
-    const extraOffset = Math.random() * Math.PI * 2;
-    const totalRotation = fullSpins * Math.PI * 2 + extraOffset;
-    const startAngle = currentAngleRef.current;
+    // Spin animation with quintic ease-out matching studio
+    const fullSpins = 6 + Math.random() * 4;
+    const randomOffset = Math.random() * Math.PI * 2;
+    const totalRotation = fullSpins * Math.PI * 2 + randomOffset;
+    const startAngle = wheelAngleRef.current;
     const targetAngle = startAngle + totalRotation;
-
-    // Spin duration in ms (between 5500ms and 7000ms)
-    const duration = 6000;
+    const duration = 6500;
     const startTime = performance.now();
 
-    // Cubic-bezier deceleration function
-    const easeOutCubic = (t: number) => 1 - Math.pow(1 - t, 3.4);
+    const easeOutQuint = (t: number) => 1 - Math.pow(1 - t, 4.2);
 
     let lastTickTime = 0;
 
     const frame = (now: number) => {
+      // Spring return physics for pointer flapper deflection
+      if (
+        Math.abs(pointerDeflectionRef.current) > 0.001 ||
+        Math.abs(pointerVelocityRef.current) > 0.001
+      ) {
+        const springK = 0.28;
+        const damping = 0.72;
+        const force = -springK * pointerDeflectionRef.current;
+        pointerVelocityRef.current = (pointerVelocityRef.current + force) * damping;
+        pointerDeflectionRef.current += pointerVelocityRef.current;
+      } else {
+        pointerDeflectionRef.current = 0;
+      }
+
       const elapsed = now - startTime;
       const progress = Math.min(1, elapsed / duration);
-      const easedProgress = easeOutCubic(progress);
+      const eased = easeOutQuint(progress);
 
-      const angle = startAngle + totalRotation * easedProgress;
-      currentAngleRef.current = angle;
+      const angle = startAngle + totalRotation * eased;
+      wheelAngleRef.current = angle;
       drawWheel(angle);
 
-      // Calculate which slice currently crosses the pointer
-      // Normalized angle relative to pointer
-      const normalizedAngle = (angle - pointerAngle) % (2 * Math.PI);
-      const positiveAngle = (2 * Math.PI - (normalizedAngle < 0 ? normalizedAngle + 2 * Math.PI : normalizedAngle)) % (2 * Math.PI);
-      const currentSliceIdx = Math.floor(positiveAngle / sliceAngle) % numSlices;
+      // Calculate slice under pointer
+      const twoPi = Math.PI * 2;
+      const pointerRel = (twoPi - ((angle - pointerAngle) % twoPi)) % twoPi;
+      let currentSliceIdx = 0;
+      for (let i = 0; i < computedSlices.length; i++) {
+        if (pointerRel >= computedSlices[i].startAngle && pointerRel < computedSlices[i].endAngle) {
+          currentSliceIdx = i;
+          break;
+        }
+      }
 
-      if (currentSliceIdx !== lastSliceIndexRef.current) {
-        lastSliceIndexRef.current = currentSliceIdx;
+      if (currentSliceIdx !== lastSliceIdxRef.current) {
+        lastSliceIdxRef.current = currentSliceIdx;
         const speedFactor = 1 - progress;
         if (now - lastTickTime > 30) {
           audioManager.playTick(speedFactor);
           lastTickTime = now;
         }
-
-        // Subtle flipper deflection during spin only
-        setFlipperAngle(pointerPosition === 'top' ? (Math.random() > 0.5 ? 8 : -8) : -10);
-        setTimeout(() => setFlipperAngle(0), 35);
+        pointerDeflectionRef.current = -0.42;
       }
 
       if (progress < 1) {
         animFrameIdRef.current = requestAnimationFrame(frame);
       } else {
-        // Spin finished!
-        setFlipperAngle(0);
-        currentAngleRef.current = targetAngle;
-        drawWheel(targetAngle);
+        // Spin finished
+        pointerDeflectionRef.current = 0;
+        wheelAngleRef.current = targetAngle % (Math.PI * 2);
+        drawWheel(wheelAngleRef.current);
 
-        const finalNormalized = (targetAngle - pointerAngle) % (2 * Math.PI);
-        const finalPositive = (2 * Math.PI - (finalNormalized < 0 ? finalNormalized + 2 * Math.PI : finalNormalized)) % (2 * Math.PI);
-        const winningIdx = Math.floor(finalPositive / sliceAngle) % numSlices;
-        const winningSlice = slices[winningIdx] || slices[0];
-
+        const finalRel = (twoPi - ((targetAngle - pointerAngle) % twoPi)) % twoPi;
+        let winningSlice = computedSlices[0]?.slice;
+        for (let i = 0; i < computedSlices.length; i++) {
+          if (finalRel >= computedSlices[i].startAngle && finalRel < computedSlices[i].endAngle) {
+            winningSlice = computedSlices[i].slice;
+            break;
+          }
+        }
         onSpinEnd(winningSlice);
       }
     };
@@ -250,9 +388,8 @@ export const WheelCanvas: React.FC<WheelCanvasProps> = ({
         cancelAnimationFrame(animFrameIdRef.current);
       }
     };
-  }, [isSpinning, drawWheel, numSlices, onSpinEnd, pointerAngle, pointerPosition, sliceAngle, slices]);
+  }, [isSpinning, computedSlices, drawWheel, onSpinEnd, pointerAngle]);
 
-  // Handle spin click
   const handleWheelClick = () => {
     if (isSpinning) return;
     onSpinStart();
@@ -260,7 +397,7 @@ export const WheelCanvas: React.FC<WheelCanvasProps> = ({
 
   return (
     <div
-      className="relative flex items-center justify-center cursor-pointer select-none group w-full h-full aspect-square"
+      className="relative flex items-center justify-center cursor-pointer select-none group w-full h-full aspect-square touch-manipulation"
       style={size ? { maxWidth: size, maxHeight: size } : undefined}
       onClick={handleWheelClick}
       role="button"
@@ -273,54 +410,10 @@ export const WheelCanvas: React.FC<WheelCanvasProps> = ({
         }
       }}
     >
-      {/* HTML5 Canvas */}
       <canvas
         ref={canvasRef}
         className="w-full h-full drop-shadow-2xl transition-transform duration-300 group-hover:scale-[1.01]"
       />
-
-      {/* Pointer / Flipper Indicator */}
-      {pointerPosition === 'top' ? (
-        <div
-          className="absolute -top-3.5 left-1/2 z-30 pointer-events-none transition-transform duration-75"
-          style={{
-            transform: `translateX(-50%) rotate(${isSpinning ? flipperAngle : 0}deg)`,
-            transformOrigin: '22px 10px',
-          }}
-        >
-          {/* Top Pointer needle - perfectly centered */}
-          <svg width="44" height="48" viewBox="0 0 44 48" fill="none" className="drop-shadow-md">
-            <polygon
-              points="6,4 38,4 22,44"
-              fill="#1e293b"
-              stroke="#0f172a"
-              strokeWidth="2.5"
-              strokeLinejoin="round"
-            />
-            <circle cx="22" cy="12" r="5" fill="#f8fafc" />
-          </svg>
-        </div>
-      ) : (
-        <div
-          className="absolute right-0 top-1/2 z-30 pointer-events-none transition-transform duration-75"
-          style={{
-            transform: `translateY(-50%) translateX(8px) rotate(${isSpinning ? flipperAngle : 0}deg)`,
-            transformOrigin: '36px 22px',
-          }}
-        >
-          {/* Right Pointer needle (Image 1 style) */}
-          <svg width="48" height="44" viewBox="0 0 48 44" fill="none" className="drop-shadow-md">
-            <polygon
-              points="44,6 44,38 4,22"
-              fill="#0284c7"
-              stroke="#0369a1"
-              strokeWidth="2.5"
-              strokeLinejoin="round"
-            />
-            <circle cx="36" cy="22" r="5" fill="#f8fafc" />
-          </svg>
-        </div>
-      )}
 
       {/* Hover Instruction Overlay when idle */}
       {!isSpinning && (

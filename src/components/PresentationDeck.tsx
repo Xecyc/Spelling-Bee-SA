@@ -2,40 +2,58 @@ import React, { useState, useEffect } from 'react';
 import {
   ChevronLeft,
   ChevronRight,
-  Trophy,
-  RotateCcw,
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { PresentationSlideId, WheelConfig, WheelSlice } from '../types/presentation';
 import { WheelCanvas } from './WheelCanvas';
 import { StopwatchTimer } from './StopwatchTimer';
-import { audioManager } from '../utils/audio';
 
 interface PresentationDeckProps {
   currentSlide: PresentationSlideId;
   onSetSlide: (slide: PresentationSlideId) => void;
   activeWheel: WheelConfig;
-  onSelectWheelRole: (role: '1st' | '2nd' | '3rd') => void;
   isWheelSpinning: boolean;
   onSpinStart: () => void;
   onSpinEnd: (slice: WheelSlice) => void;
   autoStartTimerTrigger: number;
-  onOpenStudio: () => void;
 }
 
 export const PresentationDeck: React.FC<PresentationDeckProps> = ({
   currentSlide,
   onSetSlide,
   activeWheel,
-  onSelectWheelRole,
   isWheelSpinning,
   onSpinStart,
   onSpinEnd,
   autoStartTimerTrigger,
-  onOpenStudio,
 }) => {
-  const [leftArrowHovered, setLeftArrowHovered] = useState(false);
-  const [rightArrowHovered, setRightArrowHovered] = useState(false);
+  // Touch swipe support for mobile devices
+  const [touchStartX, setTouchStartX] = useState<number | null>(null);
+  const [touchStartY, setTouchStartY] = useState<number | null>(null);
+
+  const handleTouchStart = (e: React.TouchEvent) => {
+    setTouchStartX(e.touches[0].clientX);
+    setTouchStartY(e.touches[0].clientY);
+  };
+
+  const handleTouchEnd = (e: React.TouchEvent) => {
+    if (touchStartX === null || touchStartY === null) return;
+    const touchEndX = e.changedTouches[0].clientX;
+    const touchEndY = e.changedTouches[0].clientY;
+    const diffX = touchStartX - touchEndX;
+    const diffY = touchStartY - touchEndY;
+
+    // Detect horizontal swipe gesture
+    if (Math.abs(diffX) > Math.abs(diffY) && Math.abs(diffX) > 45) {
+      if (diffX > 0 && currentSlide < 2) {
+        goToNext();
+      } else if (diffX < 0 && currentSlide > 0) {
+        goToPrev();
+      }
+    }
+    setTouchStartX(null);
+    setTouchStartY(null);
+  };
 
   // Keyboard navigation
   useEffect(() => {
@@ -43,7 +61,7 @@ export const PresentationDeck: React.FC<PresentationDeckProps> = ({
       if (['INPUT', 'TEXTAREA'].includes((e.target as HTMLElement)?.tagName)) {
         return;
       }
-      if (e.key === 'ArrowRight' && currentSlide < 3) {
+      if (e.key === 'ArrowRight' && currentSlide < 2) {
         onSetSlide((currentSlide + 1) as PresentationSlideId);
       } else if (e.key === 'ArrowLeft' && currentSlide > 0) {
         onSetSlide((currentSlide - 1) as PresentationSlideId);
@@ -60,15 +78,9 @@ export const PresentationDeck: React.FC<PresentationDeckProps> = ({
   };
 
   const goToNext = () => {
-    if (currentSlide < 3) {
+    if (currentSlide < 2) {
       onSetSlide((currentSlide + 1) as PresentationSlideId);
     }
-  };
-
-  const handleSelectTiebreaker = (role: '1st' | '2nd' | '3rd') => {
-    audioManager.playTick(1.2);
-    onSelectWheelRole(role);
-    onSetSlide(2);
   };
 
   const triggerCelebrationConfetti = () => {
@@ -78,143 +90,101 @@ export const PresentationDeck: React.FC<PresentationDeckProps> = ({
       origin: { y: 0.5 },
       colors: ['#FBBF24', '#60A5FA', '#34D399', '#F472B6', '#F87171'],
     });
-    audioManager.playFanfare();
   };
 
   return (
     <div className="relative w-screen h-screen overflow-hidden bg-[#061229] flex items-center justify-center select-none">
-      {/* 1. Left Auto-hiding Hover Navigation Arrow (100% hidden when not hovered) */}
+      {/* 1. Left Navigation Arrow - Circular button only, NOT covering whole Y axis */}
       {currentSlide > 0 && (
-        <div
-          className="fixed left-0 top-0 bottom-0 w-20 z-40 flex items-center justify-start pl-4 cursor-pointer"
-          onMouseEnter={() => setLeftArrowHovered(true)}
-          onMouseLeave={() => setLeftArrowHovered(false)}
+        <button
           onClick={goToPrev}
-          role="button"
+          className="fixed left-4 top-1/2 -translate-y-1/2 z-40 w-11 h-11 sm:w-12 sm:h-12 rounded-full bg-slate-900/80 hover:bg-amber-500 text-white hover:text-slate-950 border border-white/20 shadow-2xl backdrop-blur-md flex items-center justify-center transition-all duration-200 hover:scale-110 active:scale-95 cursor-pointer opacity-70 hover:opacity-100"
           aria-label="Previous Slide"
+          title="Previous Slide"
         >
-          <div
-            className={`w-12 h-12 rounded-full bg-slate-900/90 hover:bg-amber-500 text-white hover:text-slate-950 border border-white/20 shadow-2xl backdrop-blur-md flex items-center justify-center transition-all duration-300 transform ${
-              leftArrowHovered
-                ? 'opacity-100 translate-x-0 scale-110 pointer-events-auto'
-                : 'opacity-0 -translate-x-full pointer-events-none'
-            }`}
-          >
-            <ChevronLeft className="w-6 h-6 stroke-[2.5]" />
-          </div>
-        </div>
+          <ChevronLeft className="w-6 h-6 stroke-[2.5]" />
+        </button>
       )}
 
-      {/* 2. Right Auto-hiding Hover Navigation Arrow (100% hidden when not hovered) */}
-      {currentSlide < 3 && (
-        <div
-          className="fixed right-0 top-0 bottom-0 w-20 z-40 flex items-center justify-end pr-4 cursor-pointer"
-          onMouseEnter={() => setRightArrowHovered(true)}
-          onMouseLeave={() => setRightArrowHovered(false)}
+      {/* 2. Right Navigation Arrow - Circular button only, NOT covering whole Y axis */}
+      {currentSlide < 2 && (
+        <button
           onClick={goToNext}
-          role="button"
+          className="fixed right-4 top-1/2 -translate-y-1/2 z-40 w-11 h-11 sm:w-12 sm:h-12 rounded-full bg-slate-900/80 hover:bg-amber-500 text-white hover:text-slate-950 border border-white/20 shadow-2xl backdrop-blur-md flex items-center justify-center transition-all duration-200 hover:scale-110 active:scale-95 cursor-pointer opacity-70 hover:opacity-100"
           aria-label="Next Slide"
+          title="Next Slide"
         >
-          <div
-            className={`w-12 h-12 rounded-full bg-slate-900/90 hover:bg-amber-500 text-white hover:text-slate-950 border border-white/20 shadow-2xl backdrop-blur-md flex items-center justify-center transition-all duration-300 transform ${
-              rightArrowHovered
-                ? 'opacity-100 translate-x-0 scale-110 pointer-events-auto'
-                : 'opacity-0 translate-x-full pointer-events-none'
-            }`}
-          >
-            <ChevronRight className="w-6 h-6 stroke-[2.5]" />
-          </div>
-        </div>
+          <ChevronRight className="w-6 h-6 stroke-[2.5]" />
+        </button>
       )}
 
       {/* 3. Responsive 16:9 Slide Stage */}
-      <div className="relative aspect-video w-full max-w-[calc(100vh*16/9)] max-h-[calc(100vw*9/16)] shadow-2xl overflow-hidden select-none bg-[#071739]">
-        {/* SLIDE 0: Title Slide (Image 2) */}
+      <div
+        className="relative aspect-video w-full max-w-[calc(100vh*16/9)] max-h-[calc(100vw*9/16)] shadow-2xl overflow-hidden select-none bg-[#071739]"
+        onTouchStart={handleTouchStart}
+        onTouchEnd={handleTouchEnd}
+      >
+        {/* SLIDE 0: Title Slide (Dynamic Elementary vs High School) */}
         {currentSlide === 0 && (
           <div className="relative w-full h-full animate-in fade-in duration-300">
             <img
-              src="/assets/aistudio/image_b5f00fc8.png"
-              alt="Salto Ángel Spelling Bee Elementary 2026"
+              src={
+                activeWheel.group === 'high_school'
+                  ? '/assets/aistudio/480b2e32-4249-44c9-83bd-7e91fc5cbdba_0097f3f2.jpg'
+                  : '/assets/aistudio/image_b5f00fc8.png'
+              }
+              alt={
+                activeWheel.group === 'high_school'
+                  ? 'Salto Ángel Spelling Bee High School 2026'
+                  : 'Salto Ángel Spelling Bee Elementary 2026'
+              }
               className="absolute inset-0 w-full h-full object-cover pointer-events-none"
             />
           </div>
         )}
 
-        {/* SLIDE 1: "It's a Tie!" Interactive Hub (Image 4) - Pure links without animations */}
+        {/* SLIDE 1: Interactive Wheel & Stopwatch Timer (Dynamic Elementary vs High School) */}
         {currentSlide === 1 && (
-          <div className="relative w-full h-full animate-in fade-in duration-300">
-            {/* The exact slide image as the base */}
-            <img
-              src="/assets/aistudio/image_9aadae19.png"
-              alt="It's a Tie! 1st, 2nd, 3rd Place Tiebreaker Selector"
-              className="absolute inset-0 w-full h-full object-cover pointer-events-none"
-            />
-
-            {/* Direct Link Hotspot for 1st Place */}
-            <div
-              className="absolute cursor-pointer"
-              style={{
-                left: '26%',
-                top: '49%',
-                width: '16%',
-                height: '35%',
-              }}
-              onClick={() => handleSelectTiebreaker('1st')}
-              title="1st Place Tiebreaker"
-              role="button"
-              tabIndex={0}
-            />
-
-            {/* Direct Link Hotspot for 2nd Place */}
-            <div
-              className="absolute cursor-pointer"
-              style={{
-                left: '43%',
-                top: '49%',
-                width: '17%',
-                height: '35%',
-              }}
-              onClick={() => handleSelectTiebreaker('2nd')}
-              title="2nd Place Tiebreaker"
-              role="button"
-              tabIndex={0}
-            />
-
-            {/* Direct Link Hotspot for 3rd Place */}
-            <div
-              className="absolute cursor-pointer"
-              style={{
-                left: '62%',
-                top: '49%',
-                width: '24%',
-                height: '35%',
-              }}
-              onClick={() => handleSelectTiebreaker('3rd')}
-              title="3rd Place Tiebreaker"
-              role="button"
-              tabIndex={0}
-            />
-          </div>
-        )}
-
-        {/* SLIDE 2: Interactive Wheel & Stopwatch Timer */}
-        {currentSlide === 2 && (
           <div className="relative w-full h-full animate-in fade-in duration-300 overflow-hidden">
-            {/* The new clean background without static wheel/timer */}
+            {/* Clean background without static wheel/timer */}
             <img
-              src="/assets/aistudio/Gemini_Generated_Image_wxqydhwxqydhwxqy__1__ed331ba7.jpg"
-              alt="Salto Ángel Wheel of Names Challenge"
+              src={
+                activeWheel.group === 'high_school'
+                  ? '/assets/aistudio/8d019f05-30e0-4935-904c-e42987682443_a0014e1b.jpg'
+                  : '/assets/aistudio/Gemini_Generated_Image_wxqydhwxqydhwxqy__1__ed331ba7.jpg'
+              }
+              alt={
+                activeWheel.group === 'high_school'
+                  ? 'Salto Ángel High School Wheel Challenge'
+                  : 'Salto Ángel Elementary Wheel Challenge'
+              }
               className="absolute inset-0 w-full h-full object-cover pointer-events-none"
             />
+
+            {/* Minimal Group & Wheel Header Indicator (Zero Bloat) */}
+            <div
+              className="absolute z-20 pointer-events-none select-none text-center"
+              style={{
+                left: '50%',
+                top: '5%',
+                transform: 'translateX(-50%)',
+              }}
+            >
+              <div className="text-xs sm:text-sm md:text-base font-black tracking-wider text-amber-300 drop-shadow-[0_2px_8px_rgba(0,0,0,0.8)] uppercase">
+                {activeWheel.group === 'elementary'
+                  ? `Elementary · ${activeWheel.name}`
+                  : activeWheel.name}
+              </div>
+            </div>
 
             {/* The Real Interactive Wheel Component in the center */}
             <div
-              className="absolute flex items-center justify-center"
+              className="absolute flex items-center justify-center touch-manipulation"
               style={{
                 left: '50%',
                 top: '43%',
                 height: '68%',
-                maxHeight: 'calc(100% - 95px)',
+                maxHeight: 'calc(100% - 90px)',
                 aspectRatio: '1 / 1',
                 transform: 'translate(-50%, -50%)',
               }}
@@ -224,31 +194,31 @@ export const PresentationDeck: React.FC<PresentationDeckProps> = ({
                 isSpinning={isWheelSpinning}
                 onSpinStart={onSpinStart}
                 onSpinEnd={onSpinEnd}
-                pointerPosition="top"
+                pointerPosition="right"
               />
             </div>
 
             {/* The Real Interactive Stopwatch Timer in the middle */}
             <div
-              className="absolute z-20 flex items-center justify-center pointer-events-auto"
+              className="absolute z-20 flex items-center justify-center pointer-events-auto touch-manipulation"
               style={{
                 left: '50%',
                 top: '88%',
-                width: 'clamp(260px, 28%, 340px)',
-                height: 'clamp(52px, 11%, 66px)',
+                width: 'clamp(250px, 28%, 340px)',
+                height: 'clamp(50px, 11%, 66px)',
                 transform: 'translate(-50%, -50%)',
               }}
             >
               <StopwatchTimer
-                initialSeconds={40}
+                initialSeconds={activeWheel.timerDuration ?? 40}
                 autoStartTrigger={autoStartTimerTrigger}
               />
             </div>
           </div>
         )}
 
-        {/* SLIDE 3: Champion Celebration (Image 5) */}
-        {currentSlide === 3 && (
+        {/* SLIDE 2: Champion Celebration (Image 5) - Strictly without buttons */}
+        {currentSlide === 2 && (
           <div
             className="relative w-full h-full cursor-pointer animate-in fade-in duration-300"
             onClick={triggerCelebrationConfetti}
@@ -259,31 +229,6 @@ export const PresentationDeck: React.FC<PresentationDeckProps> = ({
               alt="Spelling Bee Elementary 2026 Champion Celebration"
               className="absolute inset-0 w-full h-full object-cover pointer-events-none"
             />
-
-            {/* Interactive Celebration Action Bar */}
-            <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex items-center gap-3 pointer-events-auto">
-              <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onSetSlide(1);
-                }}
-                className="flex items-center gap-2 px-5 py-2.5 rounded-full bg-amber-400 hover:bg-amber-300 text-slate-950 font-black text-xs tracking-wider uppercase shadow-xl transition-all hover:scale-105 active:scale-95 cursor-pointer"
-              >
-                <RotateCcw className="w-3.5 h-3.5 stroke-[2.5]" />
-                <span>Return to Tiebreakers</span>
-              </button>
-
-              <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onOpenStudio();
-                }}
-                className="flex items-center gap-2 px-5 py-2.5 rounded-full bg-slate-950/80 hover:bg-slate-950 text-amber-300 border border-amber-400/40 font-bold text-xs tracking-wider uppercase shadow-xl transition-all hover:scale-105 active:scale-95 cursor-pointer"
-              >
-                <Trophy className="w-3.5 h-3.5 text-amber-400" />
-                <span>Wheel Studio</span>
-              </button>
-            </div>
           </div>
         )}
       </div>

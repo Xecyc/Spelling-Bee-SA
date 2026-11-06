@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect } from 'react';
 import {
   WheelConfig,
   WheelSlice,
@@ -16,7 +16,6 @@ import { WinnerModal } from './components/WinnerModal';
 
 const SLIDE_TITLES = [
   'Welcome & Title',
-  "It's a Tie! Tiebreaker Hub",
   'Interactive Wheel & Timer',
   'Champion Celebration',
 ];
@@ -25,16 +24,20 @@ export default function App() {
   // Mode: Presentation Deck vs. Wheel Studio
   const [currentMode, setCurrentMode] = useState<'presentation' | 'studio'>('presentation');
 
-  // Presentation Slide index: 0, 1, 2, 3
+  // Presentation Slide index: 0, 1, 2
   const [currentSlide, setCurrentSlide] = useState<PresentationSlideId>(0);
 
   // Wheels state with localStorage persistence
   const [wheels, setWheels] = useState<WheelConfig[]>(() => {
     try {
-      const saved = localStorage.getItem('salto_angel_wheels_2026');
+      const saved = localStorage.getItem('salto_angel_wheels_2026_v4');
       if (saved) {
         const parsed = JSON.parse(saved);
-        if (Array.isArray(parsed) && parsed.length > 0) {
+        if (
+          Array.isArray(parsed) &&
+          parsed.length >= 14 &&
+          parsed.some((w) => w.group === 'high_school')
+        ) {
           return parsed;
         }
       }
@@ -80,7 +83,7 @@ export default function App() {
   // Save wheels to localStorage
   useEffect(() => {
     try {
-      localStorage.setItem('salto_angel_wheels_2026', JSON.stringify(wheels));
+      localStorage.setItem('salto_angel_wheels_2026_v4', JSON.stringify(wheels));
     } catch {
       // Ignore storage errors
     }
@@ -120,17 +123,6 @@ export default function App() {
   // Find active wheel
   const activeWheel = wheels.find((w) => w.id === activeWheelId) || wheels[0];
 
-  // Select wheel by role (1st, 2nd, 3rd)
-  const handleSelectWheelRole = useCallback(
-    (role: '1st' | '2nd' | '3rd') => {
-      const found = wheels.find((w) => w.role === role);
-      if (found) {
-        setActiveWheelId(found.id);
-      }
-    },
-    [wheels]
-  );
-
   // Update a wheel
   const handleUpdateWheel = (updated: WheelConfig) => {
     setWheels((prev) => prev.map((w) => (w.id === updated.id ? updated : w)));
@@ -138,11 +130,14 @@ export default function App() {
 
   // Create a new wheel
   const handleCreateWheel = (role: WheelRole, name: string) => {
+    const defaultTimer = role === '1st' ? 40 : 20;
     const newWheel: WheelConfig = {
       id: `wheel-${Date.now()}`,
       name,
       role,
+      group: 'elementary',
       spinDuration: 6,
+      timerDuration: defaultTimer,
       slices: [
         { id: `s-${Date.now()}-1`, text: 'WORD 1', color: '#FBBF24' },
         { id: `s-${Date.now()}-2`, text: 'WORD 2', color: '#60A5FA' },
@@ -206,7 +201,9 @@ export default function App() {
         currentMode={currentMode}
         onSwitchMode={setCurrentMode}
         activeWheelName={activeWheel.name}
-        onSelectWheelRole={handleSelectWheelRole}
+        wheels={wheels}
+        activeWheelId={activeWheelId}
+        onSelectWheel={setActiveWheelId}
         soundSettings={soundSettings}
         onUpdateSoundSettings={setSoundSettings}
         isFullscreen={isFullscreen}
@@ -220,25 +217,23 @@ export default function App() {
             currentSlide={currentSlide}
             onSetSlide={setCurrentSlide}
             activeWheel={activeWheel}
-            onSelectWheelRole={handleSelectWheelRole}
             isWheelSpinning={isWheelSpinning}
             onSpinStart={handleSpinStart}
             onSpinEnd={handleSpinEnd}
             autoStartTimerTrigger={autoStartTimerTrigger}
-            onOpenStudio={() => setCurrentMode('studio')}
           />
 
           {/* Bottom Genially Navigation Bar */}
           <BottomGeniallyBar
             currentSlide={currentSlide}
-            totalSlides={4}
+            totalSlides={3}
             onPrevSlide={() => {
               if (currentSlide > 0) {
                 setCurrentSlide((currentSlide - 1) as PresentationSlideId);
               }
             }}
             onNextSlide={() => {
-              if (currentSlide < 3) {
+              if (currentSlide < 2) {
                 setCurrentSlide((currentSlide + 1) as PresentationSlideId);
               }
             }}
@@ -271,15 +266,15 @@ export default function App() {
         isOpen={showWinnerModal}
         word={winningSlice?.text || null}
         sliceColor={winningSlice?.color}
+        timerDuration={activeWheel.timerDuration ?? 40}
         onClose={() => setShowWinnerModal(false)}
         onRemoveWord={handleRemoveWinningWord}
         onStartTimer={() => {
           setAutoStartTimerTrigger((prev) => prev + 1);
-          setShowWinnerModal(false);
-          // If in studio, switch back to slide 2 so user sees the timer running
+          // If in studio, switch back to slide 1 (the wheel slide)
           if (currentMode === 'studio') {
             setCurrentMode('presentation');
-            setCurrentSlide(2);
+            setCurrentSlide(1);
           }
         }}
       />

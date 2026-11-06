@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   ChevronLeft,
   ChevronRight,
@@ -39,6 +39,11 @@ export const BottomGeniallyBar: React.FC<BottomGeniallyBarProps> = ({
 }) => {
   const [showThumbnails, setShowThumbnails] = useState(false);
   const [isBarHovered, setIsBarHovered] = useState(false);
+  const [isTouchDevice, setIsTouchDevice] = useState(false);
+
+  useEffect(() => {
+    setIsTouchDevice('ontouchstart' in window || navigator.maxTouchPoints > 0);
+  }, []);
 
   return (
     <>
@@ -93,8 +98,8 @@ export const BottomGeniallyBar: React.FC<BottomGeniallyBarProps> = ({
         <div className="absolute bottom-0 left-0 right-0 h-10 pointer-events-auto cursor-pointer" />
 
         <div
-          className={`transition-all duration-300 ease-out transform flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-900/90 hover:bg-slate-900 border border-white/20 shadow-2xl backdrop-blur-md ${
-            isBarHovered
+          className={`transition-all duration-300 ease-out transform flex items-center gap-1.5 sm:gap-2 px-3 py-1.5 rounded-full bg-slate-900/90 hover:bg-slate-900 border border-white/20 shadow-2xl backdrop-blur-md ${
+            isBarHovered || isTouchDevice
               ? 'opacity-100 translate-y-0 scale-100 pointer-events-auto'
               : 'opacity-0 translate-y-full scale-95 pointer-events-none'
           }`}
@@ -110,7 +115,7 @@ export const BottomGeniallyBar: React.FC<BottomGeniallyBarProps> = ({
           </button>
 
           {/* Slide Counter (e.g., 2 / 4) */}
-          <div className="px-2 text-white font-mono text-xs font-bold tracking-wider select-none">
+          <div className="px-1.5 sm:px-2 text-white font-mono text-xs font-bold tracking-wider select-none">
             {currentSlide + 1} / {totalSlides}
           </div>
 
@@ -124,7 +129,7 @@ export const BottomGeniallyBar: React.FC<BottomGeniallyBarProps> = ({
             <ChevronRight className="w-4 h-4" />
           </button>
 
-          <div className="w-[1px] h-4 bg-slate-700 mx-1" />
+          <div className="w-[1px] h-4 bg-slate-700 mx-0.5 sm:mx-1" />
 
           {/* Thumbnails Navigator Toggle */}
           <button
