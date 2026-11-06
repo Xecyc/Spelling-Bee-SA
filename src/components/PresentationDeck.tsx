@@ -141,8 +141,8 @@ export const PresentationDeck: React.FC<PresentationDeckProps> = ({
             <img
               src={
                 activeWheel.group === 'high_school'
-                  ? '/assets/aistudio/480b2e32-4249-44c9-83bd-7e91fc5cbdba_0097f3f2.jpg'
-                  : '/assets/aistudio/image_b5f00fc8.png'
+                  ? `${import.meta.env.BASE_URL}assets/aistudio/480b2e32-4249-44c9-83bd-7e91fc5cbdba_0097f3f2.jpg`
+                  : `${import.meta.env.BASE_URL}assets/aistudio/image_b5f00fc8.png`
               }
               alt={
                 activeWheel.group === 'high_school'
@@ -161,8 +161,8 @@ export const PresentationDeck: React.FC<PresentationDeckProps> = ({
             <img
               src={
                 activeWheel.group === 'high_school'
-                  ? '/assets/aistudio/8d019f05-30e0-4935-904c-e42987682443_a0014e1b.jpg'
-                  : '/assets/aistudio/Gemini_Generated_Image_wxqydhwxqydhwxqy__1__ed331ba7.jpg'
+                  ? `${import.meta.env.BASE_URL}assets/aistudio/8d019f05-30e0-4935-904c-e42987682443_a0014e1b.jpg`
+                  : `${import.meta.env.BASE_URL}assets/aistudio/Gemini_Generated_Image_wxqydhwxqydhwxqy__1__ed331ba7.jpg`
               }
               alt={
                 activeWheel.group === 'high_school'
@@ -219,7 +219,7 @@ export const PresentationDeck: React.FC<PresentationDeckProps> = ({
             title="Click to celebrate!"
           >
             <img
-              src="/assets/aistudio/image_d2ab69fa.png"
+              src={`${import.meta.env.BASE_URL}assets/aistudio/image_d2ab69fa.png`}
               alt="Spelling Bee Elementary 2026 Champion Celebration"
               className="absolute inset-0 w-full h-full object-cover pointer-events-none"
             />

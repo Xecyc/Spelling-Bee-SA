@@ -151,7 +151,7 @@ export default function App() {
   };
 
   // Find active wheel
-  const activeWheel = wheels.find((w) => w.id === activeWheelId) || wheels[0];
+  const activeWheel = wheels.find((w) => w.id === activeWheelId) || wheels[0] || INITIAL_WHEELS[0];
 
   // Update a wheel
   const handleUpdateWheel = (updated: WheelConfig) => {
