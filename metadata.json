@@ -1,0 +1,6 @@
+{
+  "name": "Spelling Bee 2026 - Interactive Deck & Wheel of Names",
+  "description": "Genially-style interactive presentation deck and physics-based Wheel of Names with tiebreaker wheels and timer for Salto Ángel Elementary 2026 Spelling Bee.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
