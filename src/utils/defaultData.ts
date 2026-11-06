@@ -1,6 +1,6 @@
 import { WheelConfig, WheelSlice } from '../types/presentation.ts';
 
-export const MAX_SLICES = 50;
+export const MAX_SLICES = 150;
 
 // Harmonious palette inspired by the screenshot pastel/vibrant colors
 export const PASTEL_PALETTE = [
@@ -26,6 +26,19 @@ export const getRandomColor = (index?: number): string => {
     return PASTEL_PALETTE[index % PASTEL_PALETTE.length];
   }
   return PASTEL_PALETTE[Math.floor(Math.random() * PASTEL_PALETTE.length)];
+};
+
+export const combineUniqueWords = (base: string[], tiebreak: string[]): string[] => {
+  const seen = new Set<string>();
+  const result: string[] = [];
+  [...base, ...tiebreak].forEach((w) => {
+    const clean = w.trim().toUpperCase();
+    if (clean && !seen.has(clean)) {
+      seen.add(clean);
+      result.push(clean);
+    }
+  });
+  return result;
 };
 
 export const createSlicesFromWords = (words: string[]): WheelSlice[] => {
@@ -115,174 +128,128 @@ const WORDS_TB_HIGHSCHOOL = [
 ];
 
 // ============================================================================
-// OFFICIAL 14 WHEELS CONFIGURATION
+// OFFICIAL 10 WHEELS CONFIGURATION (SALTO ÁNGEL 2026)
 // ============================================================================
 export const INITIAL_WHEELS: WheelConfig[] = [
-  // 1. Elementary - 1st Grade
+  // --------------------------------------------------------------------------
+  // Group 1: Elementary (1st to 3rd Grade)
+  // --------------------------------------------------------------------------
   {
-    id: 'wheel-elem-1st-1',
-    name: '1st Grade - 1st Place',
-    role: '1st',
+    id: 'wheel-elem-1-3-general',
+    name: '1st-3rd Grade - General',
+    role: 'general',
+    group: 'elementary',
+    grade: '1st - 3rd',
+    place: 'general',
+    spinDuration: 6,
+    timerDuration: 40,
+    slices: createSlicesFromWords(WORDS_MAIN_1ST_3RD),
+  },
+  {
+    id: 'wheel-elem-1st-tb',
+    name: '1st Grade - Tiebreak',
+    role: 'tiebreak',
     group: 'elementary',
     grade: '1st',
-    place: '1st',
-    spinDuration: 6,
-    timerDuration: 40,
-    slices: createSlicesFromWords(WORDS_MAIN_1ST_3RD),
-  },
-  {
-    id: 'wheel-elem-1st-2',
-    name: '1st Grade - 2nd/3rd Place',
-    role: '2nd',
-    group: 'elementary',
-    grade: '1st',
-    place: '2nd_3rd',
+    place: 'tiebreak',
     spinDuration: 6,
     timerDuration: 20,
-    slices: createSlicesFromWords(WORDS_TB_1ST),
+    slices: createSlicesFromWords(combineUniqueWords(WORDS_MAIN_1ST_3RD, WORDS_TB_1ST)),
   },
-
-  // 2. Elementary - 2nd Grade
   {
-    id: 'wheel-elem-2nd-1',
-    name: '2nd Grade - 1st Place',
-    role: '1st',
+    id: 'wheel-elem-2nd-tb',
+    name: '2nd Grade - Tiebreak',
+    role: 'tiebreak',
     group: 'elementary',
     grade: '2nd',
-    place: '1st',
-    spinDuration: 6,
-    timerDuration: 40,
-    slices: createSlicesFromWords(WORDS_MAIN_1ST_3RD),
-  },
-  {
-    id: 'wheel-elem-2nd-2',
-    name: '2nd Grade - 2nd/3rd Place',
-    role: '2nd',
-    group: 'elementary',
-    grade: '2nd',
-    place: '2nd_3rd',
+    place: 'tiebreak',
     spinDuration: 6,
     timerDuration: 20,
-    slices: createSlicesFromWords(WORDS_TB_2ND),
+    slices: createSlicesFromWords(combineUniqueWords(WORDS_MAIN_1ST_3RD, WORDS_TB_2ND)),
   },
-
-  // 3. Elementary - 3rd Grade
   {
-    id: 'wheel-elem-3rd-1',
-    name: '3rd Grade - 1st Place',
-    role: '1st',
+    id: 'wheel-elem-3rd-tb',
+    name: '3rd Grade - Tiebreak',
+    role: 'tiebreak',
     group: 'elementary',
     grade: '3rd',
-    place: '1st',
-    spinDuration: 6,
-    timerDuration: 40,
-    slices: createSlicesFromWords(WORDS_MAIN_1ST_3RD),
-  },
-  {
-    id: 'wheel-elem-3rd-2',
-    name: '3rd Grade - 2nd/3rd Place',
-    role: '2nd',
-    group: 'elementary',
-    grade: '3rd',
-    place: '2nd_3rd',
+    place: 'tiebreak',
     spinDuration: 6,
     timerDuration: 20,
-    slices: createSlicesFromWords(WORDS_TB_3RD),
+    slices: createSlicesFromWords(combineUniqueWords(WORDS_MAIN_1ST_3RD, WORDS_TB_3RD)),
   },
 
-  // 4. Elementary - 4th Grade
+  // --------------------------------------------------------------------------
+  // Group 2: Elementary (4th to 6th Grade)
+  // --------------------------------------------------------------------------
   {
-    id: 'wheel-elem-4th-1',
-    name: '4th Grade - 1st Place',
-    role: '1st',
+    id: 'wheel-elem-4-6-general',
+    name: '4th-6th Grade - General',
+    role: 'general',
+    group: 'elementary',
+    grade: '4th - 6th',
+    place: 'general',
+    spinDuration: 6,
+    timerDuration: 40,
+    slices: createSlicesFromWords(WORDS_MAIN_4TH_6TH),
+  },
+  {
+    id: 'wheel-elem-4th-tb',
+    name: '4th Grade - Tiebreak',
+    role: 'tiebreak',
     group: 'elementary',
     grade: '4th',
-    place: '1st',
-    spinDuration: 6,
-    timerDuration: 40,
-    slices: createSlicesFromWords(WORDS_MAIN_4TH_6TH),
-  },
-  {
-    id: 'wheel-elem-4th-2',
-    name: '4th Grade - 2nd/3rd Place',
-    role: '2nd',
-    group: 'elementary',
-    grade: '4th',
-    place: '2nd_3rd',
+    place: 'tiebreak',
     spinDuration: 6,
     timerDuration: 20,
-    slices: createSlicesFromWords(WORDS_TB_4TH),
+    slices: createSlicesFromWords(combineUniqueWords(WORDS_MAIN_4TH_6TH, WORDS_TB_4TH)),
   },
-
-  // 5. Elementary - 5th Grade
   {
-    id: 'wheel-elem-5th-1',
-    name: '5th Grade - 1st Place',
-    role: '1st',
+    id: 'wheel-elem-5th-tb',
+    name: '5th Grade - Tiebreak',
+    role: 'tiebreak',
     group: 'elementary',
     grade: '5th',
-    place: '1st',
-    spinDuration: 6,
-    timerDuration: 40,
-    slices: createSlicesFromWords(WORDS_MAIN_4TH_6TH),
-  },
-  {
-    id: 'wheel-elem-5th-2',
-    name: '5th Grade - 2nd/3rd Place',
-    role: '2nd',
-    group: 'elementary',
-    grade: '5th',
-    place: '2nd_3rd',
+    place: 'tiebreak',
     spinDuration: 6,
     timerDuration: 20,
-    slices: createSlicesFromWords(WORDS_TB_5TH),
-  },
-
-  // 6. Elementary - 6th Grade
-  {
-    id: 'wheel-elem-6th-1',
-    name: '6th Grade - 1st Place',
-    role: '1st',
-    group: 'elementary',
-    grade: '6th',
-    place: '1st',
-    spinDuration: 6,
-    timerDuration: 40,
-    slices: createSlicesFromWords(WORDS_MAIN_4TH_6TH),
+    slices: createSlicesFromWords(combineUniqueWords(WORDS_MAIN_4TH_6TH, WORDS_TB_5TH)),
   },
   {
-    id: 'wheel-elem-6th-2',
-    name: '6th Grade - 2nd/3rd Place',
-    role: '2nd',
+    id: 'wheel-elem-6th-tb',
+    name: '6th Grade - Tiebreak',
+    role: 'tiebreak',
     group: 'elementary',
     grade: '6th',
-    place: '2nd_3rd',
+    place: 'tiebreak',
     spinDuration: 6,
     timerDuration: 20,
-    slices: createSlicesFromWords(WORDS_TB_6TH),
+    slices: createSlicesFromWords(combineUniqueWords(WORDS_MAIN_4TH_6TH, WORDS_TB_6TH)),
   },
 
-  // 7. High School (1er a 5to Año)
+  // --------------------------------------------------------------------------
+  // Group 3: High School (Bachillerato - 1er a 5to Año)
+  // --------------------------------------------------------------------------
   {
-    id: 'wheel-hs-1st',
-    name: 'High School - 1st Place',
-    role: '1st',
+    id: 'wheel-hs-general',
+    name: 'High School - General',
+    role: 'general',
     group: 'high_school',
     grade: 'High School',
-    place: '1st',
+    place: 'general',
     spinDuration: 6,
     timerDuration: 40,
     slices: createSlicesFromWords(WORDS_MAIN_HIGHSCHOOL),
   },
   {
-    id: 'wheel-hs-2nd-3rd',
-    name: 'High School - 2nd/3rd Place',
-    role: '2nd',
+    id: 'wheel-hs-tb',
+    name: 'High School - Tiebreak',
+    role: 'tiebreak',
     group: 'high_school',
     grade: 'High School',
-    place: '2nd_3rd',
+    place: 'tiebreak',
     spinDuration: 6,
     timerDuration: 20,
-    slices: createSlicesFromWords(WORDS_TB_HIGHSCHOOL),
+    slices: createSlicesFromWords(combineUniqueWords(WORDS_MAIN_HIGHSCHOOL, WORDS_TB_HIGHSCHOOL)),
   },
 ];

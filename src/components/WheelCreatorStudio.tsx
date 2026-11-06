@@ -246,7 +246,7 @@ export const WheelCreatorStudio: React.FC<WheelCreatorStudioProps> = ({
     setDevActionConfirm({
       type: 'revert_all',
       title: 'Revert All Wheels?',
-      message: 'This will restore all 14 official factory wheels (1st-6th Grade & High School 1st & 2nd/3rd place) with original words and timer durations.',
+      message: 'This will restore all 10 official factory wheels (1st-3rd, 4th-6th & High School General & Tiebreak) with original words and timer durations.',
     });
   };
 

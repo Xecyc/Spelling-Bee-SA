@@ -31,12 +31,12 @@ export default function App() {
   // Wheels state with localStorage persistence
   const [wheels, setWheels] = useState<WheelConfig[]>(() => {
     try {
-      const saved = localStorage.getItem('salto_angel_wheels_2026_v6');
+      const saved = localStorage.getItem('salto_angel_wheels_2026_v7');
       if (saved) {
         const parsed = JSON.parse(saved);
         if (
           Array.isArray(parsed) &&
-          parsed.length >= 14 &&
+          parsed.length >= 10 &&
           parsed.some((w) => w.group === 'high_school')
         ) {
           return parsed;
@@ -89,7 +89,7 @@ export default function App() {
       .then((data) => {
         if (Array.isArray(data.wheels) && data.wheels.length > 0) {
           setWheels(data.wheels);
-          localStorage.setItem('salto_angel_wheels_2026_v6', JSON.stringify(data.wheels));
+          localStorage.setItem('salto_angel_wheels_2026_v7', JSON.stringify(data.wheels));
         }
       })
       .catch(() => {
@@ -100,7 +100,7 @@ export default function App() {
   // Save wheels to localStorage and shared server endpoint
   useEffect(() => {
     try {
-      localStorage.setItem('salto_angel_wheels_2026_v6', JSON.stringify(wheels));
+      localStorage.setItem('salto_angel_wheels_2026_v7', JSON.stringify(wheels));
       fetch('/api/wheels', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -306,6 +306,7 @@ export default function App() {
   // 7. Reset cloud and local storage
   const handleResetCloudStorage = async () => {
     try {
+      localStorage.removeItem('salto_angel_wheels_2026_v7');
       localStorage.removeItem('salto_angel_wheels_2026_v6');
       localStorage.removeItem('salto_angel_wheels_2026_v4');
       await fetch('/api/wheels', {

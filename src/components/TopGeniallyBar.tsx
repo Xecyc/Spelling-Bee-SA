@@ -230,52 +230,67 @@ export const TopGeniallyBar: React.FC<TopGeniallyBarProps> = ({
                     ))}
                   </div>
 
-                  {/* 1st Place vs 2nd/3rd Place */}
+                  {/* General vs Tiebreak round buttons */}
                   <div className="grid grid-cols-2 gap-1.5">
                     {(() => {
-                      const wheel1st = wheels.find(
-                        (w) => w.group === 'elementary' && w.grade === selectedGrade && w.place === '1st'
-                      );
-                      const is1stActive = wheel1st && wheel1st.id === activeWheelId;
+                      const isBlock1 = ['1st', '2nd', '3rd'].includes(selectedGrade);
+                      const wheelGeneral =
+                        wheels.find(
+                          (w) =>
+                            w.group === 'elementary' &&
+                            (w.role === 'general' || w.place === 'general' || w.place === '1st') &&
+                            (isBlock1 ? w.name.includes('1st-3rd') : w.name.includes('4th-6th'))
+                        ) ||
+                        wheels.find(
+                          (w) =>
+                            w.group === 'elementary' &&
+                            (w.role === 'general' || w.place === 'general' || w.place === '1st')
+                        );
+                      const isGeneralActive = wheelGeneral && wheelGeneral.id === activeWheelId;
                       return (
                         <button
                           onClick={() => {
-                            if (wheel1st) {
-                              onSelectWheel(wheel1st.id);
+                            if (wheelGeneral) {
+                              onSelectWheel(wheelGeneral.id);
                               setIsOpen(false);
                             }
                           }}
                           className={`py-2 px-2.5 rounded-xl text-center font-black text-xs uppercase tracking-wide transition-all cursor-pointer border ${
-                            is1stActive
+                            isGeneralActive
                               ? 'bg-amber-400 text-[#06152d] border-amber-300 shadow-md shadow-amber-400/20'
                               : 'bg-[#0a2354]/60 text-blue-100 border-blue-400/20 hover:bg-[#0e2f6d] hover:border-blue-400/40 hover:text-white'
                           }`}
                         >
-                          1st Place
+                          General
                         </button>
                       );
                     })()}
 
                     {(() => {
-                      const wheel2nd3rd = wheels.find(
-                        (w) => w.group === 'elementary' && w.grade === selectedGrade && w.place === '2nd_3rd'
-                      );
-                      const is2nd3rdActive = wheel2nd3rd && wheel2nd3rd.id === activeWheelId;
+                      const wheelTiebreak =
+                        wheels.find(
+                          (w) =>
+                            w.group === 'elementary' &&
+                            w.grade === selectedGrade &&
+                            (w.role === 'tiebreak' || w.place === 'tiebreak' || w.place === '2nd_3rd')
+                        ) ||
+                        wheels.find((w) => w.group === 'elementary' && w.grade === selectedGrade);
+                      const isTiebreakActive = wheelTiebreak && wheelTiebreak.id === activeWheelId;
                       return (
                         <button
                           onClick={() => {
-                            if (wheel2nd3rd) {
-                              onSelectWheel(wheel2nd3rd.id);
+                            if (wheelTiebreak) {
+                              onSelectWheel(wheelTiebreak.id);
                               setIsOpen(false);
                             }
                           }}
                           className={`py-2 px-2.5 rounded-xl text-center font-black text-xs uppercase tracking-wide transition-all cursor-pointer border ${
-                            is2nd3rdActive
+                            isTiebreakActive
                               ? 'bg-amber-400 text-[#06152d] border-amber-300 shadow-md shadow-amber-400/20'
                               : 'bg-[#0a2354]/60 text-blue-100 border-blue-400/20 hover:bg-[#0e2f6d] hover:border-blue-400/40 hover:text-white'
                           }`}
                         >
-                          2nd/3rd Place
+                          Tiebreak
                         </button>
                       );
                     })()}
@@ -285,49 +300,55 @@ export const TopGeniallyBar: React.FC<TopGeniallyBarProps> = ({
                 /* High School round selector */
                 <div className="grid grid-cols-2 gap-1.5 py-1">
                   {(() => {
-                    const wheelHs1st = wheels.find(
-                      (w) => w.group === 'high_school' && w.place === '1st'
-                    );
-                    const is1stActive = wheelHs1st && wheelHs1st.id === activeWheelId;
+                    const wheelHsGeneral =
+                      wheels.find(
+                        (w) =>
+                          w.group === 'high_school' &&
+                          (w.role === 'general' || w.place === 'general' || w.place === '1st')
+                      ) || wheels.find((w) => w.group === 'high_school');
+                    const isGeneralActive = wheelHsGeneral && wheelHsGeneral.id === activeWheelId;
                     return (
                       <button
                         onClick={() => {
-                          if (wheelHs1st) {
-                            onSelectWheel(wheelHs1st.id);
+                          if (wheelHsGeneral) {
+                            onSelectWheel(wheelHsGeneral.id);
                             setIsOpen(false);
                           }
                         }}
                         className={`py-2 px-2.5 rounded-xl text-center font-black text-xs uppercase tracking-wide transition-all cursor-pointer border ${
-                          is1stActive
+                          isGeneralActive
                             ? 'bg-amber-400 text-[#06152d] border-amber-300 shadow-md shadow-amber-400/20'
                             : 'bg-[#0a2354]/60 text-blue-100 border-blue-400/20 hover:bg-[#0e2f6d] hover:border-blue-400/40 hover:text-white'
                         }`}
                       >
-                        1st Place
+                        General
                       </button>
                     );
                   })()}
 
                   {(() => {
-                    const wheelHs2nd3rd = wheels.find(
-                      (w) => w.group === 'high_school' && w.place === '2nd_3rd'
-                    );
-                    const is2nd3rdActive = wheelHs2nd3rd && wheelHs2nd3rd.id === activeWheelId;
+                    const wheelHsTiebreak =
+                      wheels.find(
+                        (w) =>
+                          w.group === 'high_school' &&
+                          (w.role === 'tiebreak' || w.place === 'tiebreak' || w.place === '2nd_3rd')
+                      ) || wheels.find((w) => w.group === 'high_school');
+                    const isTiebreakActive = wheelHsTiebreak && wheelHsTiebreak.id === activeWheelId;
                     return (
                       <button
                         onClick={() => {
-                          if (wheelHs2nd3rd) {
-                            onSelectWheel(wheelHs2nd3rd.id);
+                          if (wheelHsTiebreak) {
+                            onSelectWheel(wheelHsTiebreak.id);
                             setIsOpen(false);
                           }
                         }}
                         className={`py-2 px-2.5 rounded-xl text-center font-black text-xs uppercase tracking-wide transition-all cursor-pointer border ${
-                          is2nd3rdActive
+                          isTiebreakActive
                             ? 'bg-amber-400 text-[#06152d] border-amber-300 shadow-md shadow-amber-400/20'
                             : 'bg-[#0a2354]/60 text-blue-100 border-blue-400/20 hover:bg-[#0e2f6d] hover:border-blue-400/40 hover:text-white'
                         }`}
                       >
-                        2nd/3rd Place
+                        Tiebreak
                       </button>
                     );
                   })()}
