@@ -37,113 +37,88 @@ export const createSlicesFromWords = (words: string[]): WheelSlice[] => {
   }));
 };
 
-const WORDS_1ST_GRADE_1 = [
-  'DOCTOR', 'GRANDFATHER', 'FLOWER', 'SUNDAY', 'ANIMAL', 'WINTER', 'SON',
-  'PENCIL', 'YELLOW', 'FATHER', 'MOTHER', 'EYES', 'TREE', 'MARKET',
-  'UNCLE', 'MICE', 'WINDOW', 'AUNT', 'ORANGE', 'SISTER', 'BOOK',
-  'MOON', 'STREET', 'GARDEN', 'DINNER', 'MORNING', 'MONDAY', 'BOY',
-  'GIRL', 'CAT', 'PET', 'SUMMER'
+// ============================================================================
+// OFFICIAL SALTO ÁNGEL SPELLING BEE 2026 VOCABULARY DATASETS
+// ============================================================================
+
+// Main Vocabulary Lists (1st Place Wheels - 40s Timer)
+const WORDS_MAIN_1ST_3RD = [
+  'ANIMAL', 'WINDOW', 'PENCIL', 'ORANGE', 'YELLOW', 'FATHER', 'MOTHER',
+  'SISTER', 'BROTHER', 'SUMMER', 'WINTER', 'FLOWER', 'DOCTOR', 'MARKET',
+  'STREET', 'GARDEN', 'SUNDAY', 'MONDAY', 'DINNER', 'MORNING',
 ];
 
-const WORDS_1ST_GRADE_2 = [
-  'WATER', 'SCHOOL', 'FRIEND', 'HAPPY', 'PURPLE', 'RIVER', 'BIRD',
-  'HOUSE', 'APPLE', 'CHAIR', 'TABLE', 'BREAD', 'MUSIC', 'LIGHT',
-  'NIGHT', 'HORSE', 'TRAIN', 'GREEN', 'WHITE', 'BLACK', 'CLOCK',
-  'SMILE', 'GRASS', 'PAPER', 'CANDY', 'PLANT', 'DANCE', 'SLEEP'
+const WORDS_MAIN_4TH_6TH = [
+  'AFTERNOON', 'BREAKFAST', 'BEAUTIFUL', 'COMPUTER', 'HOSPITAL', 'MOUNTAIN',
+  'SANDWICH', 'ELEPHANT', 'DINOSAUR', 'UMBRELLA', 'VACATION', 'LANGUAGE',
+  'MAGAZINE', 'QUESTION', 'NEIGHBOR', 'MEDICINE', 'TOMORROW', 'YESTERDAY',
+  'REMEMBER', 'SURPRISE', 'TELEPHONE', 'FURNITURE', 'IMPORTANT', 'CHOCOLATE',
+  'DIRECTION', 'VEGETABLE', 'DELICIOUS', 'RESTAURANT', 'STRAWBERRY', 'UNIVERSITY',
 ];
 
-const WORDS_2ND_GRADE_1 = [
-  'BEAUTIFUL', 'MOUNTAIN', 'CHILDREN', 'JOURNEY', 'DOLPHIN', 'TREASURE',
-  'WHISPER', 'RAINBOW', 'BUTTERFLY', 'ADVENTURE', 'BLANKET', 'CHAMPION',
-  'FEATHER', 'GIRAFFE', 'HOLIDAY', 'ISLAND', 'KANGAROO', 'LANTERN',
-  'MYSTERY', 'OCTOPUS', 'PIRATE', 'QUIET', 'RESCUE', 'SHADOW',
-  'THUNDER', 'UNICORN', 'VALLEY', 'WIZARD', 'CRYSTAL', 'GARDEN'
+const WORDS_MAIN_HIGHSCHOOL = [
+  'FORBID', 'BROADCAST', 'FORESEE', 'MISLEAD', 'MISTAKE', 'MISUNDERSTAND',
+  'OVERCOME', 'OVERDO', 'OVEREAT', 'OVERHEAR', 'OVERSLEEP', 'OVERTHROW',
+  'PROOFREAD', 'REBUILD', 'REMAKE', 'RESELL', 'RETHINK', 'REWIND',
+  'REWRITE', 'SHRINK', 'SPREAD', 'SPRING', 'STRIDE', 'STRING',
+  'STRIVE', 'THRIVE', 'UNDERGO', 'UNDERSTAND', 'UNDERTAKE', 'WITHDRAW',
+  'WITHHOLD', 'WITHSTAND', 'UPHOLD', 'OVERPAY', 'MISSPELL', 'PARTAKE',
+  'OUTGROW', 'OUTSELL', 'OUTSHINE', 'SUNBURN',
 ];
 
-const WORDS_2ND_GRADE_2 = [
-  'MONSTER', 'DIAMOND', 'PENGUIN', 'CASTLE', 'FOREST', 'VOLCANO',
-  'BLOSSOM', 'SUNSHINE', 'FEATHER', 'GUITAR', 'PUMPKIN', 'BLANKET',
-  'SAILOR', 'SILVER', 'GOLDEN', 'CAPTAIN', 'DRAGON', 'PIRATE',
-  'CANDLE', 'WONDER', 'MEADOW', 'BRIDGE', 'STREAM', 'ISLAND'
+// Tie-Breaker Vocabulary Lists (2nd/3rd Place Wheels - 20s Timer)
+const WORDS_TB_1ST = [
+  'STAR', 'MOON', 'SUN', 'TREE', 'FLOWER', 'MOUSE', 'CAT', 'BOY', 'GIRL',
+  'BOOK', 'MICE', 'EYES', 'MOTHER', 'FATHER', 'BROTHER', 'SISTER', 'SON',
+  'DAUGHTER', 'AUNT', 'UNCLE', 'PET', 'GRANDFATHER', 'GRANDMOTHER',
 ];
 
-const WORDS_3RD_GRADE_1 = [
-  'ASTRONAUT', 'BRILLIANT', 'CELEBRATION', 'DISCOVERY', 'EXPLORATION',
-  'FANTASTIC', 'GOVERNMENT', 'HURRICANE', 'IMAGINATION', 'KNOWLEDGE',
-  'LABORATORY', 'MAGNIFICENT', 'NAVIGATOR', 'ORCHESTRA', 'PARACHUTE',
-  'QUESTION', 'RESTAURANT', 'SCIENTIST', 'TELESCOPE', 'UNIVERSE',
-  'VOLCANO', 'WILDERNESS', 'SYMPHONY', 'PHENOMENON', 'KALEIDOSCOPE',
-  'EXCELLENT', 'TRIUMPH', 'CHALLENGE'
+const WORDS_TB_2ND = [
+  'WRITE', 'SING', 'CLAP', 'DRAW', 'PICTURE', 'EAT', 'BREAKFAST', 'SHOWER',
+  'TAKE', 'DAY', 'MOTHER', 'FATHER', 'GRADUATION', 'BIRTHDAY', 'CHRISTMAS',
+  'GIFTS', 'MONTHS', 'DATE',
 ];
 
-const WORDS_3RD_GRADE_2 = [
-  'ADVENTURE', 'BALLOON', 'CARNIVAL', 'DINOSAUR', 'ELECTRIC',
-  'FIREWORK', 'GALAXY', 'HARMONY', 'ILLUSION', 'JUNGLE',
-  'KINGDOM', 'LEOPARD', 'MAGICIAN', 'NEPTUNE', 'OLYMPIC',
-  'PLATINUM', 'PYRAMID', 'RAINBOW', 'SUBMARINE', 'TREASURE',
-  'VAMPIRE', 'WARRIOR', 'YESTERDAY', 'ZEBRA'
+const WORDS_TB_3RD = [
+  'YOUR', 'ITS', 'OUR', 'THEIR', 'MINE', 'THOSE', 'THESE', 'WHOSE', 'DUST',
+  'FLOOR', 'MOP', 'SWEEP', 'WASH', 'DISHES', 'VACUUM', 'IRON', 'MAKE',
+  'BEDS', 'CLOTHES', 'DUSTER', 'BROOM', 'WEEKLY',
 ];
 
-const WORDS_4TH_GRADE_1 = [
-  'ACCIDENTAL', 'BOULEVARD', 'CENTURY', 'DIFFICULT', 'ENVIRONMENT',
-  'FREQUENCY', 'GENERATION', 'HOSPITALITY', 'INDEPENDENT', 'JUSTICE',
-  'KNOWLEDGEABLE', 'LANDSCAPE', 'MICROSCOPE', 'NARRATOR', 'OPPONENT',
-  'PERFORMANCE', 'QUALIFIED', 'RECOGNITION', 'SIGNIFICANT', 'TERRITORY'
+const WORDS_TB_4TH = [
+  'GOOD', 'MORNING', 'AFTERNOON', 'EVENING', 'LATER', 'NIGHT', 'NICE',
+  'MEET', 'FIRST', 'SECOND', 'NAME', 'WINDOW', 'BACKPACK', 'PAPER',
+  'SHEET', 'PENCIL', 'TEACHER', 'CALENDAR', 'BOOK', 'T-SHIRT', 'DESK',
+  'EARTH', 'GLOBE',
 ];
 
-const WORDS_4TH_GRADE_2 = [
-  'ABSOLUTE', 'BOUNDARY', 'COMMUNITY', 'DIVERSITY', 'ELEMENTARY',
-  'FRACTION', 'GEOGRAPHY', 'HERITAGE', 'IMPORTANT', 'JUDGMENT',
-  'LITERATURE', 'MONUMENT', 'NATIONAL', 'OPERATION', 'POPULATION',
-  'QUARTER', 'RELATION', 'STRUCTURE', 'TRADITION', 'UNDERSTAND'
+const WORDS_TB_5TH = [
+  'MORNING', 'AFTERNOON', 'EVENING', 'NIGHT', 'NAME', 'DAY', 'AGE',
+  'BIRTHDAY', 'JANUARY', 'FEBRUARY', 'MARCH', 'APRIL', 'MAY', 'JUNE',
+  'JULY', 'AUGUST', 'SEPTEMBER', 'OCTOBER', 'NOVEMBER', 'DECEMBER',
 ];
 
-const WORDS_5TH_GRADE_1 = [
-  'ACCOMMODATE', 'BELLIGERENT', 'CAMOUFLAGE', 'DELINQUENT', 'EMBARRASS',
-  'FLUORESCENT', 'GUILLOTINE', 'HIERARCHY', 'INDISPENSABLE', 'KALEIDOSCOPE',
-  'LIEUTENANT', 'MISCHIEVOUS', 'NEIGHBORHOOD', 'OCCURRENCE', 'PARLIAMENT',
-  'QUESTIONNAIRE', 'RENAISSANCE', 'SURVEILLANCE', 'TYRANNY', 'UNCONSCIOUS'
+const WORDS_TB_6TH = [
+  'ORDINARY', 'HUNDRED', 'THOUSAND', 'MILLION', 'PREPOSITION',
+  'IDENTIFICATION', 'BIOGRAPHY', 'COLOR WHEEL', 'LEISURE', 'INTERESTS',
+  'CHESS', 'HOUSEWORK', 'IRONING', 'ROUTINE', 'FREE TIME', 'FRACTION',
+  'DECIMAL', 'PERCENTAGE',
 ];
 
-const WORDS_5TH_GRADE_2 = [
-  'AUTHENTIC', 'BENEFICIAL', 'CHALLENGING', 'DECISIVE', 'ENTHUSIASM',
-  'FOUNDATION', 'GOVERNOR', 'HYPOTHESIS', 'ILLUSTRATION', 'JOURNALIST',
-  'LEGISLATURE', 'MAINTENANCE', 'NECESSARY', 'OPPORTUNITY', 'PERSPECTIVE',
-  'REVOLUTION', 'SUBSTANTIAL', 'TECHNIQUE', 'UNANIMOUS', 'VULNERABLE'
+// Deduplicated High School Tie-Breaker list (removes duplicate 'drive' and 'choose')
+const WORDS_TB_HIGHSCHOOL = [
+  'BECOME', 'BEGIN', 'BREAK', 'BRING', 'BUILD', 'CATCH', 'CHOOSE',
+  'DREAM', 'DRINK', 'DRIVE', 'FORGET', 'FORGIVE', 'FREEZE', 'HOLD',
+  'LEARN', 'LEAVE', 'LEND', 'LYING', 'MAN', 'OVERTAKE', 'PAY',
+  'READ', 'RING', 'SHAKE', 'SHINE', 'SHOOT', 'SLEEP', 'SPEAK',
+  'SPEND', 'WRITE', 'STRIKE', 'SWEAR', 'RUN',
 ];
 
-const WORDS_6TH_GRADE_1 = [
-  'ANESTHESIA', 'BUREAUCRACY', 'CONVALESCENT', 'DISCIPLINARY', 'ECCENTRIC',
-  'FORFEITURE', 'GRIEVANCE', 'HEMORRHAGE', 'IDIOSYNCRASY', 'JURISDICTION',
-  'KLEPTOMANIA', 'LABYRINTH', 'MALICIOUS', 'NONCHALANT', 'OBSOLESCENCE',
-  'PHILANTHROPY', 'QUINTESSENTIAL', 'REMINISCENCE', 'SACRILEGIOUS', 'TRANSCENDENT'
-];
-
-const WORDS_6TH_GRADE_2 = [
-  'APPARATUS', 'COLLEAGUE', 'DESPERATE', 'EQUIVALENT', 'FASCINATING',
-  'GOVERNMENT', 'HOMOGENEOUS', 'INADVERTENT', 'LEGITIMATE', 'METAPHORICAL',
-  'NEGOTIATION', 'ORIGINALLY', 'PHILOSOPHY', 'RESERVOIR', 'SOPHISTICATED',
-  'TEMPERAMENT', 'UNPRECEDENTED', 'VETERINARIAN', 'WITHDRAWAL', 'ZOOLOGICAL'
-];
-
-const WORDS_HIGHSCHOOL_1 = [
-  'ABERRATION', 'BELLWETHER', 'CIRCUMLOCUTION', 'DISINGENUOUS', 'EPHEMERAL',
-  'FASTIDIOUS', 'GRANDILOQUENT', 'HEGEMONY', 'INTRANSIGENT', 'JUXTAPOSITION',
-  'KLEPTOCRACY', 'LOQUACIOUS', 'MAGNANIMOUS', 'NEPOTISM', 'ONOMATOPOEIA',
-  'PANACEA', 'QUERULOUS', 'RECALCITRANT', 'SYCOPHANT', 'UBIQUITOUS',
-  'VERISIMILITUDE', 'ZEITGEIST'
-];
-
-const WORDS_HIGHSCHOOL_2 = [
-  'ANACHRONISM', 'BOURGEOISIE', 'CACOPHONY', 'DELETERIOUS', 'EQUANIMITY',
-  'FORTUITOUS', 'GARRULOUS', 'HUBRIS', 'IMPECUNIOUS', 'LACONIC',
-  'MEGALOMANIA', 'NADIR', 'OSTENTATIOUS', 'PERFIDIOUS', 'QUINTESSENCE',
-  'RESILIENT', 'SANGUINE', 'TACITURN', 'USURPATION', 'VACILLATE',
-  'WINDFALL', 'XENOPHOBIA'
-];
-
+// ============================================================================
+// OFFICIAL 14 WHEELS CONFIGURATION
+// ============================================================================
 export const INITIAL_WHEELS: WheelConfig[] = [
-  // Elementary - 1st Grade
+  // 1. Elementary - 1st Grade
   {
     id: 'wheel-elem-1st-1',
     name: '1st Grade - 1st Place',
@@ -153,7 +128,7 @@ export const INITIAL_WHEELS: WheelConfig[] = [
     place: '1st',
     spinDuration: 6,
     timerDuration: 40,
-    slices: createSlicesFromWords(WORDS_1ST_GRADE_1),
+    slices: createSlicesFromWords(WORDS_MAIN_1ST_3RD),
   },
   {
     id: 'wheel-elem-1st-2',
@@ -164,10 +139,10 @@ export const INITIAL_WHEELS: WheelConfig[] = [
     place: '2nd_3rd',
     spinDuration: 6,
     timerDuration: 20,
-    slices: createSlicesFromWords(WORDS_1ST_GRADE_2),
+    slices: createSlicesFromWords(WORDS_TB_1ST),
   },
 
-  // Elementary - 2nd Grade
+  // 2. Elementary - 2nd Grade
   {
     id: 'wheel-elem-2nd-1',
     name: '2nd Grade - 1st Place',
@@ -177,7 +152,7 @@ export const INITIAL_WHEELS: WheelConfig[] = [
     place: '1st',
     spinDuration: 6,
     timerDuration: 40,
-    slices: createSlicesFromWords(WORDS_2ND_GRADE_1),
+    slices: createSlicesFromWords(WORDS_MAIN_1ST_3RD),
   },
   {
     id: 'wheel-elem-2nd-2',
@@ -188,10 +163,10 @@ export const INITIAL_WHEELS: WheelConfig[] = [
     place: '2nd_3rd',
     spinDuration: 6,
     timerDuration: 20,
-    slices: createSlicesFromWords(WORDS_2ND_GRADE_2),
+    slices: createSlicesFromWords(WORDS_TB_2ND),
   },
 
-  // Elementary - 3rd Grade
+  // 3. Elementary - 3rd Grade
   {
     id: 'wheel-elem-3rd-1',
     name: '3rd Grade - 1st Place',
@@ -201,7 +176,7 @@ export const INITIAL_WHEELS: WheelConfig[] = [
     place: '1st',
     spinDuration: 6,
     timerDuration: 40,
-    slices: createSlicesFromWords(WORDS_3RD_GRADE_1),
+    slices: createSlicesFromWords(WORDS_MAIN_1ST_3RD),
   },
   {
     id: 'wheel-elem-3rd-2',
@@ -212,10 +187,10 @@ export const INITIAL_WHEELS: WheelConfig[] = [
     place: '2nd_3rd',
     spinDuration: 6,
     timerDuration: 20,
-    slices: createSlicesFromWords(WORDS_3RD_GRADE_2),
+    slices: createSlicesFromWords(WORDS_TB_3RD),
   },
 
-  // Elementary - 4th Grade
+  // 4. Elementary - 4th Grade
   {
     id: 'wheel-elem-4th-1',
     name: '4th Grade - 1st Place',
@@ -225,7 +200,7 @@ export const INITIAL_WHEELS: WheelConfig[] = [
     place: '1st',
     spinDuration: 6,
     timerDuration: 40,
-    slices: createSlicesFromWords(WORDS_4TH_GRADE_1),
+    slices: createSlicesFromWords(WORDS_MAIN_4TH_6TH),
   },
   {
     id: 'wheel-elem-4th-2',
@@ -236,10 +211,10 @@ export const INITIAL_WHEELS: WheelConfig[] = [
     place: '2nd_3rd',
     spinDuration: 6,
     timerDuration: 20,
-    slices: createSlicesFromWords(WORDS_4TH_GRADE_2),
+    slices: createSlicesFromWords(WORDS_TB_4TH),
   },
 
-  // Elementary - 5th Grade
+  // 5. Elementary - 5th Grade
   {
     id: 'wheel-elem-5th-1',
     name: '5th Grade - 1st Place',
@@ -249,7 +224,7 @@ export const INITIAL_WHEELS: WheelConfig[] = [
     place: '1st',
     spinDuration: 6,
     timerDuration: 40,
-    slices: createSlicesFromWords(WORDS_5TH_GRADE_1),
+    slices: createSlicesFromWords(WORDS_MAIN_4TH_6TH),
   },
   {
     id: 'wheel-elem-5th-2',
@@ -260,10 +235,10 @@ export const INITIAL_WHEELS: WheelConfig[] = [
     place: '2nd_3rd',
     spinDuration: 6,
     timerDuration: 20,
-    slices: createSlicesFromWords(WORDS_5TH_GRADE_2),
+    slices: createSlicesFromWords(WORDS_TB_5TH),
   },
 
-  // Elementary - 6th Grade
+  // 6. Elementary - 6th Grade
   {
     id: 'wheel-elem-6th-1',
     name: '6th Grade - 1st Place',
@@ -273,7 +248,7 @@ export const INITIAL_WHEELS: WheelConfig[] = [
     place: '1st',
     spinDuration: 6,
     timerDuration: 40,
-    slices: createSlicesFromWords(WORDS_6TH_GRADE_1),
+    slices: createSlicesFromWords(WORDS_MAIN_4TH_6TH),
   },
   {
     id: 'wheel-elem-6th-2',
@@ -284,10 +259,10 @@ export const INITIAL_WHEELS: WheelConfig[] = [
     place: '2nd_3rd',
     spinDuration: 6,
     timerDuration: 20,
-    slices: createSlicesFromWords(WORDS_6TH_GRADE_2),
+    slices: createSlicesFromWords(WORDS_TB_6TH),
   },
 
-  // High School (1st to 5th Year Shared Pool)
+  // 7. High School (1er a 5to Año)
   {
     id: 'wheel-hs-1st',
     name: 'High School - 1st Place',
@@ -297,7 +272,7 @@ export const INITIAL_WHEELS: WheelConfig[] = [
     place: '1st',
     spinDuration: 6,
     timerDuration: 40,
-    slices: createSlicesFromWords(WORDS_HIGHSCHOOL_1),
+    slices: createSlicesFromWords(WORDS_MAIN_HIGHSCHOOL),
   },
   {
     id: 'wheel-hs-2nd-3rd',
@@ -308,6 +283,6 @@ export const INITIAL_WHEELS: WheelConfig[] = [
     place: '2nd_3rd',
     spinDuration: 6,
     timerDuration: 20,
-    slices: createSlicesFromWords(WORDS_HIGHSCHOOL_2),
+    slices: createSlicesFromWords(WORDS_TB_HIGHSCHOOL),
   },
 ];

@@ -1,0 +1,1905 @@
+[
+  {
+    "id": "wheel-elem-1st-1",
+    "name": "1st Grade - 1st Place",
+    "role": "1st",
+    "group": "elementary",
+    "grade": "1st",
+    "place": "1st",
+    "spinDuration": 6,
+    "timerDuration": 40,
+    "slices": [
+      {
+        "id": "slice-1794004488955-0-a167w",
+        "text": "ANIMAL",
+        "color": "#FBBF24"
+      },
+      {
+        "id": "slice-1794004488955-1-qofku",
+        "text": "WINDOW",
+        "color": "#F472B6"
+      },
+      {
+        "id": "slice-1794004488955-2-w9i58",
+        "text": "PENCIL",
+        "color": "#60A5FA"
+      },
+      {
+        "id": "slice-1794004488955-3-yj3jt",
+        "text": "ORANGE",
+        "color": "#4ADE80"
+      },
+      {
+        "id": "slice-1794004488955-4-9x6by",
+        "text": "YELLOW",
+        "color": "#A78BFA"
+      },
+      {
+        "id": "slice-1794004488955-5-ob7gc",
+        "text": "FATHER",
+        "color": "#FB923C"
+      },
+      {
+        "id": "slice-1794004488955-6-6pt07",
+        "text": "MOTHER",
+        "color": "#38BDF8"
+      },
+      {
+        "id": "slice-1794004488955-7-rkr7l",
+        "text": "SISTER",
+        "color": "#F87171"
+      },
+      {
+        "id": "slice-1794004488955-8-qwyw1",
+        "text": "BROTHER",
+        "color": "#C084FC"
+      },
+      {
+        "id": "slice-1794004488955-9-wvgv8",
+        "text": "SUMMER",
+        "color": "#34D399"
+      },
+      {
+        "id": "slice-1794004488955-10-yz57g",
+        "text": "WINTER",
+        "color": "#FDE047"
+      },
+      {
+        "id": "slice-1794004488955-11-43u2i",
+        "text": "FLOWER",
+        "color": "#E879F9"
+      },
+      {
+        "id": "slice-1794004488955-12-t33ae",
+        "text": "DOCTOR",
+        "color": "#2DD4BF"
+      },
+      {
+        "id": "slice-1794004488955-13-7kluu",
+        "text": "MARKET",
+        "color": "#F97316"
+      },
+      {
+        "id": "slice-1794004488955-14-poii8",
+        "text": "STREET",
+        "color": "#818CF8"
+      },
+      {
+        "id": "slice-1794004488955-15-dlrjv",
+        "text": "GARDEN",
+        "color": "#FBBF24"
+      },
+      {
+        "id": "slice-1794004488955-16-v7vot",
+        "text": "SUNDAY",
+        "color": "#F472B6"
+      },
+      {
+        "id": "slice-1794004488955-17-xa19g",
+        "text": "MONDAY",
+        "color": "#60A5FA"
+      },
+      {
+        "id": "slice-1794004488955-18-l3znt",
+        "text": "DINNER",
+        "color": "#4ADE80"
+      },
+      {
+        "id": "slice-1794004488955-19-x4def",
+        "text": "MORNING",
+        "color": "#A78BFA"
+      }
+    ]
+  },
+  {
+    "id": "wheel-elem-1st-2",
+    "name": "1st Grade - 2nd/3rd Place",
+    "role": "2nd",
+    "group": "elementary",
+    "grade": "1st",
+    "place": "2nd_3rd",
+    "spinDuration": 6,
+    "timerDuration": 20,
+    "slices": [
+      {
+        "id": "slice-1794004488955-0-4mxcv",
+        "text": "STAR",
+        "color": "#FBBF24"
+      },
+      {
+        "id": "slice-1794004488955-1-wm2r0",
+        "text": "MOON",
+        "color": "#F472B6"
+      },
+      {
+        "id": "slice-1794004488955-2-hkjgj",
+        "text": "SUN",
+        "color": "#60A5FA"
+      },
+      {
+        "id": "slice-1794004488955-3-onquv",
+        "text": "TREE",
+        "color": "#4ADE80"
+      },
+      {
+        "id": "slice-1794004488955-4-m6qs7",
+        "text": "FLOWER",
+        "color": "#A78BFA"
+      },
+      {
+        "id": "slice-1794004488955-5-zr7tx",
+        "text": "MOUSE",
+        "color": "#FB923C"
+      },
+      {
+        "id": "slice-1794004488955-6-32kzj",
+        "text": "CAT",
+        "color": "#38BDF8"
+      },
+      {
+        "id": "slice-1794004488955-7-ux4tq",
+        "text": "BOY",
+        "color": "#F87171"
+      },
+      {
+        "id": "slice-1794004488955-8-zpjp5",
+        "text": "GIRL",
+        "color": "#C084FC"
+      },
+      {
+        "id": "slice-1794004488955-9-26ncs",
+        "text": "BOOK",
+        "color": "#34D399"
+      },
+      {
+        "id": "slice-1794004488955-10-1l5kj",
+        "text": "MICE",
+        "color": "#FDE047"
+      },
+      {
+        "id": "slice-1794004488955-11-glaqk",
+        "text": "EYES",
+        "color": "#E879F9"
+      },
+      {
+        "id": "slice-1794004488955-12-lqybn",
+        "text": "MOTHER",
+        "color": "#2DD4BF"
+      },
+      {
+        "id": "slice-1794004488955-13-r4a2w",
+        "text": "FATHER",
+        "color": "#F97316"
+      },
+      {
+        "id": "slice-1794004488955-14-moefy",
+        "text": "BROTHER",
+        "color": "#818CF8"
+      },
+      {
+        "id": "slice-1794004488955-15-jnrej",
+        "text": "SISTER",
+        "color": "#FBBF24"
+      },
+      {
+        "id": "slice-1794004488955-16-fjcqh",
+        "text": "SON",
+        "color": "#F472B6"
+      },
+      {
+        "id": "slice-1794004488955-17-vbrrx",
+        "text": "DAUGHTER",
+        "color": "#60A5FA"
+      },
+      {
+        "id": "slice-1794004488955-18-unat0",
+        "text": "AUNT",
+        "color": "#4ADE80"
+      },
+      {
+        "id": "slice-1794004488955-19-kcwk0",
+        "text": "UNCLE",
+        "color": "#A78BFA"
+      },
+      {
+        "id": "slice-1794004488955-20-on26m",
+        "text": "PET",
+        "color": "#FB923C"
+      },
+      {
+        "id": "slice-1794004488955-21-kehej",
+        "text": "GRANDFATHER",
+        "color": "#38BDF8"
+      },
+      {
+        "id": "slice-1794004488955-22-dimle",
+        "text": "GRANDMOTHER",
+        "color": "#F87171"
+      }
+    ]
+  },
+  {
+    "id": "wheel-elem-2nd-1",
+    "name": "2nd Grade - 1st Place",
+    "role": "1st",
+    "group": "elementary",
+    "grade": "2nd",
+    "place": "1st",
+    "spinDuration": 6,
+    "timerDuration": 40,
+    "slices": [
+      {
+        "id": "slice-1794004488955-0-mj534",
+        "text": "ANIMAL",
+        "color": "#FBBF24"
+      },
+      {
+        "id": "slice-1794004488955-1-hx6lf",
+        "text": "WINDOW",
+        "color": "#F472B6"
+      },
+      {
+        "id": "slice-1794004488955-2-qrtjb",
+        "text": "PENCIL",
+        "color": "#60A5FA"
+      },
+      {
+        "id": "slice-1794004488955-3-x4h0i",
+        "text": "ORANGE",
+        "color": "#4ADE80"
+      },
+      {
+        "id": "slice-1794004488955-4-osv3i",
+        "text": "YELLOW",
+        "color": "#A78BFA"
+      },
+      {
+        "id": "slice-1794004488955-5-i39ry",
+        "text": "FATHER",
+        "color": "#FB923C"
+      },
+      {
+        "id": "slice-1794004488955-6-wbed5",
+        "text": "MOTHER",
+        "color": "#38BDF8"
+      },
+      {
+        "id": "slice-1794004488955-7-9rlik",
+        "text": "SISTER",
+        "color": "#F87171"
+      },
+      {
+        "id": "slice-1794004488955-8-joy9x",
+        "text": "BROTHER",
+        "color": "#C084FC"
+      },
+      {
+        "id": "slice-1794004488955-9-b6a44",
+        "text": "SUMMER",
+        "color": "#34D399"
+      },
+      {
+        "id": "slice-1794004488955-10-jt4so",
+        "text": "WINTER",
+        "color": "#FDE047"
+      },
+      {
+        "id": "slice-1794004488955-11-u9dek",
+        "text": "FLOWER",
+        "color": "#E879F9"
+      },
+      {
+        "id": "slice-1794004488955-12-sv490",
+        "text": "DOCTOR",
+        "color": "#2DD4BF"
+      },
+      {
+        "id": "slice-1794004488955-13-glsna",
+        "text": "MARKET",
+        "color": "#F97316"
+      },
+      {
+        "id": "slice-1794004488955-14-rftgm",
+        "text": "STREET",
+        "color": "#818CF8"
+      },
+      {
+        "id": "slice-1794004488955-15-3r8h0",
+        "text": "GARDEN",
+        "color": "#FBBF24"
+      },
+      {
+        "id": "slice-1794004488955-16-g7mwu",
+        "text": "SUNDAY",
+        "color": "#F472B6"
+      },
+      {
+        "id": "slice-1794004488955-17-k14oh",
+        "text": "MONDAY",
+        "color": "#60A5FA"
+      },
+      {
+        "id": "slice-1794004488955-18-k8c0b",
+        "text": "DINNER",
+        "color": "#4ADE80"
+      },
+      {
+        "id": "slice-1794004488955-19-7acix",
+        "text": "MORNING",
+        "color": "#A78BFA"
+      }
+    ]
+  },
+  {
+    "id": "wheel-elem-2nd-2",
+    "name": "2nd Grade - 2nd/3rd Place",
+    "role": "2nd",
+    "group": "elementary",
+    "grade": "2nd",
+    "place": "2nd_3rd",
+    "spinDuration": 6,
+    "timerDuration": 20,
+    "slices": [
+      {
+        "id": "slice-1794004488955-0-45g4s",
+        "text": "WRITE",
+        "color": "#FBBF24"
+      },
+      {
+        "id": "slice-1794004488955-1-cz0uu",
+        "text": "SING",
+        "color": "#F472B6"
+      },
+      {
+        "id": "slice-1794004488955-2-865k4",
+        "text": "CLAP",
+        "color": "#60A5FA"
+      },
+      {
+        "id": "slice-1794004488955-3-trpjo",
+        "text": "DRAW",
+        "color": "#4ADE80"
+      },
+      {
+        "id": "slice-1794004488955-4-2ikis",
+        "text": "PICTURE",
+        "color": "#A78BFA"
+      },
+      {
+        "id": "slice-1794004488955-5-x5av4",
+        "text": "EAT",
+        "color": "#FB923C"
+      },
+      {
+        "id": "slice-1794004488955-6-xsp73",
+        "text": "BREAKFAST",
+        "color": "#38BDF8"
+      },
+      {
+        "id": "slice-1794004488955-7-c70we",
+        "text": "SHOWER",
+        "color": "#F87171"
+      },
+      {
+        "id": "slice-1794004488955-8-2jafd",
+        "text": "TAKE",
+        "color": "#C084FC"
+      },
+      {
+        "id": "slice-1794004488955-9-maccd",
+        "text": "DAY",
+        "color": "#34D399"
+      },
+      {
+        "id": "slice-1794004488955-10-69hxx",
+        "text": "MOTHER",
+        "color": "#FDE047"
+      },
+      {
+        "id": "slice-1794004488955-11-j32td",
+        "text": "FATHER",
+        "color": "#E879F9"
+      },
+      {
+        "id": "slice-1794004488955-12-1d5ar",
+        "text": "GRADUATION",
+        "color": "#2DD4BF"
+      },
+      {
+        "id": "slice-1794004488955-13-qoez3",
+        "text": "BIRTHDAY",
+        "color": "#F97316"
+      },
+      {
+        "id": "slice-1794004488955-14-wuzqa",
+        "text": "CHRISTMAS",
+        "color": "#818CF8"
+      },
+      {
+        "id": "slice-1794004488955-15-jc4g4",
+        "text": "GIFTS",
+        "color": "#FBBF24"
+      },
+      {
+        "id": "slice-1794004488955-16-4e082",
+        "text": "MONTHS",
+        "color": "#F472B6"
+      },
+      {
+        "id": "slice-1794004488955-17-d3v43",
+        "text": "DATE",
+        "color": "#60A5FA"
+      }
+    ]
+  },
+  {
+    "id": "wheel-elem-3rd-1",
+    "name": "3rd Grade - 1st Place",
+    "role": "1st",
+    "group": "elementary",
+    "grade": "3rd",
+    "place": "1st",
+    "spinDuration": 6,
+    "timerDuration": 40,
+    "slices": [
+      {
+        "id": "slice-1794004488955-0-ck65r",
+        "text": "ANIMAL",
+        "color": "#FBBF24"
+      },
+      {
+        "id": "slice-1794004488955-1-4gdu2",
+        "text": "WINDOW",
+        "color": "#F472B6"
+      },
+      {
+        "id": "slice-1794004488955-2-xafsb",
+        "text": "PENCIL",
+        "color": "#60A5FA"
+      },
+      {
+        "id": "slice-1794004488955-3-awvom",
+        "text": "ORANGE",
+        "color": "#4ADE80"
+      },
+      {
+        "id": "slice-1794004488955-4-i1l7q",
+        "text": "YELLOW",
+        "color": "#A78BFA"
+      },
+      {
+        "id": "slice-1794004488955-5-7xlr9",
+        "text": "FATHER",
+        "color": "#FB923C"
+      },
+      {
+        "id": "slice-1794004488955-6-u85h9",
+        "text": "MOTHER",
+        "color": "#38BDF8"
+      },
+      {
+        "id": "slice-1794004488955-7-jj2ks",
+        "text": "SISTER",
+        "color": "#F87171"
+      },
+      {
+        "id": "slice-1794004488955-8-y516n",
+        "text": "BROTHER",
+        "color": "#C084FC"
+      },
+      {
+        "id": "slice-1794004488955-9-wojcw",
+        "text": "SUMMER",
+        "color": "#34D399"
+      },
+      {
+        "id": "slice-1794004488955-10-2a3u0",
+        "text": "WINTER",
+        "color": "#FDE047"
+      },
+      {
+        "id": "slice-1794004488955-11-ru89f",
+        "text": "FLOWER",
+        "color": "#E879F9"
+      },
+      {
+        "id": "slice-1794004488955-12-xgrlv",
+        "text": "DOCTOR",
+        "color": "#2DD4BF"
+      },
+      {
+        "id": "slice-1794004488955-13-ad8su",
+        "text": "MARKET",
+        "color": "#F97316"
+      },
+      {
+        "id": "slice-1794004488955-14-u13s6",
+        "text": "STREET",
+        "color": "#818CF8"
+      },
+      {
+        "id": "slice-1794004488955-15-gzvul",
+        "text": "GARDEN",
+        "color": "#FBBF24"
+      },
+      {
+        "id": "slice-1794004488955-16-opwy0",
+        "text": "SUNDAY",
+        "color": "#F472B6"
+      },
+      {
+        "id": "slice-1794004488955-17-4zgmw",
+        "text": "MONDAY",
+        "color": "#60A5FA"
+      },
+      {
+        "id": "slice-1794004488955-18-0aopx",
+        "text": "DINNER",
+        "color": "#4ADE80"
+      },
+      {
+        "id": "slice-1794004488955-19-pm192",
+        "text": "MORNING",
+        "color": "#A78BFA"
+      }
+    ]
+  },
+  {
+    "id": "wheel-elem-3rd-2",
+    "name": "3rd Grade - 2nd/3rd Place",
+    "role": "2nd",
+    "group": "elementary",
+    "grade": "3rd",
+    "place": "2nd_3rd",
+    "spinDuration": 6,
+    "timerDuration": 20,
+    "slices": [
+      {
+        "id": "slice-1794004488955-0-mdjqq",
+        "text": "YOUR",
+        "color": "#FBBF24"
+      },
+      {
+        "id": "slice-1794004488955-1-15m5u",
+        "text": "ITS",
+        "color": "#F472B6"
+      },
+      {
+        "id": "slice-1794004488955-2-qvs4g",
+        "text": "OUR",
+        "color": "#60A5FA"
+      },
+      {
+        "id": "slice-1794004488955-3-fzaoh",
+        "text": "THEIR",
+        "color": "#4ADE80"
+      },
+      {
+        "id": "slice-1794004488955-4-gf9t8",
+        "text": "MINE",
+        "color": "#A78BFA"
+      },
+      {
+        "id": "slice-1794004488955-5-ah69l",
+        "text": "THOSE",
+        "color": "#FB923C"
+      },
+      {
+        "id": "slice-1794004488955-6-4n8j2",
+        "text": "THESE",
+        "color": "#38BDF8"
+      },
+      {
+        "id": "slice-1794004488955-7-ahe6h",
+        "text": "WHOSE",
+        "color": "#F87171"
+      },
+      {
+        "id": "slice-1794004488955-8-kxejo",
+        "text": "DUST",
+        "color": "#C084FC"
+      },
+      {
+        "id": "slice-1794004488955-9-2b9lv",
+        "text": "FLOOR",
+        "color": "#34D399"
+      },
+      {
+        "id": "slice-1794004488955-10-wwdoi",
+        "text": "MOP",
+        "color": "#FDE047"
+      },
+      {
+        "id": "slice-1794004488955-11-juslq",
+        "text": "SWEEP",
+        "color": "#E879F9"
+      },
+      {
+        "id": "slice-1794004488955-12-8vlkn",
+        "text": "WASH",
+        "color": "#2DD4BF"
+      },
+      {
+        "id": "slice-1794004488955-13-ln37g",
+        "text": "DISHES",
+        "color": "#F97316"
+      },
+      {
+        "id": "slice-1794004488955-14-dznbc",
+        "text": "VACUUM",
+        "color": "#818CF8"
+      },
+      {
+        "id": "slice-1794004488955-15-binu2",
+        "text": "IRON",
+        "color": "#FBBF24"
+      },
+      {
+        "id": "slice-1794004488955-16-1u82u",
+        "text": "MAKE",
+        "color": "#F472B6"
+      },
+      {
+        "id": "slice-1794004488955-17-714na",
+        "text": "BEDS",
+        "color": "#60A5FA"
+      },
+      {
+        "id": "slice-1794004488955-18-crx7y",
+        "text": "CLOTHES",
+        "color": "#4ADE80"
+      },
+      {
+        "id": "slice-1794004488955-19-ol2ho",
+        "text": "DUSTER",
+        "color": "#A78BFA"
+      },
+      {
+        "id": "slice-1794004488955-20-f3qtb",
+        "text": "BROOM",
+        "color": "#FB923C"
+      },
+      {
+        "id": "slice-1794004488955-21-g08c8",
+        "text": "WEEKLY",
+        "color": "#38BDF8"
+      }
+    ]
+  },
+  {
+    "id": "wheel-elem-4th-1",
+    "name": "4th Grade - 1st Place",
+    "role": "1st",
+    "group": "elementary",
+    "grade": "4th",
+    "place": "1st",
+    "spinDuration": 6,
+    "timerDuration": 40,
+    "slices": [
+      {
+        "id": "slice-1794004488955-0-w22hb",
+        "text": "AFTERNOON",
+        "color": "#FBBF24"
+      },
+      {
+        "id": "slice-1794004488955-1-utsuo",
+        "text": "BREAKFAST",
+        "color": "#F472B6"
+      },
+      {
+        "id": "slice-1794004488955-2-6l0ag",
+        "text": "BEAUTIFUL",
+        "color": "#60A5FA"
+      },
+      {
+        "id": "slice-1794004488955-3-xbcxy",
+        "text": "COMPUTER",
+        "color": "#4ADE80"
+      },
+      {
+        "id": "slice-1794004488955-4-ax5jz",
+        "text": "HOSPITAL",
+        "color": "#A78BFA"
+      },
+      {
+        "id": "slice-1794004488955-5-2d0sw",
+        "text": "MOUNTAIN",
+        "color": "#FB923C"
+      },
+      {
+        "id": "slice-1794004488955-6-5tih6",
+        "text": "SANDWICH",
+        "color": "#38BDF8"
+      },
+      {
+        "id": "slice-1794004488955-7-yhye5",
+        "text": "ELEPHANT",
+        "color": "#F87171"
+      },
+      {
+        "id": "slice-1794004488955-8-xvr0k",
+        "text": "DINOSAUR",
+        "color": "#C084FC"
+      },
+      {
+        "id": "slice-1794004488955-9-xh54z",
+        "text": "UMBRELLA",
+        "color": "#34D399"
+      },
+      {
+        "id": "slice-1794004488955-10-q3era",
+        "text": "VACATION",
+        "color": "#FDE047"
+      },
+      {
+        "id": "slice-1794004488955-11-ck8b9",
+        "text": "LANGUAGE",
+        "color": "#E879F9"
+      },
+      {
+        "id": "slice-1794004488955-12-zk9d0",
+        "text": "MAGAZINE",
+        "color": "#2DD4BF"
+      },
+      {
+        "id": "slice-1794004488955-13-ndc5e",
+        "text": "QUESTION",
+        "color": "#F97316"
+      },
+      {
+        "id": "slice-1794004488955-14-cikw8",
+        "text": "NEIGHBOR",
+        "color": "#818CF8"
+      },
+      {
+        "id": "slice-1794004488955-15-q4hs0",
+        "text": "MEDICINE",
+        "color": "#FBBF24"
+      },
+      {
+        "id": "slice-1794004488955-16-kur2h",
+        "text": "TOMORROW",
+        "color": "#F472B6"
+      },
+      {
+        "id": "slice-1794004488955-17-7wbal",
+        "text": "YESTERDAY",
+        "color": "#60A5FA"
+      },
+      {
+        "id": "slice-1794004488955-18-bkjwa",
+        "text": "REMEMBER",
+        "color": "#4ADE80"
+      },
+      {
+        "id": "slice-1794004488955-19-q25b2",
+        "text": "SURPRISE",
+        "color": "#A78BFA"
+      },
+      {
+        "id": "slice-1794004488955-20-fd0g9",
+        "text": "TELEPHONE",
+        "color": "#FB923C"
+      },
+      {
+        "id": "slice-1794004488955-21-bylh4",
+        "text": "FURNITURE",
+        "color": "#38BDF8"
+      },
+      {
+        "id": "slice-1794004488955-22-0xq1x",
+        "text": "IMPORTANT",
+        "color": "#F87171"
+      },
+      {
+        "id": "slice-1794004488955-23-5fig2",
+        "text": "CHOCOLATE",
+        "color": "#C084FC"
+      },
+      {
+        "id": "slice-1794004488955-24-p3dle",
+        "text": "DIRECTION",
+        "color": "#34D399"
+      },
+      {
+        "id": "slice-1794004488955-25-ihevv",
+        "text": "VEGETABLE",
+        "color": "#FDE047"
+      },
+      {
+        "id": "slice-1794004488955-26-kacyi",
+        "text": "DELICIOUS",
+        "color": "#E879F9"
+      },
+      {
+        "id": "slice-1794004488955-27-ynt2j",
+        "text": "RESTAURANT",
+        "color": "#2DD4BF"
+      },
+      {
+        "id": "slice-1794004488955-28-3lg7b",
+        "text": "STRAWBERRY",
+        "color": "#F97316"
+      },
+      {
+        "id": "slice-1794004488955-29-0xdu6",
+        "text": "UNIVERSITY",
+        "color": "#818CF8"
+      }
+    ]
+  },
+  {
+    "id": "wheel-elem-4th-2",
+    "name": "4th Grade - 2nd/3rd Place",
+    "role": "2nd",
+    "group": "elementary",
+    "grade": "4th",
+    "place": "2nd_3rd",
+    "spinDuration": 6,
+    "timerDuration": 20,
+    "slices": [
+      {
+        "id": "slice-1794004488955-0-l9wpn",
+        "text": "GOOD",
+        "color": "#FBBF24"
+      },
+      {
+        "id": "slice-1794004488955-1-a2vhz",
+        "text": "MORNING",
+        "color": "#F472B6"
+      },
+      {
+        "id": "slice-1794004488955-2-a2cer",
+        "text": "AFTERNOON",
+        "color": "#60A5FA"
+      },
+      {
+        "id": "slice-1794004488955-3-t21ue",
+        "text": "EVENING",
+        "color": "#4ADE80"
+      },
+      {
+        "id": "slice-1794004488955-4-4bf0p",
+        "text": "LATER",
+        "color": "#A78BFA"
+      },
+      {
+        "id": "slice-1794004488955-5-w1iys",
+        "text": "NIGHT",
+        "color": "#FB923C"
+      },
+      {
+        "id": "slice-1794004488955-6-iifwu",
+        "text": "NICE",
+        "color": "#38BDF8"
+      },
+      {
+        "id": "slice-1794004488955-7-d1qqh",
+        "text": "MEET",
+        "color": "#F87171"
+      },
+      {
+        "id": "slice-1794004488955-8-dr0ix",
+        "text": "FIRST",
+        "color": "#C084FC"
+      },
+      {
+        "id": "slice-1794004488955-9-d9gos",
+        "text": "SECOND",
+        "color": "#34D399"
+      },
+      {
+        "id": "slice-1794004488955-10-7cw27",
+        "text": "NAME",
+        "color": "#FDE047"
+      },
+      {
+        "id": "slice-1794004488955-11-v85f5",
+        "text": "WINDOW",
+        "color": "#E879F9"
+      },
+      {
+        "id": "slice-1794004488955-12-q36mw",
+        "text": "BACKPACK",
+        "color": "#2DD4BF"
+      },
+      {
+        "id": "slice-1794004488955-13-nore2",
+        "text": "PAPER",
+        "color": "#F97316"
+      },
+      {
+        "id": "slice-1794004488955-14-9x15j",
+        "text": "SHEET",
+        "color": "#818CF8"
+      },
+      {
+        "id": "slice-1794004488955-15-5fr0a",
+        "text": "PENCIL",
+        "color": "#FBBF24"
+      },
+      {
+        "id": "slice-1794004488955-16-d6v36",
+        "text": "TEACHER",
+        "color": "#F472B6"
+      },
+      {
+        "id": "slice-1794004488955-17-c3o19",
+        "text": "CALENDAR",
+        "color": "#60A5FA"
+      },
+      {
+        "id": "slice-1794004488955-18-6rhpr",
+        "text": "BOOK",
+        "color": "#4ADE80"
+      },
+      {
+        "id": "slice-1794004488955-19-9b98v",
+        "text": "T-SHIRT",
+        "color": "#A78BFA"
+      },
+      {
+        "id": "slice-1794004488955-20-qe5lm",
+        "text": "DESK",
+        "color": "#FB923C"
+      },
+      {
+        "id": "slice-1794004488955-21-o85zx",
+        "text": "EARTH",
+        "color": "#38BDF8"
+      },
+      {
+        "id": "slice-1794004488955-22-5r6wb",
+        "text": "GLOBE",
+        "color": "#F87171"
+      }
+    ]
+  },
+  {
+    "id": "wheel-elem-5th-1",
+    "name": "5th Grade - 1st Place",
+    "role": "1st",
+    "group": "elementary",
+    "grade": "5th",
+    "place": "1st",
+    "spinDuration": 6,
+    "timerDuration": 40,
+    "slices": [
+      {
+        "id": "slice-1794004488955-0-zyuhe",
+        "text": "AFTERNOON",
+        "color": "#FBBF24"
+      },
+      {
+        "id": "slice-1794004488955-1-orr86",
+        "text": "BREAKFAST",
+        "color": "#F472B6"
+      },
+      {
+        "id": "slice-1794004488955-2-8b852",
+        "text": "BEAUTIFUL",
+        "color": "#60A5FA"
+      },
+      {
+        "id": "slice-1794004488955-3-4fksr",
+        "text": "COMPUTER",
+        "color": "#4ADE80"
+      },
+      {
+        "id": "slice-1794004488955-4-47qtu",
+        "text": "HOSPITAL",
+        "color": "#A78BFA"
+      },
+      {
+        "id": "slice-1794004488955-5-teu3h",
+        "text": "MOUNTAIN",
+        "color": "#FB923C"
+      },
+      {
+        "id": "slice-1794004488955-6-5qsgu",
+        "text": "SANDWICH",
+        "color": "#38BDF8"
+      },
+      {
+        "id": "slice-1794004488955-7-i6lrq",
+        "text": "ELEPHANT",
+        "color": "#F87171"
+      },
+      {
+        "id": "slice-1794004488955-8-x4lsi",
+        "text": "DINOSAUR",
+        "color": "#C084FC"
+      },
+      {
+        "id": "slice-1794004488955-9-q5ei8",
+        "text": "UMBRELLA",
+        "color": "#34D399"
+      },
+      {
+        "id": "slice-1794004488955-10-1xsaa",
+        "text": "VACATION",
+        "color": "#FDE047"
+      },
+      {
+        "id": "slice-1794004488955-11-36n2a",
+        "text": "LANGUAGE",
+        "color": "#E879F9"
+      },
+      {
+        "id": "slice-1794004488955-12-b7b2z",
+        "text": "MAGAZINE",
+        "color": "#2DD4BF"
+      },
+      {
+        "id": "slice-1794004488955-13-9jzyn",
+        "text": "QUESTION",
+        "color": "#F97316"
+      },
+      {
+        "id": "slice-1794004488955-14-f0ftg",
+        "text": "NEIGHBOR",
+        "color": "#818CF8"
+      },
+      {
+        "id": "slice-1794004488955-15-v1xfw",
+        "text": "MEDICINE",
+        "color": "#FBBF24"
+      },
+      {
+        "id": "slice-1794004488955-16-dfowg",
+        "text": "TOMORROW",
+        "color": "#F472B6"
+      },
+      {
+        "id": "slice-1794004488955-17-mrhwn",
+        "text": "YESTERDAY",
+        "color": "#60A5FA"
+      },
+      {
+        "id": "slice-1794004488955-18-dgpv1",
+        "text": "REMEMBER",
+        "color": "#4ADE80"
+      },
+      {
+        "id": "slice-1794004488955-19-shiyo",
+        "text": "SURPRISE",
+        "color": "#A78BFA"
+      },
+      {
+        "id": "slice-1794004488955-20-bnbmo",
+        "text": "TELEPHONE",
+        "color": "#FB923C"
+      },
+      {
+        "id": "slice-1794004488955-21-11gvw",
+        "text": "FURNITURE",
+        "color": "#38BDF8"
+      },
+      {
+        "id": "slice-1794004488955-22-iq2wo",
+        "text": "IMPORTANT",
+        "color": "#F87171"
+      },
+      {
+        "id": "slice-1794004488955-23-idnty",
+        "text": "CHOCOLATE",
+        "color": "#C084FC"
+      },
+      {
+        "id": "slice-1794004488955-24-ipj7t",
+        "text": "DIRECTION",
+        "color": "#34D399"
+      },
+      {
+        "id": "slice-1794004488955-25-6l9jg",
+        "text": "VEGETABLE",
+        "color": "#FDE047"
+      },
+      {
+        "id": "slice-1794004488955-26-0x5h7",
+        "text": "DELICIOUS",
+        "color": "#E879F9"
+      },
+      {
+        "id": "slice-1794004488955-27-symcl",
+        "text": "RESTAURANT",
+        "color": "#2DD4BF"
+      },
+      {
+        "id": "slice-1794004488955-28-84l0o",
+        "text": "STRAWBERRY",
+        "color": "#F97316"
+      },
+      {
+        "id": "slice-1794004488955-29-ypo4o",
+        "text": "UNIVERSITY",
+        "color": "#818CF8"
+      }
+    ]
+  },
+  {
+    "id": "wheel-elem-5th-2",
+    "name": "5th Grade - 2nd/3rd Place",
+    "role": "2nd",
+    "group": "elementary",
+    "grade": "5th",
+    "place": "2nd_3rd",
+    "spinDuration": 6,
+    "timerDuration": 20,
+    "slices": [
+      {
+        "id": "slice-1794004488955-0-9x3k3",
+        "text": "MORNING",
+        "color": "#FBBF24"
+      },
+      {
+        "id": "slice-1794004488955-1-oinv1",
+        "text": "AFTERNOON",
+        "color": "#F472B6"
+      },
+      {
+        "id": "slice-1794004488955-2-ctf2l",
+        "text": "EVENING",
+        "color": "#60A5FA"
+      },
+      {
+        "id": "slice-1794004488955-3-d8953",
+        "text": "NIGHT",
+        "color": "#4ADE80"
+      },
+      {
+        "id": "slice-1794004488955-4-75qds",
+        "text": "NAME",
+        "color": "#A78BFA"
+      },
+      {
+        "id": "slice-1794004488955-5-t46n3",
+        "text": "DAY",
+        "color": "#FB923C"
+      },
+      {
+        "id": "slice-1794004488955-6-khibb",
+        "text": "AGE",
+        "color": "#38BDF8"
+      },
+      {
+        "id": "slice-1794004488955-7-q6jsb",
+        "text": "BIRTHDAY",
+        "color": "#F87171"
+      },
+      {
+        "id": "slice-1794004488955-8-nol7k",
+        "text": "JANUARY",
+        "color": "#C084FC"
+      },
+      {
+        "id": "slice-1794004488955-9-4lgfo",
+        "text": "FEBRUARY",
+        "color": "#34D399"
+      },
+      {
+        "id": "slice-1794004488955-10-ouj67",
+        "text": "MARCH",
+        "color": "#FDE047"
+      },
+      {
+        "id": "slice-1794004488955-11-4s2fg",
+        "text": "APRIL",
+        "color": "#E879F9"
+      },
+      {
+        "id": "slice-1794004488955-12-qaetm",
+        "text": "MAY",
+        "color": "#2DD4BF"
+      },
+      {
+        "id": "slice-1794004488955-13-urold",
+        "text": "JUNE",
+        "color": "#F97316"
+      },
+      {
+        "id": "slice-1794004488955-14-7gvwa",
+        "text": "JULY",
+        "color": "#818CF8"
+      },
+      {
+        "id": "slice-1794004488955-15-p6pf1",
+        "text": "AUGUST",
+        "color": "#FBBF24"
+      },
+      {
+        "id": "slice-1794004488955-16-ld2is",
+        "text": "SEPTEMBER",
+        "color": "#F472B6"
+      },
+      {
+        "id": "slice-1794004488955-17-miolw",
+        "text": "OCTOBER",
+        "color": "#60A5FA"
+      },
+      {
+        "id": "slice-1794004488955-18-zsyh9",
+        "text": "NOVEMBER",
+        "color": "#4ADE80"
+      },
+      {
+        "id": "slice-1794004488955-19-s2t61",
+        "text": "DECEMBER",
+        "color": "#A78BFA"
+      }
+    ]
+  },
+  {
+    "id": "wheel-elem-6th-1",
+    "name": "6th Grade - 1st Place",
+    "role": "1st",
+    "group": "elementary",
+    "grade": "6th",
+    "place": "1st",
+    "spinDuration": 6,
+    "timerDuration": 40,
+    "slices": [
+      {
+        "id": "slice-1794004488955-0-1ookx",
+        "text": "AFTERNOON",
+        "color": "#FBBF24"
+      },
+      {
+        "id": "slice-1794004488955-1-ac1sc",
+        "text": "BREAKFAST",
+        "color": "#F472B6"
+      },
+      {
+        "id": "slice-1794004488955-2-n7ttj",
+        "text": "BEAUTIFUL",
+        "color": "#60A5FA"
+      },
+      {
+        "id": "slice-1794004488955-3-vx62l",
+        "text": "COMPUTER",
+        "color": "#4ADE80"
+      },
+      {
+        "id": "slice-1794004488955-4-37utt",
+        "text": "HOSPITAL",
+        "color": "#A78BFA"
+      },
+      {
+        "id": "slice-1794004488955-5-u3os3",
+        "text": "MOUNTAIN",
+        "color": "#FB923C"
+      },
+      {
+        "id": "slice-1794004488955-6-kv3hd",
+        "text": "SANDWICH",
+        "color": "#38BDF8"
+      },
+      {
+        "id": "slice-1794004488955-7-rry9y",
+        "text": "ELEPHANT",
+        "color": "#F87171"
+      },
+      {
+        "id": "slice-1794004488955-8-cugkl",
+        "text": "DINOSAUR",
+        "color": "#C084FC"
+      },
+      {
+        "id": "slice-1794004488955-9-a8yka",
+        "text": "UMBRELLA",
+        "color": "#34D399"
+      },
+      {
+        "id": "slice-1794004488955-10-18xub",
+        "text": "VACATION",
+        "color": "#FDE047"
+      },
+      {
+        "id": "slice-1794004488955-11-52umr",
+        "text": "LANGUAGE",
+        "color": "#E879F9"
+      },
+      {
+        "id": "slice-1794004488955-12-to2ft",
+        "text": "MAGAZINE",
+        "color": "#2DD4BF"
+      },
+      {
+        "id": "slice-1794004488955-13-oeqg5",
+        "text": "QUESTION",
+        "color": "#F97316"
+      },
+      {
+        "id": "slice-1794004488955-14-33k0q",
+        "text": "NEIGHBOR",
+        "color": "#818CF8"
+      },
+      {
+        "id": "slice-1794004488955-15-4giqr",
+        "text": "MEDICINE",
+        "color": "#FBBF24"
+      },
+      {
+        "id": "slice-1794004488955-16-mvdmw",
+        "text": "TOMORROW",
+        "color": "#F472B6"
+      },
+      {
+        "id": "slice-1794004488955-17-s9xa0",
+        "text": "YESTERDAY",
+        "color": "#60A5FA"
+      },
+      {
+        "id": "slice-1794004488955-18-b0lhj",
+        "text": "REMEMBER",
+        "color": "#4ADE80"
+      },
+      {
+        "id": "slice-1794004488955-19-btkpn",
+        "text": "SURPRISE",
+        "color": "#A78BFA"
+      },
+      {
+        "id": "slice-1794004488955-20-dwxqq",
+        "text": "TELEPHONE",
+        "color": "#FB923C"
+      },
+      {
+        "id": "slice-1794004488955-21-7h56t",
+        "text": "FURNITURE",
+        "color": "#38BDF8"
+      },
+      {
+        "id": "slice-1794004488955-22-tteax",
+        "text": "IMPORTANT",
+        "color": "#F87171"
+      },
+      {
+        "id": "slice-1794004488955-23-dol1x",
+        "text": "CHOCOLATE",
+        "color": "#C084FC"
+      },
+      {
+        "id": "slice-1794004488955-24-ckzw5",
+        "text": "DIRECTION",
+        "color": "#34D399"
+      },
+      {
+        "id": "slice-1794004488955-25-ooqjm",
+        "text": "VEGETABLE",
+        "color": "#FDE047"
+      },
+      {
+        "id": "slice-1794004488955-26-sfkpm",
+        "text": "DELICIOUS",
+        "color": "#E879F9"
+      },
+      {
+        "id": "slice-1794004488955-27-3ksxk",
+        "text": "RESTAURANT",
+        "color": "#2DD4BF"
+      },
+      {
+        "id": "slice-1794004488955-28-lt44a",
+        "text": "STRAWBERRY",
+        "color": "#F97316"
+      },
+      {
+        "id": "slice-1794004488955-29-lllbn",
+        "text": "UNIVERSITY",
+        "color": "#818CF8"
+      }
+    ]
+  },
+  {
+    "id": "wheel-elem-6th-2",
+    "name": "6th Grade - 2nd/3rd Place",
+    "role": "2nd",
+    "group": "elementary",
+    "grade": "6th",
+    "place": "2nd_3rd",
+    "spinDuration": 6,
+    "timerDuration": 20,
+    "slices": [
+      {
+        "id": "slice-1794004488955-0-db7vq",
+        "text": "ORDINARY",
+        "color": "#FBBF24"
+      },
+      {
+        "id": "slice-1794004488955-1-zsxrf",
+        "text": "HUNDRED",
+        "color": "#F472B6"
+      },
+      {
+        "id": "slice-1794004488955-2-5sreu",
+        "text": "THOUSAND",
+        "color": "#60A5FA"
+      },
+      {
+        "id": "slice-1794004488955-3-2ti54",
+        "text": "MILLION",
+        "color": "#4ADE80"
+      },
+      {
+        "id": "slice-1794004488955-4-dajfz",
+        "text": "PREPOSITION",
+        "color": "#A78BFA"
+      },
+      {
+        "id": "slice-1794004488955-5-aj0cl",
+        "text": "IDENTIFICATION",
+        "color": "#FB923C"
+      },
+      {
+        "id": "slice-1794004488955-6-qw8tg",
+        "text": "BIOGRAPHY",
+        "color": "#38BDF8"
+      },
+      {
+        "id": "slice-1794004488955-7-xzoy3",
+        "text": "COLOR WHEEL",
+        "color": "#F87171"
+      },
+      {
+        "id": "slice-1794004488955-8-6wzin",
+        "text": "LEISURE",
+        "color": "#C084FC"
+      },
+      {
+        "id": "slice-1794004488955-9-h1txl",
+        "text": "INTERESTS",
+        "color": "#34D399"
+      },
+      {
+        "id": "slice-1794004488955-10-47uq1",
+        "text": "CHESS",
+        "color": "#FDE047"
+      },
+      {
+        "id": "slice-1794004488955-11-clyum",
+        "text": "HOUSEWORK",
+        "color": "#E879F9"
+      },
+      {
+        "id": "slice-1794004488955-12-xaiim",
+        "text": "IRONING",
+        "color": "#2DD4BF"
+      },
+      {
+        "id": "slice-1794004488955-13-u9si2",
+        "text": "ROUTINE",
+        "color": "#F97316"
+      },
+      {
+        "id": "slice-1794004488955-14-hwzh1",
+        "text": "FREE TIME",
+        "color": "#818CF8"
+      },
+      {
+        "id": "slice-1794004488955-15-u4uj9",
+        "text": "FRACTION",
+        "color": "#FBBF24"
+      },
+      {
+        "id": "slice-1794004488955-16-svjbs",
+        "text": "DECIMAL",
+        "color": "#F472B6"
+      },
+      {
+        "id": "slice-1794004488955-17-ll3rm",
+        "text": "PERCENTAGE",
+        "color": "#60A5FA"
+      }
+    ]
+  },
+  {
+    "id": "wheel-hs-1st",
+    "name": "High School - 1st Place",
+    "role": "1st",
+    "group": "high_school",
+    "grade": "High School",
+    "place": "1st",
+    "spinDuration": 6,
+    "timerDuration": 40,
+    "slices": [
+      {
+        "id": "slice-1794004488955-0-0737t",
+        "text": "FORBID",
+        "color": "#FBBF24"
+      },
+      {
+        "id": "slice-1794004488955-1-w6cta",
+        "text": "BROADCAST",
+        "color": "#F472B6"
+      },
+      {
+        "id": "slice-1794004488955-2-eqgqw",
+        "text": "FORESEE",
+        "color": "#60A5FA"
+      },
+      {
+        "id": "slice-1794004488955-3-dvsq5",
+        "text": "MISLEAD",
+        "color": "#4ADE80"
+      },
+      {
+        "id": "slice-1794004488955-4-gesfv",
+        "text": "MISTAKE",
+        "color": "#A78BFA"
+      },
+      {
+        "id": "slice-1794004488955-5-nxcas",
+        "text": "MISUNDERSTAND",
+        "color": "#FB923C"
+      },
+      {
+        "id": "slice-1794004488955-6-s9kc0",
+        "text": "OVERCOME",
+        "color": "#38BDF8"
+      },
+      {
+        "id": "slice-1794004488955-7-ughzb",
+        "text": "OVERDO",
+        "color": "#F87171"
+      },
+      {
+        "id": "slice-1794004488955-8-13e0l",
+        "text": "OVEREAT",
+        "color": "#C084FC"
+      },
+      {
+        "id": "slice-1794004488955-9-j2qti",
+        "text": "OVERHEAR",
+        "color": "#34D399"
+      },
+      {
+        "id": "slice-1794004488955-10-p0ldn",
+        "text": "OVERSLEEP",
+        "color": "#FDE047"
+      },
+      {
+        "id": "slice-1794004488955-11-8p0k5",
+        "text": "OVERTHROW",
+        "color": "#E879F9"
+      },
+      {
+        "id": "slice-1794004488955-12-zey9x",
+        "text": "PROOFREAD",
+        "color": "#2DD4BF"
+      },
+      {
+        "id": "slice-1794004488955-13-4e42h",
+        "text": "REBUILD",
+        "color": "#F97316"
+      },
+      {
+        "id": "slice-1794004488955-14-kelfg",
+        "text": "REMAKE",
+        "color": "#818CF8"
+      },
+      {
+        "id": "slice-1794004488955-15-s5fxf",
+        "text": "RESELL",
+        "color": "#FBBF24"
+      },
+      {
+        "id": "slice-1794004488955-16-sufvm",
+        "text": "RETHINK",
+        "color": "#F472B6"
+      },
+      {
+        "id": "slice-1794004488955-17-gf7ev",
+        "text": "REWIND",
+        "color": "#60A5FA"
+      },
+      {
+        "id": "slice-1794004488955-18-5kwvs",
+        "text": "REWRITE",
+        "color": "#4ADE80"
+      },
+      {
+        "id": "slice-1794004488955-19-ek1ou",
+        "text": "SHRINK",
+        "color": "#A78BFA"
+      },
+      {
+        "id": "slice-1794004488955-20-yswp5",
+        "text": "SPREAD",
+        "color": "#FB923C"
+      },
+      {
+        "id": "slice-1794004488955-21-lrha1",
+        "text": "SPRING",
+        "color": "#38BDF8"
+      },
+      {
+        "id": "slice-1794004488955-22-g0wda",
+        "text": "STRIDE",
+        "color": "#F87171"
+      },
+      {
+        "id": "slice-1794004488955-23-hc7jj",
+        "text": "STRING",
+        "color": "#C084FC"
+      },
+      {
+        "id": "slice-1794004488955-24-m605z",
+        "text": "STRIVE",
+        "color": "#34D399"
+      },
+      {
+        "id": "slice-1794004488955-25-xndpp",
+        "text": "THRIVE",
+        "color": "#FDE047"
+      },
+      {
+        "id": "slice-1794004488955-26-z1lrm",
+        "text": "UNDERGO",
+        "color": "#E879F9"
+      },
+      {
+        "id": "slice-1794004488955-27-mu44u",
+        "text": "UNDERSTAND",
+        "color": "#2DD4BF"
+      },
+      {
+        "id": "slice-1794004488955-28-pei1x",
+        "text": "UNDERTAKE",
+        "color": "#F97316"
+      },
+      {
+        "id": "slice-1794004488955-29-mqagv",
+        "text": "WITHDRAW",
+        "color": "#818CF8"
+      },
+      {
+        "id": "slice-1794004488955-30-wvrrq",
+        "text": "WITHHOLD",
+        "color": "#FBBF24"
+      },
+      {
+        "id": "slice-1794004488955-31-8213f",
+        "text": "WITHSTAND",
+        "color": "#F472B6"
+      },
+      {
+        "id": "slice-1794004488955-32-97qh0",
+        "text": "UPHOLD",
+        "color": "#60A5FA"
+      },
+      {
+        "id": "slice-1794004488955-33-vjv38",
+        "text": "OVERPAY",
+        "color": "#4ADE80"
+      },
+      {
+        "id": "slice-1794004488955-34-lrbhn",
+        "text": "MISSPELL",
+        "color": "#A78BFA"
+      },
+      {
+        "id": "slice-1794004488955-35-wyvot",
+        "text": "PARTAKE",
+        "color": "#FB923C"
+      },
+      {
+        "id": "slice-1794004488955-36-nhd1g",
+        "text": "OUTGROW",
+        "color": "#38BDF8"
+      },
+      {
+        "id": "slice-1794004488955-37-kmkbe",
+        "text": "OUTSELL",
+        "color": "#F87171"
+      },
+      {
+        "id": "slice-1794004488955-38-xt6o5",
+        "text": "OUTSHINE",
+        "color": "#C084FC"
+      },
+      {
+        "id": "slice-1794004488955-39-lr9yj",
+        "text": "SUNBURN",
+        "color": "#34D399"
+      }
+    ]
+  },
+  {
+    "id": "wheel-hs-2nd-3rd",
+    "name": "High School - 2nd/3rd Place",
+    "role": "2nd",
+    "group": "high_school",
+    "grade": "High School",
+    "place": "2nd_3rd",
+    "spinDuration": 6,
+    "timerDuration": 20,
+    "slices": [
+      {
+        "id": "slice-1794004488955-0-o7ik9",
+        "text": "BECOME",
+        "color": "#FBBF24"
+      },
+      {
+        "id": "slice-1794004488955-1-xxf7c",
+        "text": "BEGIN",
+        "color": "#F472B6"
+      },
+      {
+        "id": "slice-1794004488955-2-t9t1o",
+        "text": "BREAK",
+        "color": "#60A5FA"
+      },
+      {
+        "id": "slice-1794004488955-3-ma1w4",
+        "text": "BRING",
+        "color": "#4ADE80"
+      },
+      {
+        "id": "slice-1794004488955-4-cndxo",
+        "text": "BUILD",
+        "color": "#A78BFA"
+      },
+      {
+        "id": "slice-1794004488955-5-5pvmi",
+        "text": "CATCH",
+        "color": "#FB923C"
+      },
+      {
+        "id": "slice-1794004488955-6-og1h2",
+        "text": "CHOOSE",
+        "color": "#38BDF8"
+      },
+      {
+        "id": "slice-1794004488955-7-otnn3",
+        "text": "DREAM",
+        "color": "#F87171"
+      },
+      {
+        "id": "slice-1794004488955-8-eg5tf",
+        "text": "DRINK",
+        "color": "#C084FC"
+      },
+      {
+        "id": "slice-1794004488955-9-jcdkz",
+        "text": "DRIVE",
+        "color": "#34D399"
+      },
+      {
+        "id": "slice-1794004488955-10-69q03",
+        "text": "FORGET",
+        "color": "#FDE047"
+      },
+      {
+        "id": "slice-1794004488955-11-s10gd",
+        "text": "FORGIVE",
+        "color": "#E879F9"
+      },
+      {
+        "id": "slice-1794004488955-12-k9jwi",
+        "text": "FREEZE",
+        "color": "#2DD4BF"
+      },
+      {
+        "id": "slice-1794004488955-13-xgrcr",
+        "text": "HOLD",
+        "color": "#F97316"
+      },
+      {
+        "id": "slice-1794004488955-14-gc6bk",
+        "text": "LEARN",
+        "color": "#818CF8"
+      },
+      {
+        "id": "slice-1794004488955-15-ai4th",
+        "text": "LEAVE",
+        "color": "#FBBF24"
+      },
+      {
+        "id": "slice-1794004488955-16-0evw7",
+        "text": "LEND",
+        "color": "#F472B6"
+      },
+      {
+        "id": "slice-1794004488955-17-6kki2",
+        "text": "LYING",
+        "color": "#60A5FA"
+      },
+      {
+        "id": "slice-1794004488955-18-x8zct",
+        "text": "MAN",
+        "color": "#4ADE80"
+      },
+      {
+        "id": "slice-1794004488955-19-bjcn8",
+        "text": "OVERTAKE",
+        "color": "#A78BFA"
+      },
+      {
+        "id": "slice-1794004488955-20-fe8mi",
+        "text": "PAY",
+        "color": "#FB923C"
+      },
+      {
+        "id": "slice-1794004488955-21-4gyvp",
+        "text": "READ",
+        "color": "#38BDF8"
+      },
+      {
+        "id": "slice-1794004488955-22-aflxv",
+        "text": "RING",
+        "color": "#F87171"
+      },
+      {
+        "id": "slice-1794004488955-23-ld11n",
+        "text": "SHAKE",
+        "color": "#C084FC"
+      },
+      {
+        "id": "slice-1794004488955-24-xyxo1",
+        "text": "SHINE",
+        "color": "#34D399"
+      },
+      {
+        "id": "slice-1794004488955-25-v74p9",
+        "text": "SHOOT",
+        "color": "#FDE047"
+      },
+      {
+        "id": "slice-1794004488955-26-rybpr",
+        "text": "SLEEP",
+        "color": "#E879F9"
+      },
+      {
+        "id": "slice-1794004488955-27-ofm1a",
+        "text": "SPEAK",
+        "color": "#2DD4BF"
+      },
+      {
+        "id": "slice-1794004488955-28-mb0gd",
+        "text": "SPEND",
+        "color": "#F97316"
+      },
+      {
+        "id": "slice-1794004488955-29-n1oxh",
+        "text": "WRITE",
+        "color": "#818CF8"
+      },
+      {
+        "id": "slice-1794004488955-30-1jgw4",
+        "text": "STRIKE",
+        "color": "#FBBF24"
+      },
+      {
+        "id": "slice-1794004488955-31-szdit",
+        "text": "SWEAR",
+        "color": "#F472B6"
+      },
+      {
+        "id": "slice-1794004488955-32-nyju3",
+        "text": "RUN",
+        "color": "#60A5FA"
+      }
+    ]
+  }
+]

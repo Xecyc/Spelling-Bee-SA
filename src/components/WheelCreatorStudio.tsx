@@ -30,6 +30,12 @@ import {
   FileText,
   Sparkles,
   ChevronDown,
+  Wrench,
+  Dices,
+  Timer,
+  RefreshCw,
+  AlertTriangle,
+  Layers,
 } from 'lucide-react';
 import {
   WheelConfig,
@@ -105,6 +111,13 @@ interface WheelCreatorStudioProps {
   soundSettings: SoundSettings;
   onUpdateSoundSettings: (settings: SoundSettings) => void;
   onOpenDocumentAnalyzer?: () => void;
+  // Dev & Testing tools
+  onRevertAllWheels?: () => void;
+  onRemoveAllWheels?: () => void;
+  onRandomizeWheels?: () => void;
+  onReplaceAllWheels?: (newWheels: WheelConfig[]) => void;
+  onTriggerTestCelebration?: (word?: string) => void;
+  onResetCloudStorage?: () => void;
 }
 
 export const WheelCreatorStudio: React.FC<WheelCreatorStudioProps> = ({
@@ -121,6 +134,12 @@ export const WheelCreatorStudio: React.FC<WheelCreatorStudioProps> = ({
   soundSettings,
   onUpdateSoundSettings,
   onOpenDocumentAnalyzer,
+  onRevertAllWheels,
+  onRemoveAllWheels,
+  onRandomizeWheels,
+  onReplaceAllWheels,
+  onTriggerTestCelebration,
+  onResetCloudStorage,
 }) => {
   const currentWheel = wheels.find((w) => w.id === activeWheelId) || wheels[0];
 
@@ -182,6 +201,196 @@ export const WheelCreatorStudio: React.FC<WheelCreatorStudioProps> = ({
     }
     setShowDeleteModal(false);
     setWheelToDelete(null);
+  };
+
+  // Dev & Testing Tools state (Studio View Only)
+  const [showDevToolsMenu, setShowDevToolsMenu] = useState(false);
+  const [devActionConfirm, setDevActionConfirm] = useState<{
+    type: 'remove_all' | 'revert_all' | 'clear_storage';
+    title: string;
+    message: string;
+  } | null>(null);
+  const devToolsDropdownRef = useRef<HTMLDivElement | null>(null);
+  const importAllBackupInputRef = useRef<HTMLInputElement | null>(null);
+
+  // Close dev tools dropdown on outside click
+  useEffect(() => {
+    const handleOutsideClick = (e: MouseEvent) => {
+      if (
+        devToolsDropdownRef.current &&
+        !devToolsDropdownRef.current.contains(e.target as Node)
+      ) {
+        setShowDevToolsMenu(false);
+      }
+    };
+    if (showDevToolsMenu) {
+      document.addEventListener('mousedown', handleOutsideClick);
+    }
+    return () => {
+      document.removeEventListener('mousedown', handleOutsideClick);
+    };
+  }, [showDevToolsMenu]);
+
+  // Dev actions
+  const handleTriggerRemoveAll = () => {
+    setShowDevToolsMenu(false);
+    setDevActionConfirm({
+      type: 'remove_all',
+      title: 'Remove All Wheels?',
+      message: 'This will clear all current wheels and leave 1 fresh starter wheel for testing.',
+    });
+  };
+
+  const handleTriggerRevertAll = () => {
+    setShowDevToolsMenu(false);
+    setDevActionConfirm({
+      type: 'revert_all',
+      title: 'Revert All Wheels?',
+      message: 'This will restore all 14 official factory wheels (1st-6th Grade & High School 1st & 2nd/3rd place) with original words and timer durations.',
+    });
+  };
+
+  const handleTriggerRandomizeAll = () => {
+    setShowDevToolsMenu(false);
+    if (onRandomizeWheels) {
+      onRandomizeWheels();
+      showToast('All wheels randomized with fresh colors & shuffled slices!');
+    }
+  };
+
+  const handleShuffleCurrent = () => {
+    setShowDevToolsMenu(false);
+    const shuffled = [...currentWheel.slices].sort(() => Math.random() - 0.5);
+    onUpdateWheel({ ...currentWheel, slices: shuffled });
+    showToast(`Shuffled ${shuffled.length} words on "${currentWheel.name}"`);
+  };
+
+  const SAMPLE_COMPETITION_WORDS = [
+    'ASTRONOMY', 'BRILLIANT', 'CAROUSEL', 'DICTIONARY', 'ELEPHANT',
+    'FLOURISH', 'GALAXY', 'HARMONIOUS', 'ILLUMINATE', 'JOURNEY',
+    'KALEIDOSCOPE', 'LABYRINTH', 'MAGNIFICENT', 'NAVIGATOR', 'ORCHESTRA',
+    'PERSISTENCE', 'QUANTUM', 'REVOLUTION', 'SYMPHONY', 'TELESCOPE',
+  ];
+
+  const handlePopulateDemoWords = () => {
+    setShowDevToolsMenu(false);
+    const newSlices: WheelSlice[] = SAMPLE_COMPETITION_WORDS.map((w, idx) => ({
+      id: `slice-demo-${Date.now()}-${idx}`,
+      text: w,
+      color: COLOR_PALETTES.classic.colors[idx % COLOR_PALETTES.classic.colors.length],
+      weight: 1,
+      enabled: true,
+    }));
+    onUpdateWheel({ ...currentWheel, slices: newSlices });
+    showToast(`Populated 20 competition words in "${currentWheel.name}"`);
+  };
+
+  const handleStressTest50 = () => {
+    setShowDevToolsMenu(false);
+    const stressWords = [
+      'ASTRONAUT', 'BEAUTIFUL', 'CHAMPION', 'DELIGHT', 'ENERGY', 'FESTIVAL', 'GENIUS', 'HORIZON',
+      'ISLAND', 'JUBILEE', 'KINGDOM', 'LEOPARD', 'MIRACLE', 'NOSTALGIA', 'OLYMPIC', 'PHANTOM',
+      'QUARTZ', 'RAINBOW', 'SAPPHIRE', 'TRIUMPH', 'UNIVERSE', 'VICTORY', 'WONDER', 'XYLOPHONE',
+      'YOUTH', 'ZEPHYR', 'ADVENTURE', 'BRILLIANCE', 'CELEBRATE', 'DISCOVERY', 'EMERALD', 'FREEDOM',
+      'GRATITUDE', 'HONOR', 'INVENTOR', 'JUSTICE', 'KINDNESS', 'LIGHTNING', 'MAJESTY', 'NATURE',
+      'OPTIMISM', 'PASSION', 'QUEST', 'RADIANT', 'STRENGTH', 'TREASURE', 'ULTIMATE', 'VALOR',
+      'WISDOM', 'ZENITH',
+    ];
+    const newSlices: WheelSlice[] = stressWords.slice(0, MAX_SLICES).map((w, idx) => ({
+      id: `slice-stress-${Date.now()}-${idx}`,
+      text: w,
+      color: COLOR_PALETTES.cyberpunk.colors[idx % COLOR_PALETTES.cyberpunk.colors.length],
+      weight: 1,
+      enabled: true,
+    }));
+    onUpdateWheel({ ...currentWheel, slices: newSlices });
+    showToast(`Loaded ${newSlices.length} slices (Maximum Density Stress-Test)`);
+  };
+
+  const handleTestCelebration = () => {
+    setShowDevToolsMenu(false);
+    if (onTriggerTestCelebration) {
+      onTriggerTestCelebration();
+    } else {
+      setWinningSlice(currentWheel.slices[0] || { id: 'test-1', text: 'CHAMPION', color: '#FBBF24' });
+      setShowWinnerModal(true);
+    }
+  };
+
+  const handleExportAllWheelsBackup = () => {
+    setShowDevToolsMenu(false);
+    try {
+      const backupData = {
+        exportedAt: new Date().toISOString(),
+        version: 'salto-angel-spelling-bee-2026-v4',
+        totalWheels: wheels.length,
+        wheels,
+      };
+      const blob = new Blob([JSON.stringify(backupData, null, 2)], {
+        type: 'application/json',
+      });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `spelling_bee_all_wheels_backup_${new Date().toISOString().slice(0, 10)}.json`;
+      a.click();
+      URL.revokeObjectURL(url);
+      showToast(`Exported all ${wheels.length} wheels to JSON backup`);
+    } catch {
+      showToast('Failed to export wheels backup.');
+    }
+  };
+
+  const handleImportAllWheelsBackup = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      try {
+        const parsed = JSON.parse(event.target?.result as string);
+        const importedList = Array.isArray(parsed) ? parsed : parsed.wheels;
+        if (Array.isArray(importedList) && importedList.length > 0 && onReplaceAllWheels) {
+          onReplaceAllWheels(importedList);
+          showToast(`Successfully restored ${importedList.length} wheels from backup!`);
+        } else {
+          showToast('Invalid backup file structure.');
+        }
+      } catch {
+        showToast('Could not read or parse JSON file.');
+      }
+    };
+    reader.readAsText(file);
+    e.target.value = '';
+  };
+
+  const handleTriggerClearStorage = () => {
+    setShowDevToolsMenu(false);
+    setDevActionConfirm({
+      type: 'clear_storage',
+      title: 'Reset Server Sync & Storage?',
+      message: 'This will reset all server data and local cache back to clean factory state.',
+    });
+  };
+
+  const handleConfirmDevAction = () => {
+    if (!devActionConfirm) return;
+    if (devActionConfirm.type === 'remove_all') {
+      if (onRemoveAllWheels) {
+        onRemoveAllWheels();
+        showToast('All wheels removed. Starter wheel created.');
+      }
+    } else if (devActionConfirm.type === 'revert_all') {
+      if (onRevertAllWheels) {
+        onRevertAllWheels();
+        showToast('Reverted all wheels to factory defaults (14 official wheels).');
+      }
+    } else if (devActionConfirm.type === 'clear_storage') {
+      if (onResetCloudStorage) {
+        onResetCloudStorage();
+        showToast('Server sync and storage reset to factory default.');
+      }
+    }
+    setDevActionConfirm(null);
   };
 
   // Settings for current wheel with fallbacks
@@ -1314,6 +1523,187 @@ export const WheelCreatorStudio: React.FC<WheelCreatorStudioProps> = ({
                 <span className="hidden sm:inline">Analyze Word/Excel</span>
               </button>
             )}
+
+            {/* Dev & Testing Tools Dropdown (Studio View Only) */}
+            <div className="relative" ref={devToolsDropdownRef}>
+              <button
+                type="button"
+                onClick={() => setShowDevToolsMenu((prev) => !prev)}
+                className="px-3 py-1.5 rounded-xl text-xs font-bold bg-amber-500/15 hover:bg-amber-500/25 text-amber-600 dark:text-amber-400 border border-amber-500/35 transition flex items-center gap-1.5 cursor-pointer shadow-xs"
+                title="Developer & Testing Tools (Demo Mode)"
+              >
+                <Wrench className="w-3.5 h-3.5 text-amber-500" />
+                <span>Dev Tools</span>
+                <ChevronDown
+                  className={`w-3 h-3 text-amber-500 transition-transform ${
+                    showDevToolsMenu ? 'rotate-180' : ''
+                  }`}
+                />
+              </button>
+
+              {showDevToolsMenu && (
+                <div className="absolute right-0 mt-2 w-72 sm:w-80 max-w-[90vw] bg-white dark:bg-slate-900 border border-amber-500/40 rounded-2xl shadow-2xl p-2.5 z-50 text-xs animate-in fade-in slide-in-from-top-2 duration-150">
+                  <div className="px-2 py-1.5 mb-1.5 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between">
+                    <span className="font-display font-black uppercase text-[10px] tracking-wider text-amber-500 flex items-center gap-1.5">
+                      <Wrench className="w-3 h-3" />
+                      <span>Studio Dev &amp; Testing Suite</span>
+                    </span>
+                    <span className="px-1.5 py-0.5 rounded text-[9px] font-mono bg-amber-500/20 text-amber-600 dark:text-amber-300">
+                      demo
+                    </span>
+                  </div>
+
+                  {/* Section 1: Wheel Reset & Revert */}
+                  <div className="space-y-1 mb-2">
+                    <div className="px-2 text-[10px] font-bold uppercase tracking-wider text-slate-400">
+                      Collection Management
+                    </div>
+
+                    {/* Revert All Wheels */}
+                    <button
+                      type="button"
+                      onClick={handleTriggerRevertAll}
+                      className="w-full px-2.5 py-1.5 rounded-lg hover:bg-blue-50 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-200 flex items-center justify-between transition cursor-pointer text-left"
+                    >
+                      <span className="flex items-center gap-2 font-medium">
+                        <RotateCcw className="w-3.5 h-3.5 text-blue-500" />
+                        <span>Revert All Wheels</span>
+                      </span>
+                      <span className="text-[10px] text-slate-400">14 official</span>
+                    </button>
+
+                    {/* Remove All Wheels */}
+                    <button
+                      type="button"
+                      onClick={handleTriggerRemoveAll}
+                      className="w-full px-2.5 py-1.5 rounded-lg hover:bg-rose-50 dark:hover:bg-rose-950/40 text-rose-600 dark:text-rose-400 flex items-center justify-between transition cursor-pointer text-left"
+                    >
+                      <span className="flex items-center gap-2 font-medium">
+                        <Trash2 className="w-3.5 h-3.5 text-rose-500" />
+                        <span>Remove All Wheels</span>
+                      </span>
+                      <span className="text-[10px] text-rose-400">fresh starter</span>
+                    </button>
+
+                    {/* Randomize Wheels */}
+                    <button
+                      type="button"
+                      onClick={handleTriggerRandomizeAll}
+                      className="w-full px-2.5 py-1.5 rounded-lg hover:bg-amber-50 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-200 flex items-center justify-between transition cursor-pointer text-left"
+                    >
+                      <span className="flex items-center gap-2 font-medium">
+                        <Dices className="w-3.5 h-3.5 text-amber-500" />
+                        <span>Randomize All Wheels</span>
+                      </span>
+                      <span className="text-[10px] text-slate-400">colors &amp; order</span>
+                    </button>
+                  </div>
+
+                  {/* Section 2: Current Wheel Actions */}
+                  <div className="space-y-1 mb-2 pt-1.5 border-t border-slate-100 dark:border-slate-800">
+                    <div className="px-2 text-[10px] font-bold uppercase tracking-wider text-slate-400">
+                      Active Wheel ("{currentWheel.name.slice(0, 14)}...")
+                    </div>
+
+                    {/* Shuffle Current Wheel */}
+                    <button
+                      type="button"
+                      onClick={handleShuffleCurrent}
+                      className="w-full px-2.5 py-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-200 flex items-center gap-2 transition cursor-pointer text-left"
+                    >
+                      <Shuffle className="w-3.5 h-3.5 text-indigo-500" />
+                      <span>Shuffle Current Words</span>
+                    </button>
+
+                    {/* Populate 20 Demo Words */}
+                    <button
+                      type="button"
+                      onClick={handlePopulateDemoWords}
+                      className="w-full px-2.5 py-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-200 flex items-center justify-between transition cursor-pointer text-left"
+                    >
+                      <span className="flex items-center gap-2 font-medium">
+                        <Sparkles className="w-3.5 h-3.5 text-purple-500" />
+                        <span>Fill 20 Competition Words</span>
+                      </span>
+                      <span className="text-[10px] text-slate-400">demo</span>
+                    </button>
+
+                    {/* Stress-Test 50 Words */}
+                    <button
+                      type="button"
+                      onClick={handleStressTest50}
+                      className="w-full px-2.5 py-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-200 flex items-center justify-between transition cursor-pointer text-left"
+                    >
+                      <span className="flex items-center gap-2 font-medium">
+                        <Layers className="w-3.5 h-3.5 text-cyan-500" />
+                        <span>Stress-Test 50 Slices</span>
+                      </span>
+                      <span className="text-[10px] text-slate-400">max</span>
+                    </button>
+                  </div>
+
+                  {/* Section 3: Testing Simulation */}
+                  <div className="space-y-1 mb-2 pt-1.5 border-t border-slate-100 dark:border-slate-800">
+                    <div className="px-2 text-[10px] font-bold uppercase tracking-wider text-slate-400">
+                      Live Simulation
+                    </div>
+
+                    {/* Test Winner Celebration */}
+                    <button
+                      type="button"
+                      onClick={handleTestCelebration}
+                      className="w-full px-2.5 py-1.5 rounded-lg hover:bg-amber-50 dark:hover:bg-amber-950/40 text-amber-600 dark:text-amber-400 flex items-center justify-between transition cursor-pointer text-left font-semibold"
+                    >
+                      <span className="flex items-center gap-2">
+                        <Trophy className="w-3.5 h-3.5 text-amber-500" />
+                        <span>Test Winner Celebration</span>
+                      </span>
+                      <span className="text-[10px] text-amber-500">fanfare</span>
+                    </button>
+                  </div>
+
+                  {/* Section 4: Backup & Storage */}
+                  <div className="space-y-1 pt-1.5 border-t border-slate-100 dark:border-slate-800">
+                    <div className="px-2 text-[10px] font-bold uppercase tracking-wider text-slate-400">
+                      Backup &amp; Reset
+                    </div>
+
+                    {/* Export All Backup */}
+                    <button
+                      type="button"
+                      onClick={handleExportAllWheelsBackup}
+                      className="w-full px-2.5 py-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-200 flex items-center justify-between transition cursor-pointer text-left"
+                    >
+                      <span className="flex items-center gap-2">
+                        <Download className="w-3.5 h-3.5 text-emerald-500" />
+                        <span>Export All Wheels (.json)</span>
+                      </span>
+                      <span className="text-[10px] text-slate-400">{wheels.length}</span>
+                    </button>
+
+                    {/* Import All Backup */}
+                    <button
+                      type="button"
+                      onClick={() => importAllBackupInputRef.current?.click()}
+                      className="w-full px-2.5 py-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-200 flex items-center gap-2 transition cursor-pointer text-left"
+                    >
+                      <Upload className="w-3.5 h-3.5 text-amber-500" />
+                      <span>Restore Wheels Backup (.json)</span>
+                    </button>
+
+                    {/* Reset Server Storage */}
+                    <button
+                      type="button"
+                      onClick={handleTriggerClearStorage}
+                      className="w-full px-2.5 py-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-500 dark:text-slate-400 flex items-center gap-2 transition cursor-pointer text-left"
+                    >
+                      <RefreshCw className="w-3.5 h-3.5 text-slate-400" />
+                      <span>Reset Cloud &amp; Local Storage</span>
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
 
             {/* New / Reset Button */}
             <button
@@ -2571,6 +2961,61 @@ export const WheelCreatorStudio: React.FC<WheelCreatorStudioProps> = ({
           </div>
         </div>
       )}
+
+      {/* Dev Action Confirmation Modal */}
+      {devActionConfirm && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md animate-in fade-in duration-150">
+          <div className="relative w-full max-w-md bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl shadow-2xl p-6 space-y-4">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-2xl bg-amber-500/20 text-amber-500 flex items-center justify-center shrink-0">
+                <AlertTriangle className="w-5 h-5 text-amber-500" />
+              </div>
+              <div>
+                <h3 className="font-display font-bold text-base text-slate-900 dark:text-white">
+                  {devActionConfirm.title}
+                </h3>
+                <p className="text-xs text-slate-500 dark:text-slate-400">
+                  Dev &amp; Testing Action
+                </p>
+              </div>
+            </div>
+
+            <p className="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">
+              {devActionConfirm.message}
+            </p>
+
+            <div className="flex items-center justify-end gap-2 pt-2 border-t border-slate-100 dark:border-slate-800">
+              <button
+                type="button"
+                onClick={() => setDevActionConfirm(null)}
+                className="px-4 py-2 rounded-xl text-xs font-semibold text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition cursor-pointer"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={handleConfirmDevAction}
+                className={`px-4 py-2 rounded-xl text-xs font-bold text-white shadow-md transition cursor-pointer ${
+                  devActionConfirm.type === 'remove_all'
+                    ? 'bg-rose-600 hover:bg-rose-500'
+                    : 'bg-amber-600 hover:bg-amber-500'
+                }`}
+              >
+                Confirm
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Hidden input for Restoring Full Wheels Backup (.json) */}
+      <input
+        type="file"
+        ref={importAllBackupInputRef}
+        accept="application/json"
+        className="hidden"
+        onChange={handleImportAllWheelsBackup}
+      />
 
       {/* Toast Notification Pill */}
       {toastMessage && (

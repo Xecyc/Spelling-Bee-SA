@@ -6,7 +6,7 @@ import {
   PresentationSlideId,
   SoundSettings,
 } from './types/presentation';
-import { INITIAL_WHEELS } from './utils/defaultData';
+import { INITIAL_WHEELS, PASTEL_PALETTE } from './utils/defaultData';
 import { audioManager } from './utils/audio';
 import { PresentationDeck } from './components/PresentationDeck';
 import { WheelCreatorStudio } from './components/WheelCreatorStudio';
@@ -31,7 +31,7 @@ export default function App() {
   // Wheels state with localStorage persistence
   const [wheels, setWheels] = useState<WheelConfig[]>(() => {
     try {
-      const saved = localStorage.getItem('salto_angel_wheels_2026_v4');
+      const saved = localStorage.getItem('salto_angel_wheels_2026_v6');
       if (saved) {
         const parsed = JSON.parse(saved);
         if (
@@ -89,7 +89,7 @@ export default function App() {
       .then((data) => {
         if (Array.isArray(data.wheels) && data.wheels.length > 0) {
           setWheels(data.wheels);
-          localStorage.setItem('salto_angel_wheels_2026_v4', JSON.stringify(data.wheels));
+          localStorage.setItem('salto_angel_wheels_2026_v6', JSON.stringify(data.wheels));
         }
       })
       .catch(() => {
@@ -100,7 +100,7 @@ export default function App() {
   // Save wheels to localStorage and shared server endpoint
   useEffect(() => {
     try {
-      localStorage.setItem('salto_angel_wheels_2026_v4', JSON.stringify(wheels));
+      localStorage.setItem('salto_angel_wheels_2026_v6', JSON.stringify(wheels));
       fetch('/api/wheels', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -235,6 +235,91 @@ export default function App() {
     return () => window.removeEventListener('keydown', handleKeyDown);
   });
 
+  // Dev tools actions:
+  // 1. Revert all wheels to factory defaults (INITIAL_WHEELS)
+  const handleRevertAllWheels = () => {
+    setWheels(INITIAL_WHEELS);
+    setActiveWheelId(INITIAL_WHEELS[0].id);
+  };
+
+  // 2. Remove all wheels (leaves 1 clean starter wheel for testing)
+  const handleRemoveAllWheels = () => {
+    const starterWheel: WheelConfig = {
+      id: `wheel-starter-${Date.now()}`,
+      name: 'Starter Wheel',
+      role: '1st',
+      group: 'elementary',
+      grade: '1st',
+      place: '1st',
+      spinDuration: 6,
+      timerDuration: 40,
+      slices: [
+        { id: `s-starter-1`, text: 'START', color: '#FBBF24', enabled: true, weight: 1 },
+        { id: `s-starter-2`, text: 'TEST', color: '#60A5FA', enabled: true, weight: 1 },
+      ],
+    };
+    setWheels([starterWheel]);
+    setActiveWheelId(starterWheel.id);
+  };
+
+  // 3. Randomize wheels: shuffles words across wheels or slice colors/order
+  const handleRandomizeWheels = () => {
+    setWheels((prev) =>
+      prev.map((w) => {
+        const shuffled = [...w.slices]
+          .map((s, idx) => ({
+            ...s,
+            color: PASTEL_PALETTE[(idx + Math.floor(Math.random() * PASTEL_PALETTE.length)) % PASTEL_PALETTE.length],
+          }))
+          .sort(() => Math.random() - 0.5);
+        return {
+          ...w,
+          slices: shuffled,
+        };
+      })
+    );
+  };
+
+  // 4. Replace all wheels with an entire array (e.g. from JSON import or Analyzer)
+  const handleReplaceAllWheels = (newWheels: WheelConfig[]) => {
+    if (newWheels.length === 0) return;
+    setWheels(newWheels);
+    setActiveWheelId(newWheels[0].id);
+  };
+
+  // 5. Replace words in existing wheels
+  const handleReplaceWordsInExistingWheels = (updatedWheels: WheelConfig[]) => {
+    setWheels(updatedWheels);
+  };
+
+  // 6. Test celebration modal trigger
+  const handleTriggerTestCelebration = (customWord?: string) => {
+    const testSlice: WheelSlice = {
+      id: `test-winner-${Date.now()}`,
+      text: customWord || activeWheel.slices[0]?.text || 'CHAMPION',
+      color: activeWheel.slices[0]?.color || '#FBBF24',
+    };
+    setWinningSlice(testSlice);
+    setShowWinnerModal(true);
+  };
+
+  // 7. Reset cloud and local storage
+  const handleResetCloudStorage = async () => {
+    try {
+      localStorage.removeItem('salto_angel_wheels_2026_v6');
+      localStorage.removeItem('salto_angel_wheels_2026_v4');
+      await fetch('/api/wheels', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ wheels: INITIAL_WHEELS }),
+      });
+      setWheels(INITIAL_WHEELS);
+      setActiveWheelId(INITIAL_WHEELS[0].id);
+    } catch {
+      // Ignore
+    }
+  };
+
   return (
     <div className="relative w-screen h-screen overflow-hidden bg-slate-950 font-sans">
       {/* Top Hover Navigation Bar (Reveals on hover, allows instant view swap) */}
@@ -301,6 +386,12 @@ export default function App() {
           soundSettings={soundSettings}
           onUpdateSoundSettings={setSoundSettings}
           onOpenDocumentAnalyzer={() => setShowDocumentAnalyzer(true)}
+          onRevertAllWheels={handleRevertAllWheels}
+          onRemoveAllWheels={handleRemoveAllWheels}
+          onRandomizeWheels={handleRandomizeWheels}
+          onReplaceAllWheels={handleReplaceAllWheels}
+          onTriggerTestCelebration={handleTriggerTestCelebration}
+          onResetCloudStorage={handleResetCloudStorage}
         />
       )}
 
@@ -330,6 +421,9 @@ export default function App() {
         isOpen={showDocumentAnalyzer}
         onClose={() => setShowDocumentAnalyzer(false)}
         onAppendWheels={handleAppendWheels}
+        existingWheels={wheels}
+        onReplaceWordsInExistingWheels={handleReplaceWordsInExistingWheels}
+        onReplaceAllWheels={handleReplaceAllWheels}
       />
     </div>
   );
