@@ -177,7 +177,7 @@ export const PresentationDeck: React.FC<PresentationDeckProps> = ({
               className="absolute z-20 pointer-events-none select-none text-center"
               style={{
                 left: '50%',
-                top: activeWheel.group === 'high_school' ? '1.5%' : '3.5%',
+                top: activeWheel.group === 'high_school' ? '2.8%' : '3.5%',
                 transform: 'translateX(-50%)',
               }}
             >
