@@ -161,7 +161,7 @@ export const PresentationDeck: React.FC<PresentationDeckProps> = ({
             <img
               src={
                 activeWheel.group === 'high_school'
-                  ? `${import.meta.env.BASE_URL}assets/aistudio/8d019f05-30e0-4935-904c-e42987682443_a0014e1b.jpg`
+                  ? `${import.meta.env.BASE_URL}assets/aistudio/600be532-29f8-42b3-b71b-aff6b649f0e8_0b8ecf00.jpg`
                   : `${import.meta.env.BASE_URL}assets/aistudio/Gemini_Generated_Image_wxqydhwxqydhwxqy__1__ed331ba7.jpg`
               }
               alt={
@@ -177,7 +177,7 @@ export const PresentationDeck: React.FC<PresentationDeckProps> = ({
               className="absolute z-20 pointer-events-none select-none text-center"
               style={{
                 left: '50%',
-                top: activeWheel.group === 'high_school' ? '2.8%' : '3.5%',
+                top: '5%',
                 transform: 'translateX(-50%)',
               }}
             >
@@ -230,8 +230,16 @@ export const PresentationDeck: React.FC<PresentationDeckProps> = ({
             title="Click to celebrate!"
           >
             <img
-              src={`${import.meta.env.BASE_URL}assets/aistudio/image_d2ab69fa.png`}
-              alt="Spelling Bee Elementary 2026 Champion Celebration"
+              src={
+                activeWheel.group === 'high_school'
+                  ? `${import.meta.env.BASE_URL}assets/aistudio/480b2e32-4249-44c9-83bd-7e91fc5cbdba_0097f3f2.jpg`
+                  : `${import.meta.env.BASE_URL}assets/aistudio/image_d2ab69fa.png`
+              }
+              alt={
+                activeWheel.group === 'high_school'
+                  ? 'Salto Ángel Spelling Bee High School 2026'
+                  : 'Spelling Bee Elementary 2026 Champion Celebration'
+              }
               className="absolute inset-0 w-full h-full object-cover pointer-events-none"
             />
           </div>
