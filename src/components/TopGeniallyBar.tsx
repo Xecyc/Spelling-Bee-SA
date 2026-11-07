@@ -41,9 +41,27 @@ export const TopGeniallyBar: React.FC<TopGeniallyBarProps> = ({
   const [selectedGroup, setSelectedGroup] = useState<'elementary' | 'high_school'>(
     (activeWheel?.group as 'elementary' | 'high_school') || 'elementary'
   );
-  const [selectedGrade, setSelectedGrade] = useState<string>(
-    activeWheel?.grade && activeWheel.grade !== 'High School' ? activeWheel.grade : '1st'
+
+  // Clean determination if active wheel is Tiebreak vs General round
+  const isCurrentTiebreak = Boolean(
+    activeWheel?.role === 'tiebreak' ||
+      activeWheel?.place === 'tiebreak' ||
+      activeWheel?.place === '2nd_3rd' ||
+      activeWheel?.name?.toLowerCase().includes('tiebreak')
   );
+
+  const getInitialGrade = (wheel: WheelConfig | undefined): string => {
+    if (!wheel || wheel.group === 'high_school') return '1st';
+    if (wheel.grade && ['1st', '2nd', '3rd', '4th', '5th', '6th'].includes(wheel.grade)) {
+      return wheel.grade;
+    }
+    if (wheel.grade === '4th - 6th' || (wheel.name && wheel.name.includes('4th-6th'))) {
+      return '4th';
+    }
+    return '1st';
+  };
+
+  const [selectedGrade, setSelectedGrade] = useState<string>(() => getInitialGrade(activeWheel));
 
   // Sync group and grade with active wheel when it changes
   useEffect(() => {
@@ -52,8 +70,21 @@ export const TopGeniallyBar: React.FC<TopGeniallyBarProps> = ({
         setSelectedGroup('high_school');
       } else {
         setSelectedGroup('elementary');
-        if (activeWheel.grade && activeWheel.grade !== 'High School') {
+        if (
+          activeWheel.grade &&
+          ['1st', '2nd', '3rd', '4th', '5th', '6th'].includes(activeWheel.grade)
+        ) {
           setSelectedGrade(activeWheel.grade);
+        } else if (
+          activeWheel.grade === '4th - 6th' ||
+          (activeWheel.name && activeWheel.name.includes('4th-6th'))
+        ) {
+          setSelectedGrade((prev) => (['4th', '5th', '6th'].includes(prev) ? prev : '4th'));
+        } else if (
+          activeWheel.grade === '1st - 3rd' ||
+          (activeWheel.name && activeWheel.name.includes('1st-3rd'))
+        ) {
+          setSelectedGrade((prev) => (['1st', '2nd', '3rd'].includes(prev) ? prev : '1st'));
         }
       }
     }
@@ -149,19 +180,35 @@ export const TopGeniallyBar: React.FC<TopGeniallyBarProps> = ({
                 <button
                   onClick={() => {
                     setSelectedGroup('elementary');
-                    const target =
-                      wheels.find(
-                        (w) =>
-                          w.group === 'elementary' &&
-                          w.grade === selectedGrade &&
-                          (w.place === activeWheel.place || w.place === '1st')
-                      ) ||
-                      wheels.find(
-                        (w) => w.group === 'elementary' && w.grade === selectedGrade
-                      ) ||
-                      wheels.find((w) => w.group === 'elementary');
-                    if (target) {
-                      onSelectWheel(target.id);
+                    const isBlock1 = ['1st', '2nd', '3rd'].includes(selectedGrade);
+                    if (isCurrentTiebreak) {
+                      const target =
+                        wheels.find(
+                          (w) =>
+                            w.group === 'elementary' &&
+                            w.grade === selectedGrade &&
+                            (w.role === 'tiebreak' || w.place === 'tiebreak' || w.name.toLowerCase().includes('tiebreak'))
+                        ) ||
+                        wheels.find(
+                          (w) =>
+                            w.group === 'elementary' &&
+                            (w.role === 'tiebreak' || w.place === 'tiebreak' || w.name.toLowerCase().includes('tiebreak'))
+                        );
+                      if (target) onSelectWheel(target.id);
+                    } else {
+                      const target =
+                        wheels.find(
+                          (w) =>
+                            w.group === 'elementary' &&
+                            (w.role === 'general' || w.place === 'general') &&
+                            (isBlock1 ? w.name.includes('1st-3rd') : w.name.includes('4th-6th'))
+                        ) ||
+                        wheels.find(
+                          (w) =>
+                            w.group === 'elementary' &&
+                            (w.role === 'general' || w.place === 'general')
+                        );
+                      if (target) onSelectWheel(target.id);
                     }
                   }}
                   className={`flex-1 py-1.5 text-center font-black text-xs uppercase tracking-wide rounded-lg transition-all cursor-pointer ${
@@ -175,15 +222,22 @@ export const TopGeniallyBar: React.FC<TopGeniallyBarProps> = ({
                 <button
                   onClick={() => {
                     setSelectedGroup('high_school');
-                    const target =
-                      wheels.find(
-                        (w) =>
-                          w.group === 'high_school' &&
-                          (w.place === activeWheel.place || w.place === '1st')
-                      ) ||
-                      wheels.find((w) => w.group === 'high_school');
-                    if (target) {
-                      onSelectWheel(target.id);
+                    if (isCurrentTiebreak) {
+                      const target =
+                        wheels.find(
+                          (w) =>
+                            w.group === 'high_school' &&
+                            (w.role === 'tiebreak' || w.place === 'tiebreak' || w.name.toLowerCase().includes('tiebreak'))
+                        ) || wheels.find((w) => w.group === 'high_school');
+                      if (target) onSelectWheel(target.id);
+                    } else {
+                      const target =
+                        wheels.find(
+                          (w) =>
+                            w.group === 'high_school' &&
+                            (w.role === 'general' || w.place === 'general' || w.name.toLowerCase().includes('general'))
+                        ) || wheels.find((w) => w.group === 'high_school');
+                      if (target) onSelectWheel(target.id);
                     }
                   }}
                   className={`flex-1 py-1.5 text-center font-black text-xs uppercase tracking-wide rounded-lg transition-all cursor-pointer ${
@@ -205,18 +259,33 @@ export const TopGeniallyBar: React.FC<TopGeniallyBarProps> = ({
                         key={grade}
                         onClick={() => {
                           setSelectedGrade(grade);
-                          const target =
-                            wheels.find(
-                              (w) =>
-                                w.group === 'elementary' &&
-                                w.grade === grade &&
-                                (w.place === activeWheel.place || w.place === '1st')
-                            ) ||
-                            wheels.find(
-                              (w) => w.group === 'elementary' && w.grade === grade
-                            );
-                          if (target) {
-                            onSelectWheel(target.id);
+                          const isBlock1 = ['1st', '2nd', '3rd'].includes(grade);
+
+                          if (isCurrentTiebreak) {
+                            // If user is currently in Tiebreak mode, keep tiebreak active for this grade
+                            const target =
+                              wheels.find(
+                                (w) =>
+                                  w.group === 'elementary' &&
+                                  w.grade === grade &&
+                                  (w.role === 'tiebreak' || w.place === 'tiebreak' || w.name.toLowerCase().includes('tiebreak'))
+                              ) || wheels.find((w) => w.group === 'elementary' && w.grade === grade);
+                            if (target) onSelectWheel(target.id);
+                          } else {
+                            // Default General mode: select the block general wheel (General stays yellow, Tiebreak stays blue)
+                            const target =
+                              wheels.find(
+                                (w) =>
+                                  w.group === 'elementary' &&
+                                  (w.role === 'general' || w.place === 'general') &&
+                                  (isBlock1 ? w.name.includes('1st-3rd') : w.name.includes('4th-6th'))
+                              ) ||
+                              wheels.find(
+                                (w) =>
+                                  w.group === 'elementary' &&
+                                  (w.role === 'general' || w.place === 'general')
+                              );
+                            if (target) onSelectWheel(target.id);
                           }
                         }}
                         className={`py-1.5 text-center rounded-lg font-black text-[11px] transition-all cursor-pointer border ${
@@ -232,126 +301,112 @@ export const TopGeniallyBar: React.FC<TopGeniallyBarProps> = ({
 
                   {/* General vs Tiebreak round buttons */}
                   <div className="grid grid-cols-2 gap-1.5">
-                    {(() => {
-                      const isBlock1 = ['1st', '2nd', '3rd'].includes(selectedGrade);
-                      const wheelGeneral =
-                        wheels.find(
-                          (w) =>
-                            w.group === 'elementary' &&
-                            (w.role === 'general' || w.place === 'general' || w.place === '1st') &&
-                            (isBlock1 ? w.name.includes('1st-3rd') : w.name.includes('4th-6th'))
-                        ) ||
-                        wheels.find(
-                          (w) =>
-                            w.group === 'elementary' &&
-                            (w.role === 'general' || w.place === 'general' || w.place === '1st')
-                        );
-                      const isGeneralActive = wheelGeneral && wheelGeneral.id === activeWheelId;
-                      return (
-                        <button
-                          onClick={() => {
-                            if (wheelGeneral) {
-                              onSelectWheel(wheelGeneral.id);
-                              setIsOpen(false);
-                            }
-                          }}
-                          className={`py-2 px-2.5 rounded-xl text-center font-black text-xs uppercase tracking-wide transition-all cursor-pointer border ${
-                            isGeneralActive
-                              ? 'bg-amber-400 text-[#06152d] border-amber-300 shadow-md shadow-amber-400/20'
-                              : 'bg-[#0a2354]/60 text-blue-100 border-blue-400/20 hover:bg-[#0e2f6d] hover:border-blue-400/40 hover:text-white'
-                          }`}
-                        >
-                          General
-                        </button>
-                      );
-                    })()}
+                    {/* General Button: Active by default (yellow) */}
+                    <button
+                      onClick={() => {
+                        const isBlock1 = ['1st', '2nd', '3rd'].includes(selectedGrade);
+                        const wheelGeneral =
+                          wheels.find(
+                            (w) =>
+                              w.group === 'elementary' &&
+                              (w.role === 'general' || w.place === 'general') &&
+                              (isBlock1 ? w.name.includes('1st-3rd') : w.name.includes('4th-6th'))
+                          ) ||
+                          wheels.find(
+                            (w) =>
+                              w.group === 'elementary' &&
+                              (w.role === 'general' || w.place === 'general')
+                          );
+                        if (wheelGeneral) {
+                          onSelectWheel(wheelGeneral.id);
+                          setIsOpen(false);
+                        }
+                      }}
+                      className={`py-2 px-2.5 rounded-xl text-center font-black text-xs uppercase tracking-wide transition-all cursor-pointer border ${
+                        !isCurrentTiebreak
+                          ? 'bg-amber-400 text-[#06152d] border-amber-300 shadow-md shadow-amber-400/20'
+                          : 'bg-[#0a2354]/60 text-blue-100 border-blue-400/20 hover:bg-[#0e2f6d] hover:border-blue-400/40 hover:text-white'
+                      }`}
+                    >
+                      General
+                    </button>
 
-                    {(() => {
-                      const wheelTiebreak =
-                        wheels.find(
-                          (w) =>
-                            w.group === 'elementary' &&
-                            w.grade === selectedGrade &&
-                            (w.role === 'tiebreak' || w.place === 'tiebreak' || w.place === '2nd_3rd')
-                        ) ||
-                        wheels.find((w) => w.group === 'elementary' && w.grade === selectedGrade);
-                      const isTiebreakActive = wheelTiebreak && wheelTiebreak.id === activeWheelId;
-                      return (
-                        <button
-                          onClick={() => {
-                            if (wheelTiebreak) {
-                              onSelectWheel(wheelTiebreak.id);
-                              setIsOpen(false);
-                            }
-                          }}
-                          className={`py-2 px-2.5 rounded-xl text-center font-black text-xs uppercase tracking-wide transition-all cursor-pointer border ${
-                            isTiebreakActive
-                              ? 'bg-amber-400 text-[#06152d] border-amber-300 shadow-md shadow-amber-400/20'
-                              : 'bg-[#0a2354]/60 text-blue-100 border-blue-400/20 hover:bg-[#0e2f6d] hover:border-blue-400/40 hover:text-white'
-                          }`}
-                        >
-                          Tiebreak
-                        </button>
-                      );
-                    })()}
+                    {/* Tiebreak Button: Inactive (blue) by default until selected */}
+                    <button
+                      onClick={() => {
+                        const wheelTiebreak =
+                          wheels.find(
+                            (w) =>
+                              w.group === 'elementary' &&
+                              w.grade === selectedGrade &&
+                              (w.role === 'tiebreak' || w.place === 'tiebreak' || w.name.toLowerCase().includes('tiebreak'))
+                          ) ||
+                          wheels.find(
+                            (w) =>
+                              w.group === 'elementary' &&
+                              (w.role === 'tiebreak' || w.place === 'tiebreak' || w.name.toLowerCase().includes('tiebreak'))
+                          );
+                        if (wheelTiebreak) {
+                          onSelectWheel(wheelTiebreak.id);
+                          setIsOpen(false);
+                        }
+                      }}
+                      className={`py-2 px-2.5 rounded-xl text-center font-black text-xs uppercase tracking-wide transition-all cursor-pointer border ${
+                        isCurrentTiebreak
+                          ? 'bg-amber-400 text-[#06152d] border-amber-300 shadow-md shadow-amber-400/20'
+                          : 'bg-[#0a2354]/60 text-blue-100 border-blue-400/20 hover:bg-[#0e2f6d] hover:border-blue-400/40 hover:text-white'
+                      }`}
+                    >
+                      Tiebreak
+                    </button>
                   </div>
                 </div>
               ) : (
                 /* High School round selector */
                 <div className="grid grid-cols-2 gap-1.5 py-1">
-                  {(() => {
-                    const wheelHsGeneral =
-                      wheels.find(
-                        (w) =>
-                          w.group === 'high_school' &&
-                          (w.role === 'general' || w.place === 'general' || w.place === '1st')
-                      ) || wheels.find((w) => w.group === 'high_school');
-                    const isGeneralActive = wheelHsGeneral && wheelHsGeneral.id === activeWheelId;
-                    return (
-                      <button
-                        onClick={() => {
-                          if (wheelHsGeneral) {
-                            onSelectWheel(wheelHsGeneral.id);
-                            setIsOpen(false);
-                          }
-                        }}
-                        className={`py-2 px-2.5 rounded-xl text-center font-black text-xs uppercase tracking-wide transition-all cursor-pointer border ${
-                          isGeneralActive
-                            ? 'bg-amber-400 text-[#06152d] border-amber-300 shadow-md shadow-amber-400/20'
-                            : 'bg-[#0a2354]/60 text-blue-100 border-blue-400/20 hover:bg-[#0e2f6d] hover:border-blue-400/40 hover:text-white'
-                        }`}
-                      >
-                        General
-                      </button>
-                    );
-                  })()}
+                  <button
+                    onClick={() => {
+                      const wheelHsGeneral =
+                        wheels.find(
+                          (w) =>
+                            w.group === 'high_school' &&
+                            (w.role === 'general' || w.place === 'general' || w.name.toLowerCase().includes('general'))
+                        ) || wheels.find((w) => w.group === 'high_school');
+                      if (wheelHsGeneral) {
+                        onSelectWheel(wheelHsGeneral.id);
+                        setIsOpen(false);
+                      }
+                    }}
+                    className={`py-2 px-2.5 rounded-xl text-center font-black text-xs uppercase tracking-wide transition-all cursor-pointer border ${
+                      !isCurrentTiebreak
+                        ? 'bg-amber-400 text-[#06152d] border-amber-300 shadow-md shadow-amber-400/20'
+                        : 'bg-[#0a2354]/60 text-blue-100 border-blue-400/20 hover:bg-[#0e2f6d] hover:border-blue-400/40 hover:text-white'
+                    }`}
+                  >
+                    General
+                  </button>
 
-                  {(() => {
-                    const wheelHsTiebreak =
-                      wheels.find(
-                        (w) =>
-                          w.group === 'high_school' &&
-                          (w.role === 'tiebreak' || w.place === 'tiebreak' || w.place === '2nd_3rd')
-                      ) || wheels.find((w) => w.group === 'high_school');
-                    const isTiebreakActive = wheelHsTiebreak && wheelHsTiebreak.id === activeWheelId;
-                    return (
-                      <button
-                        onClick={() => {
-                          if (wheelHsTiebreak) {
-                            onSelectWheel(wheelHsTiebreak.id);
-                            setIsOpen(false);
-                          }
-                        }}
-                        className={`py-2 px-2.5 rounded-xl text-center font-black text-xs uppercase tracking-wide transition-all cursor-pointer border ${
-                          isTiebreakActive
-                            ? 'bg-amber-400 text-[#06152d] border-amber-300 shadow-md shadow-amber-400/20'
-                            : 'bg-[#0a2354]/60 text-blue-100 border-blue-400/20 hover:bg-[#0e2f6d] hover:border-blue-400/40 hover:text-white'
-                        }`}
-                      >
-                        Tiebreak
-                      </button>
-                    );
-                  })()}
+                  <button
+                    onClick={() => {
+                      const wheelHsTiebreak =
+                        wheels.find(
+                          (w) =>
+                            w.group === 'high_school' &&
+                            (w.role === 'tiebreak' || w.place === 'tiebreak' || w.name.toLowerCase().includes('tiebreak'))
+                        ) || wheels.find((w) => w.group === 'high_school');
+                      if (wheelHsTiebreak) {
+                        onSelectWheel(wheelHsTiebreak.id);
+                        setIsOpen(false);
+                      }
+                    }}
+                    className={`py-2 px-2.5 rounded-xl text-center font-black text-xs uppercase tracking-wide transition-all cursor-pointer border ${
+                      isCurrentTiebreak
+                        ? 'bg-amber-400 text-[#06152d] border-amber-300 shadow-md shadow-amber-400/20'
+                        : 'bg-[#0a2354]/60 text-blue-100 border-blue-400/20 hover:bg-[#0e2f6d] hover:border-blue-400/40 hover:text-white'
+                    }`}
+                  >
+                    Tiebreak
+                  </button>
                 </div>
               )}
             </div>

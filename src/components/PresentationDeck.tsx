@@ -177,14 +177,25 @@ export const PresentationDeck: React.FC<PresentationDeckProps> = ({
               className="absolute z-20 pointer-events-none select-none text-center"
               style={{
                 left: '50%',
-                top: '5%',
+                top: activeWheel.group === 'high_school' ? '1.5%' : '3.5%',
                 transform: 'translateX(-50%)',
               }}
             >
               <div className="text-xs sm:text-sm md:text-base font-black tracking-wider text-amber-300 drop-shadow-[0_2px_8px_rgba(0,0,0,0.8)] uppercase">
-                {activeWheel.group === 'elementary'
-                  ? `Elementary · ${activeWheel.name}`
-                  : activeWheel.name}
+                {(() => {
+                  const isGeneral =
+                    activeWheel.role === 'general' ||
+                    activeWheel.place === 'general' ||
+                    activeWheel.name.toLowerCase().includes('general');
+
+                  const cleanName = isGeneral
+                    ? activeWheel.name.replace(/\s*[-–—]?\s*general\s*/gi, '').trim()
+                    : activeWheel.name;
+
+                  return activeWheel.group === 'elementary'
+                    ? `Elementary · ${cleanName}`
+                    : cleanName || activeWheel.name;
+                })()}
               </div>
             </div>
 
