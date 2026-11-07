@@ -1503,7 +1503,7 @@ export const WheelCreatorStudio: React.FC<WheelCreatorStudioProps> = ({
                 <h1 className="font-display font-bold text-sm sm:text-base text-slate-900 dark:text-white truncate">
                   {currentWheel.name}
                 </h1>
-                <span className="text-slate-400 group-hover:text-indigo-500 text-xs transition-colors">
+                <span className="text-slate-400 group-hover:text-amber-500 text-xs transition-colors">
                   ✎
                 </span>
               </div>

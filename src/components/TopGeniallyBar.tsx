@@ -133,7 +133,7 @@ export const TopGeniallyBar: React.FC<TopGeniallyBarProps> = ({
         {/* Dropdown Menu Modal - Redesigned to Sober Presentation Navy & Golden-Yellow */}
         {isOpen && (
           <div className="mt-0.5 w-84 bg-[#061a3e] border border-blue-400/30 rounded-2xl shadow-2xl backdrop-blur-xl p-3.5 text-white text-xs z-50 animate-in fade-in zoom-in-95 duration-150">
-            {/* Header: Pure Solid White "SWITCH VIEW & WHEEL" (Yellow breadcrumb removed) */}
+            {/* Header: Pure Solid White "SWITCH VIEW & WHEEL" */}
             <div className="flex items-center justify-between px-1 py-1 border-b border-blue-900/60 mb-2.5">
               <span className="font-display font-black text-xs text-white tracking-wider uppercase">
                 Switch View & Wheel
