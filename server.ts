@@ -1,4 +1,7 @@
 import express from 'express';
+import http from 'http';
+import os from 'os';
+import { Server as SocketIOServer } from 'socket.io';
 import { createServer as createViteServer } from 'vite';
 import path from 'path';
 import fs from 'fs';
@@ -9,7 +12,51 @@ import { INITIAL_WHEELS } from './src/utils/defaultData.ts';
 dotenv.config();
 
 const app = express();
+const httpServer = http.createServer(app);
 const port = 3000;
+
+// Attach Socket.io with open CORS for stage & local network mobile remote
+const io = new SocketIOServer(httpServer, {
+  cors: {
+    origin: '*',
+    methods: ['GET', 'POST'],
+  },
+});
+
+// Strictly typed payload for remote controlled winner podium
+interface WinnersPayload {
+  first: string;
+  second: string;
+  third: string;
+}
+
+let currentWinners: WinnersPayload | null = null;
+let isWinnersActive = false;
+
+io.on('connection', (socket) => {
+  // If podium is active, sync newly connected stage display or remote
+  if (isWinnersActive && currentWinners) {
+    socket.emit('show_winners', currentWinners);
+  }
+
+  // Listen for push_winners event from mobile remote
+  socket.on('push_winners', (data: WinnersPayload) => {
+    currentWinners = {
+      first: typeof data?.first === 'string' ? data.first.trim() : '',
+      second: typeof data?.second === 'string' ? data.second.trim() : '',
+      third: typeof data?.third === 'string' ? data.third.trim() : '',
+    };
+    isWinnersActive = true;
+    io.emit('show_winners', currentWinners);
+  });
+
+  // Listen for clear_board event from mobile remote
+  socket.on('clear_board', () => {
+    currentWinners = null;
+    isWinnersActive = false;
+    io.emit('hide_winners');
+  });
+});
 
 app.use(express.json({ limit: '50mb' }));
 
@@ -208,6 +255,24 @@ ${text.slice(0, 50000)}
   }
 });
 
+// API: Discover host LAN IP for the Stage Remote QR code
+app.get('/api/network-ip', (req, res) => {
+  const interfaces = os.networkInterfaces();
+  const addresses: string[] = [];
+  for (const name of Object.keys(interfaces)) {
+    for (const iface of interfaces[name] || []) {
+      if (iface.family === 'IPv4' && !iface.internal) {
+        addresses.push(iface.address);
+      }
+    }
+  }
+  res.json({
+    localIp: addresses[0] || 'localhost',
+    allIps: addresses,
+    port,
+  });
+});
+
 // Vite middleware in development
 async function startServer() {
   if (process.env.NODE_ENV !== 'production') {
@@ -223,8 +288,8 @@ async function startServer() {
     });
   }
 
-  app.listen(port, '0.0.0.0', () => {
-    console.log(`Server listening on http://0.0.0.0:${port}`);
+  httpServer.listen(port, '0.0.0.0', () => {
+    console.log(`Server with Socket.io listening on http://0.0.0.0:${port}`);
   });
 }
 

@@ -1,0 +1,148 @@
+================================================================================
+U.E.P. SALTO ÁNGEL SPELLING BEE 2026 — STAGE ROULETTE & PRESENTATION SYSTEM
+================================================================================
+Target Audience: AI Language Models, Prompt Context, Contest AV Directors, Judges
+Purpose: Complete functional, structural, and technical application specification
+
+--------------------------------------------------------------------------------
+1. APPLICATION OVERVIEW & MISSION
+--------------------------------------------------------------------------------
+This application is a specialized, production-ready stage presentation and
+interactive word-roulette platform developed specifically for the
+"U.E.P. Salto Ángel Spelling Bee 2026" annual English spelling championship.
+
+The application is projected live onto large auditorium TVs, stage LED video
+walls, and 1080p/4K projectors in front of students, parents, judges, and
+pronouncers. It controls the high-stakes tiebreaker rounds where spellers spin
+the wheel on stage to determine their target spelling word and must spell it
+before a strict countdown timer expires.
+
+--------------------------------------------------------------------------------
+2. STAGE HARDWARE & AUDITORIUM OPERATING CONSTRAINTS
+--------------------------------------------------------------------------------
+- Display Medium: Large TV screens, auditorium projectors, or LED video walls.
+- Aspect Ratio: Strictly locked to 16:9 (`aspect-video`, `max-w-[calc(100vh*16/9)]`)
+  to prevent screen distortion, edge clipping, or letterboxing on stage TVs.
+- Navigation Ergonomics:
+  * Top and bottom Genially-style navigation bars auto-hide during presentation
+    to maximize stage presence and eliminate visual clutter.
+  * Side slide navigation buttons are strictly 48x48px circular buttons centered
+    vertically at `top-1/2 -translate-y-1/2`. They never intercept Y-axis clicks,
+    ensuring operators never trigger accidental slide transitions when clicking
+    the wheel or stage background.
+  * Keyboard shortcut: Press `Ctrl+Enter` or `Space` anywhere to spin the wheel.
+- Audio Discipline (Auditorium & Microphone Safe):
+  * Crisp mechanical peg ticking sound during spin synthesized via Web Audio API.
+  * Countdown timer warning ticks and a buzzer at zero seconds.
+  * Text-to-speech voice reading and celebratory trumpet fanfare upon landing are
+    deliberately muted/disabled by default so they do not cause loud acoustic
+    feedback or interfere with stage microphones and the human pronouncer.
+  * Visual confetti animation triggers gracefully without audio blast.
+
+--------------------------------------------------------------------------------
+3. CONTEST STRUCTURE & CATEGORY WHEEL HIERARCHY
+--------------------------------------------------------------------------------
+The competition is divided into two primary groups with zero bloat in naming:
+
+A. ELEMENTARY ("Elementary")
+   - Grades included: 1st Grade, 2nd Grade, 3rd Grade, 4th Grade, 5th Grade, 6th Grade.
+   - Wheel Structure: Each individual grade has its own distinct, unique wheels:
+     * 1st Place Tiebreaker Wheel: Default timer of 40 seconds.
+     * 2nd & 3rd Place Tiebreaker Wheel: Default timer of 20 seconds.
+   - Visual Theme: Royal Blue & Golden Yellow celebratory stage background with
+     school crest banner and stars.
+
+B. HIGH SCHOOL ("High School")
+   - Years included: 1st Year, 2nd Year, 3rd Year, 4th Year, 5th Year.
+   - Wheel Structure: Rather than individual wheels per year, High School utilizes
+     two unified, comprehensive stage tiebreaker wheels for all 1st to 5th years:
+     * High School - 1st Place: 40 seconds countdown timer.
+     * High School - 2nd/3rd Place: 20 seconds countdown timer.
+   - Dynamic Background: Clicking High School instantly swaps the stage background
+     to the official High School 2026 backdrops:
+     - Slide 0 (Welcome): `480b2e32-4249-44c9-83bd-7e91fc5cbdba_0097f3f2.jpg`
+       (Features "Spelling Bee High School 2026" crest, bees, and ribbons).
+     - Slide 1 (Roulette Wheel): `8d019f05-30e0-4935-904c-e42987682443_a0014e1b.jpg`
+       (Features clean open dark blue auditorium center for the wheel).
+
+C. NAMING CONVENTIONS & ZERO BLOAT DISCIPLINE
+   - No excessive words: We use "Elementary" (never "Elementary Division") and
+     "High School".
+   - Wheels are named cleanly: "1st Grade - 1st Place", "1st Grade Tie",
+     "High School - 1st Place", "High School Tie".
+   - Redundant timer suffixes like "(40s)" and "(20s)" are strictly excluded from
+     dropdown menus, tabs, and buttons.
+
+--------------------------------------------------------------------------------
+4. KEY INTERACTIVE COMPONENTS & FEATURES
+--------------------------------------------------------------------------------
+1. PRESENTATION DECK (3 Slides):
+   - Slide 0: Welcome banner with animated school shield, bee mascots, and
+     category indicators.
+   - Slide 1: Stage Roulette with active category header, high-DPI canvas wheel,
+     countdown timer with digital display, and quick-action controls.
+   - Slide 2: Champion celebration hall of fame slide.
+
+2. HIGH-DPI CANVAS ROULETTE ENGINE:
+   - Built with HTML5 Canvas 2D supporting 4K retina displays (`window.devicePixelRatio`).
+   - Realistic quintic easing (`easeOutQuint`) for dramatic deceleration.
+   - Right-side needle indicator with physics spring deflection as slice pegs pass.
+   - Center metallic hubcap with clickable "SPIN" button.
+   - Subtle idle rotation when stationary to maintain high stage energy.
+   - Custom slice weighting, disabling, per-slice colors, and images.
+
+3. WINNER MODAL & INTEGRATED COUNTDOWN TIMER:
+   - When the wheel lands on a word, a large, bold, single-line stage banner displays
+     the winning word with sparkling glow.
+   - Options to:
+     * Start the countdown timer immediately (40s for 1st place, 20s for 2nd/3rd).
+     * Remove the winning word from the wheel so it cannot be selected again.
+     * Close the modal and spin again.
+
+4. WHEEL CREATOR STUDIO:
+   - Full-featured management studio based on `wheel_of_names_studio_ad4d0835.html`.
+   - Hidden Dropdown Wheel Selector: Replaces horizontal scrolling clutter with a
+     clean popup menu showing all wheels organized by category.
+   - Delete/Remove Wheel Action: Operators can easily delete any unnecessary wheel
+     via the red "Remove Wheel" button or the trash icon in the menu, guarded by
+     a confirmation dialog and a minimum safety limit (preventing zero wheels).
+   - Word List Editor: Multi-line textarea or individual card entries with instant
+     color assignment, slice weights, toggle switches, and bulk shuffle/sort.
+   - 3-Tab Customizer:
+     * During Spin: Duration (1-30s), tick sound pitch, max visible slices.
+     * After Spin: Confetti toggle, popup modal, fanfare volume.
+     * Appearance: Color palettes (Classic, Pastel, Neon Cyber, Sunset, Ocean,
+       Monochrome), slice border lines, center hub image upload.
+   - Import/Export: Backup and restore wheels via JSON.
+   - Document Analyzer (AI-Powered): Upload Word (.docx) or Excel (.xlsx) files;
+     Gemini AI automatically parses words, strips Spanish translations and verb
+     conjugations, and constructs ready-to-spin wheels.
+
+5. LOCAL NETWORK PERSISTENCE & MULTI-DEVICE SYNC:
+   - Built-in Node/Express backend (`server.ts`) with `/api/wheels` endpoint.
+   - Any edits made in the studio on one PC or tablet instantly persist to
+     `data/wheels.json` and sync across other machines on the same local network.
+   - LocalStorage backup ensures offline operation even if Wi-Fi drops in the auditorium.
+
+--------------------------------------------------------------------------------
+5. TECHNICAL ARCHITECTURE & STACK
+--------------------------------------------------------------------------------
+- Framework: React 19 (TypeScript) + Vite
+- Styling: Tailwind CSS (modern `@import "tailwindcss";` pipeline)
+- Backend: Express running in `server.ts` on port 3000
+- AI Engine: `@google/genai` TypeScript SDK (server-side Gemini API proxy)
+- State Management: React useState / useEffect with localStorage + `/api/wheels` sync
+- Audio Synthesis: Web Audio API (zero external audio file dependencies)
+- Icons: `lucide-react`
+
+--------------------------------------------------------------------------------
+6. SUMMARY OF USER MODIFICATIONS & HISTORY
+--------------------------------------------------------------------------------
+- Consolidated High School to 2 unified wheels (1st Place & 2nd/3rd Place).
+- Set default timers to 40s (1st Place) and 20s (2nd/3rd Place).
+- Stripped bloated naming (no "Elementary Division", no redundant timer text).
+- Enabled automatic background swapping between Elementary and High School assets.
+- Disabled TTS voice and winning fanfare audio while keeping visual confetti.
+- Upgraded stage roulette to match the advanced Wheel Creator Studio engine.
+- Added clean dropdown wheel selector and explicit "Remove/Delete Wheel" button.
+================================================================================

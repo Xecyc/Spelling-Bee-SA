@@ -36,6 +36,7 @@ import {
   RefreshCw,
   AlertTriangle,
   Layers,
+  Smartphone,
 } from 'lucide-react';
 import {
   WheelConfig,
@@ -1660,6 +1661,20 @@ export const WheelCreatorStudio: React.FC<WheelCreatorStudioProps> = ({
                       </span>
                       <span className="text-[10px] text-amber-500">fanfare</span>
                     </button>
+
+                    {/* Open Mobile Stage Remote in New Tab */}
+                    <a
+                      href="/remote"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="w-full px-2.5 py-1.5 rounded-lg hover:bg-blue-50 dark:hover:bg-blue-950/40 text-blue-600 dark:text-blue-400 flex items-center justify-between transition cursor-pointer text-left font-semibold"
+                    >
+                      <span className="flex items-center gap-2">
+                        <Smartphone className="w-3.5 h-3.5 text-blue-500" />
+                        <span>Open Mobile Stage Remote</span>
+                      </span>
+                      <span className="text-[10px] text-blue-500">/remote</span>
+                    </a>
                   </div>
 
                   {/* Section 4: Backup & Storage */}

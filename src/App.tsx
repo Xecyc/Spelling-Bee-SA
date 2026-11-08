@@ -1,10 +1,12 @@
 import { useState, useEffect } from 'react';
+import { io } from 'socket.io-client';
 import {
   WheelConfig,
   WheelSlice,
   WheelRole,
   PresentationSlideId,
   SoundSettings,
+  WinnersData,
 } from './types/presentation';
 import { INITIAL_WHEELS, PASTEL_PALETTE } from './utils/defaultData';
 import { audioManager } from './utils/audio';
@@ -14,11 +16,13 @@ import { TopGeniallyBar } from './components/TopGeniallyBar';
 import { BottomGeniallyBar } from './components/BottomGeniallyBar';
 import { WinnerModal } from './components/WinnerModal';
 import { DocumentAnalyzerModal } from './components/DocumentAnalyzerModal';
+import { RemoteControl } from './components/RemoteControl';
+import { RemoteQRCodeModal } from './components/RemoteQRCodeModal';
 
 const SLIDE_TITLES = [
   'Welcome & Title',
   'Interactive Wheel & Timer',
-  'Champion Celebration',
+  'Winner Podium',
 ];
 
 export default function App() {
@@ -75,6 +79,33 @@ export default function App() {
   // Fullscreen state
   const [isFullscreen, setIsFullscreen] = useState<boolean>(false);
 
+  // Route B: Mobile Remote backstage check (/remote or ?view=remote)
+  const [isRemoteRoute, setIsRemoteRoute] = useState<boolean>(() => {
+    if (typeof window !== 'undefined') {
+      return (
+        window.location.pathname.startsWith('/remote') ||
+        window.location.search.includes('view=remote')
+      );
+    }
+    return false;
+  });
+
+  // Keep route synced on back/forward browser navigation or pushState
+  useEffect(() => {
+    const handleUrlChange = () => {
+      const isRemote =
+        window.location.pathname.startsWith('/remote') ||
+        window.location.search.includes('view=remote');
+      setIsRemoteRoute(isRemote);
+    };
+    window.addEventListener('popstate', handleUrlChange);
+    return () => window.removeEventListener('popstate', handleUrlChange);
+  }, []);
+
+  // Remote Controlled Winner Podium State
+  const [winnersData, setWinnersData] = useState<WinnersData | null>(null);
+  const [showRemoteModal, setShowRemoteModal] = useState<boolean>(false);
+
   // Wheel spin state
   const [isWheelSpinning, setIsWheelSpinning] = useState(false);
   const [winningSlice, setWinningSlice] = useState<WheelSlice | null>(null);
@@ -82,8 +113,38 @@ export default function App() {
   const [autoStartTimerTrigger, setAutoStartTimerTrigger] = useState<number>(0);
   const [showDocumentAnalyzer, setShowDocumentAnalyzer] = useState(false);
 
+  // Socket.io integration for Stage Display: Listen to remote control events
+  useEffect(() => {
+    if (isRemoteRoute) return;
+
+    const socket = io({
+      transports: ['websocket', 'polling'],
+      reconnectionAttempts: 10,
+    });
+
+    // When show_winners is received from mobile remote:
+    // Set activeSlide state to Winner Podium slide and pass winner data
+    socket.on('show_winners', (data: WinnersData) => {
+      setWinnersData(data);
+      setCurrentMode('presentation');
+      setCurrentSlide(2);
+    });
+
+    // When hide_winners is received:
+    // Set activeSlide back to 1 (the wheel) and clear winner data
+    socket.on('hide_winners', () => {
+      setWinnersData(null);
+      setCurrentSlide(1);
+    });
+
+    return () => {
+      socket.disconnect();
+    };
+  }, [isRemoteRoute]);
+
   // Load shared wheels from server on mount (syncs across multiple PCs)
   useEffect(() => {
+    if (isRemoteRoute) return;
     fetch('/api/wheels')
       .then((res) => res.json())
       .then((data) => {
@@ -321,6 +382,11 @@ export default function App() {
     }
   };
 
+  // Route B: Backstage Mobile Remote view (/remote)
+  if (isRemoteRoute) {
+    return <RemoteControl />;
+  }
+
   return (
     <div className="relative w-screen h-screen overflow-hidden bg-slate-950 font-sans">
       {/* Top Hover Navigation Bar (Reveals on hover, allows instant view swap) */}
@@ -335,6 +401,7 @@ export default function App() {
         onUpdateSoundSettings={setSoundSettings}
         isFullscreen={isFullscreen}
         onToggleFullscreen={toggleFullscreen}
+        onOpenRemoteModal={() => setShowRemoteModal(true)}
       />
 
       {/* Main View: Presentation Deck vs. Wheel Creator Studio */}
@@ -348,6 +415,7 @@ export default function App() {
             onSpinStart={handleSpinStart}
             onSpinEnd={handleSpinEnd}
             autoStartTimerTrigger={autoStartTimerTrigger}
+            winnersData={winnersData}
           />
 
           {/* Bottom Genially Navigation Bar */}
@@ -425,6 +493,17 @@ export default function App() {
         existingWheels={wheels}
         onReplaceWordsInExistingWheels={handleReplaceWordsInExistingWheels}
         onReplaceAllWheels={handleReplaceAllWheels}
+      />
+
+      {/* Stage Remote QR Code Modal */}
+      <RemoteQRCodeModal
+        isOpen={showRemoteModal}
+        onClose={() => setShowRemoteModal(false)}
+        onSwitchToRemote={() => {
+          window.history.pushState({}, '', '/remote');
+          setIsRemoteRoute(true);
+          setShowRemoteModal(false);
+        }}
       />
     </div>
   );

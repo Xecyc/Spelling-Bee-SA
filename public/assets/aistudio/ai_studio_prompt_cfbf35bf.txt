@@ -1,0 +1,62 @@
+**SYSTEM CONTEXT & STRICT DIRECTIVES:**
+You are an expert full-stack developer (React 19, Vite, TypeScript, Tailwind CSS, Node.js, Express, Socket.io). 
+You are adding a "Remote Controlled Winner Podium" feature to a live-stage Spelling Bee application.
+ACT EXTREMELY METICULOUSLY. Read every single bullet point. Do not skip any requirements. Do not invent your own design, animations, or styling. Do not use cartoonish assets. Everything must be highly professional, sober, and modern.
+
+**1. ARCHITECTURE OVERVIEW:**
+The application has a frontend (React/Vite) and a backend (Express in `server.ts`). 
+We are adding real-time remote control via WebSockets (`socket.io`).
+We need two distinct frontend routes (can be handled via simple state if router is absent, but must be completely separate views):
+- Route A: The Main Stage Display (Auditorium Projector)
+- Route B: The Remote Control (`/remote` - Mobile phone backstage)
+
+**2. BACKEND SPECIFICATION (`server.ts`)**
+- Install/Use `socket.io`.
+- Attach Socket.io to the existing Express HTTP server.
+- Configure CORS to allow all origins `*` (this runs on a secure local network).
+- Listen for connection events.
+- Listen for event: `push_winners`. Payload must be strictly typed: `{ first: string, second: string, third: string }`. When received, broadcast `show_winners` with the same payload to all connected clients.
+- Listen for event: `clear_board`. Payload is empty. When received, broadcast `hide_winners` to all clients.
+
+**3. THE QR CODE MODAL & MAIN MENU BUTTON**
+- In the existing Main Dropdown Menu (on the Stage UI), add a button labeled: "📱 Remote Control".
+- Clicking this button MUST NOT open the remote panel directly on the main screen. Instead, it must open a centered popup Modal.
+- The Modal must display a QR Code (use a library like `qrcode.react`).
+- The QR Code's value must be the dynamic local IP address of the host machine running the app, pointing to the remote route (e.g., `http://<LOCAL_IP>:<PORT>/remote`). 
+- Include a large "Close" button on this modal to dismiss it and return to the clean stage view.
+
+**4. THE REMOTE CONTROL PANEL COMPONENT (`/remote`)**
+- This is a separate, mobile-optimized React component that the operator views on their phone.
+- It must connect to the Socket.io server as a client (`socket.io-client`).
+- Styling: Dark mode, completely isolated from the stage styling (`bg-[#191919] text-white min-h-screen p-6 max-w-md mx-auto`).
+- State: `winners` object tracking 1st, 2nd, and 3rd place string inputs.
+- UI Elements:
+  - Header: "Stage Remote" (text-xl font-semibold).
+  - Three distinct input fields for 1st, 2nd, and 3rd place names. Use classes: `p-3 rounded bg-[#2B2D31] border border-gray-600 focus:outline-none focus:border-blue-500 w-full mb-4`.
+  - Button 1 (Secondary): "Clear Board" (Red styling: `bg-red-600/20 text-red-500 p-3 rounded`). Emits `clear_board` socket event and clears local inputs.
+  - Button 2 (Primary): "Push to Stage" (Blue styling: `bg-blue-600 text-white p-3 rounded shadow-lg`). Emits `push_winners` socket event with the current input state.
+
+**5. THE STAGE DISPLAY & PODIUM SLIDE (Slide 3)**
+- The main stage component must listen to `show_winners` and `hide_winners` socket events.
+- When `show_winners` is received, set the `activeSlide` state to 3 and pass the winner data to the new `PodiumSlide` component.
+- When `hide_winners` is received, set `activeSlide` back to 1 (the wheel) and clear winner data.
+- **CRITICAL - `PodiumSlide.tsx` Component Design:**
+  - You MUST use `framer-motion` for animations. 
+  - The container must be exactly 16:9 (`aspect-video`), overflow hidden, with the background image `url(/assets/image_d24fda.jpg)`.
+  - The layout consists of three glassmorphic pedestals (columns). NO 3D graphics, NO cartoon cups.
+  - Base pedestal class (USE EXACTLY THIS): `relative w-48 flex flex-col items-center justify-start pt-6 border-t-4 bg-white/5 backdrop-blur-sm rounded-t-lg shadow-[0_4px_30px_rgba(0,0,0,0.1)]`
+  - **3rd Place (Right side):**
+    - Animation: `initial={{ opacity: 0, y: 100 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0, duration: 0.8, ease: "easeOut" }}`
+    - Text: Fade in after 0.5s delay. `text-3xl font-bold text-gray-200`.
+    - Pedestal: Height `h-40`, border `border-amber-600`. Inner text "3RD" (`text-amber-600`).
+  - **2nd Place (Left side):**
+    - Animation: `initial={{ opacity: 0, y: 100 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 1, duration: 0.8, ease: "easeOut" }}`
+    - Text: Fade in after 1.5s delay. `text-3xl font-bold text-white`.
+    - Pedestal: Height `h-48`, border `border-slate-300`. Inner text "2ND" (`text-slate-300`).
+  - **1st Place (Center):**
+    - Animation: `initial={{ opacity: 0, y: 150 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 2.5, type: "spring", stiffness: 70, damping: 15 }}` (Must use spring physics for elegant landing).
+    - Text: Scale up (`initial={{ opacity: 0, scale: 0.8 }}`) after 3.2s delay. Use classes: `text-5xl font-black text-yellow-400 mb-8 text-center w-full truncate px-2 drop-shadow-[0_0_20px_rgba(250,204,21,0.6)]`.
+    - Pedestal: Height `h-64`, border `border-yellow-400`, background `bg-white/10`. Inner text "1ST" (`text-yellow-400 drop-shadow-[0_0_10px_rgba(250,204,21,0.4)]`).
+
+**FINAL REMINDER:**
+Do not hallucinate any text-to-speech or audio for this specific slide. Output the precise Node/Express backend code, the React Socket configuration, the QR Code modal component, the Remote Control component, and the Framer Motion Podium component exactly as specified above.

@@ -50,7 +50,13 @@ export interface TimerSettings {
   autoStartOnWin: boolean;
 }
 
-export type PresentationSlideId = 0 | 1 | 2;
+export type PresentationSlideId = 0 | 1 | 2 | 3;
+
+export interface WinnersData {
+  first: string;
+  second: string;
+  third: string;
+}
 
 export interface PresentationState {
   currentSlide: PresentationSlideId;
@@ -58,4 +64,5 @@ export interface PresentationState {
   isWheelSpinning: boolean;
   winningWord: string | null;
   showWinnerModal: boolean;
+  winnersData?: WinnersData | null;
 }

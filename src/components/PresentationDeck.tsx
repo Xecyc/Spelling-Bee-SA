@@ -4,8 +4,9 @@ import {
   ChevronRight,
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
-import { PresentationSlideId, WheelConfig, WheelSlice } from '../types/presentation';
+import { PresentationSlideId, WheelConfig, WheelSlice, WinnersData } from '../types/presentation';
 import { WheelCanvas } from './WheelCanvas';
+import { PodiumSlide } from './PodiumSlide';
 
 interface PresentationDeckProps {
   currentSlide: PresentationSlideId;
@@ -15,6 +16,7 @@ interface PresentationDeckProps {
   onSpinStart: () => void;
   onSpinEnd: (slice: WheelSlice) => void;
   autoStartTimerTrigger: number;
+  winnersData?: WinnersData | null;
 }
 
 export const PresentationDeck: React.FC<PresentationDeckProps> = ({
@@ -25,6 +27,7 @@ export const PresentationDeck: React.FC<PresentationDeckProps> = ({
   onSpinStart,
   onSpinEnd,
   autoStartTimerTrigger,
+  winnersData,
 }) => {
   // Touch swipe support for mobile devices
   const [touchStartX, setTouchStartX] = useState<number | null>(null);
@@ -222,25 +225,12 @@ export const PresentationDeck: React.FC<PresentationDeckProps> = ({
           </div>
         )}
 
-        {/* SLIDE 2: Champion Celebration (Image 5) - Strictly without buttons */}
-        {currentSlide === 2 && (
-          <div
-            className="relative w-full h-full cursor-pointer animate-in fade-in duration-300"
-            onClick={triggerCelebrationConfetti}
-            title="Click to celebrate!"
-          >
-            <img
-              src={
-                activeWheel.group === 'high_school'
-                  ? `${import.meta.env.BASE_URL}assets/aistudio/480b2e32-4249-44c9-83bd-7e91fc5cbdba_0097f3f2.jpg`
-                  : `${import.meta.env.BASE_URL}assets/aistudio/image_d2ab69fa.png`
-              }
-              alt={
-                activeWheel.group === 'high_school'
-                  ? 'Salto Ángel Spelling Bee High School 2026'
-                  : 'Spelling Bee Elementary 2026 Champion Celebration'
-              }
-              className="absolute inset-0 w-full h-full object-cover pointer-events-none"
+        {/* SLIDE 2 / 3: Remote Controlled Winner Podium (Empty Stage with Glassmorphic Pedestals) */}
+        {(currentSlide === 2 || currentSlide === 3) && (
+          <div className="relative w-full h-full animate-in fade-in duration-300">
+            <PodiumSlide
+              winners={winnersData || { first: '', second: '', third: '' }}
+              backgroundUrl={`${import.meta.env.BASE_URL}assets/image_d24fda.jpg`}
             />
           </div>
         )}

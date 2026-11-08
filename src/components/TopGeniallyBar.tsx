@@ -7,6 +7,7 @@ import {
   Maximize2,
   Minimize2,
   Disc,
+  Trophy,
 } from 'lucide-react';
 import { SoundSettings, WheelConfig } from '../types/presentation';
 import { audioManager } from '../utils/audio';
@@ -22,6 +23,7 @@ interface TopGeniallyBarProps {
   onUpdateSoundSettings: (settings: SoundSettings) => void;
   isFullscreen: boolean;
   onToggleFullscreen: () => void;
+  onOpenRemoteModal?: () => void;
 }
 
 export const TopGeniallyBar: React.FC<TopGeniallyBarProps> = ({
@@ -34,6 +36,7 @@ export const TopGeniallyBar: React.FC<TopGeniallyBarProps> = ({
   onUpdateSoundSettings,
   isFullscreen,
   onToggleFullscreen,
+  onOpenRemoteModal,
 }) => {
   const [isOpen, setIsOpen] = useState(false);
 
@@ -428,6 +431,22 @@ export const TopGeniallyBar: React.FC<TopGeniallyBarProps> = ({
                 )}
                 <span>{soundSettings.enabled ? 'Sound On' : 'Muted'}</span>
               </button>
+
+              {/* Podium Remote Trigger Button with Cup/Trophy icon between Sound and Fullscreen */}
+              {onOpenRemoteModal && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    onOpenRemoteModal();
+                    setIsOpen(false);
+                  }}
+                  className="flex items-center justify-center p-1.5 rounded-lg text-amber-400 hover:text-amber-300 hover:bg-[#0a2354] border border-amber-400/40 bg-amber-400/10 transition cursor-pointer"
+                  title="Podium Remote Control"
+                  aria-label="Podium Remote Control"
+                >
+                  <Trophy className="w-4 h-4 text-amber-400 fill-amber-400/20" />
+                </button>
+              )}
 
               <button
                 onClick={onToggleFullscreen}
