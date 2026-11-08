@@ -35,11 +35,16 @@ export const WheelCanvas: React.FC<WheelCanvasProps> = ({
   const pointerVelocityRef = useRef<number>(0);
   const lastSliceIdxRef = useRef<number>(-1);
 
-  const activeSlices = slices.length > 0
-    ? slices.filter((s) => s.enabled !== false && (s.text.trim() !== '' || s.image))
-    : [{ id: 'ph-1', text: 'WORD 1', color: '#FACC15' }];
+  const activeSlices = React.useMemo(() => {
+    return slices.length > 0
+      ? slices.filter((s) => s.enabled !== false && (s.text.trim() !== '' || s.image))
+      : [{ id: 'ph-1', text: 'WORD 1', color: '#FACC15' }];
+  }, [slices]);
 
-  const totalWeight = activeSlices.reduce((acc, s) => acc + (s.weight || 1), 0);
+  const totalWeight = React.useMemo(
+    () => activeSlices.reduce((acc, s) => acc + (s.weight || 1), 0),
+    [activeSlices]
+  );
 
   // Compute slice angles with weights and balanced colors
   const computedSlices = React.useMemo(() => {
@@ -280,13 +285,20 @@ export const WheelCanvas: React.FC<WheelCanvasProps> = ({
     ctx.restore();
   }, [computedSlices, pointerPosition, showCenterText, isSpinning]);
 
+  const drawWheelRef = useRef(drawWheel);
+  drawWheelRef.current = drawWheel;
+  const computedSlicesRef = useRef(computedSlices);
+  computedSlicesRef.current = computedSlices;
+  const onSpinEndRef = useRef(onSpinEnd);
+  onSpinEndRef.current = onSpinEnd;
+
   // Initial and reactive redraw with resize support
   useEffect(() => {
-    drawWheel(wheelAngleRef.current);
-    const handleResize = () => drawWheel(wheelAngleRef.current);
+    drawWheelRef.current(wheelAngleRef.current);
+    const handleResize = () => drawWheelRef.current(wheelAngleRef.current);
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
-  }, [drawWheel]);
+  }, []);
 
   // Physics animation loop
   useEffect(() => {
@@ -296,7 +308,7 @@ export const WheelCanvas: React.FC<WheelCanvasProps> = ({
       // Idle slow spin
       const idleLoop = () => {
         wheelAngleRef.current = (wheelAngleRef.current + 0.0022) % (Math.PI * 2);
-        drawWheel(wheelAngleRef.current);
+        drawWheelRef.current(wheelAngleRef.current);
         animFrameIdRef.current = requestAnimationFrame(idleLoop);
       };
       animFrameIdRef.current = requestAnimationFrame(idleLoop);
@@ -339,14 +351,15 @@ export const WheelCanvas: React.FC<WheelCanvasProps> = ({
 
       const angle = startAngle + totalRotation * eased;
       wheelAngleRef.current = angle;
-      drawWheel(angle);
+      drawWheelRef.current(angle);
 
       // Calculate slice under pointer
       const twoPi = Math.PI * 2;
       const pointerRel = (twoPi - ((angle - pointerAngle) % twoPi)) % twoPi;
       let currentSliceIdx = 0;
-      for (let i = 0; i < computedSlices.length; i++) {
-        if (pointerRel >= computedSlices[i].startAngle && pointerRel < computedSlices[i].endAngle) {
+      const currentSlices = computedSlicesRef.current;
+      for (let i = 0; i < currentSlices.length; i++) {
+        if (pointerRel >= currentSlices[i].startAngle && pointerRel < currentSlices[i].endAngle) {
           currentSliceIdx = i;
           break;
         }
@@ -368,17 +381,17 @@ export const WheelCanvas: React.FC<WheelCanvasProps> = ({
         // Spin finished
         pointerDeflectionRef.current = 0;
         wheelAngleRef.current = targetAngle % (Math.PI * 2);
-        drawWheel(wheelAngleRef.current);
+        drawWheelRef.current(wheelAngleRef.current);
 
         const finalRel = (twoPi - ((targetAngle - pointerAngle) % twoPi)) % twoPi;
-        let winningSlice = computedSlices[0]?.slice;
-        for (let i = 0; i < computedSlices.length; i++) {
-          if (finalRel >= computedSlices[i].startAngle && finalRel < computedSlices[i].endAngle) {
-            winningSlice = computedSlices[i].slice;
+        let winningSlice = currentSlices[0]?.slice;
+        for (let i = 0; i < currentSlices.length; i++) {
+          if (finalRel >= currentSlices[i].startAngle && finalRel < currentSlices[i].endAngle) {
+            winningSlice = currentSlices[i].slice;
             break;
           }
         }
-        onSpinEnd(winningSlice);
+        onSpinEndRef.current(winningSlice);
       }
     };
 
@@ -389,9 +402,14 @@ export const WheelCanvas: React.FC<WheelCanvasProps> = ({
         cancelAnimationFrame(animFrameIdRef.current);
       }
     };
-  }, [isSpinning, computedSlices, drawWheel, onSpinEnd, pointerAngle]);
+  }, [isSpinning, pointerAngle]);
 
+  const lastClickTimeRef = useRef<number>(0);
   const handleWheelClick = () => {
+    const now = performance.now();
+    if (now - lastClickTimeRef.current < 450) return;
+    lastClickTimeRef.current = now;
+
     if (isSpinning) {
       if (onStopSpin) {
         onStopSpin();
@@ -406,10 +424,6 @@ export const WheelCanvas: React.FC<WheelCanvasProps> = ({
       className="relative flex items-center justify-center cursor-pointer select-none group w-full h-full aspect-square touch-manipulation"
       style={size ? { maxWidth: size, maxHeight: size } : undefined}
       onClick={handleWheelClick}
-      onTouchEnd={(e) => {
-        e.preventDefault();
-        handleWheelClick();
-      }}
       role="button"
       tabIndex={0}
       aria-label={isSpinning ? 'Wheel is spinning. Click to stop.' : 'Interactive Wheel of Names. Click to spin.'}

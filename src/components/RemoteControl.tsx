@@ -192,8 +192,14 @@ export const RemoteControl: React.FC<RemoteControlProps> = ({
     };
   }, []);
 
+  const lastSpinClickTimeRef = React.useRef<number>(0);
+
   // Action: Spin or Stop the stage wheel
   const handleSpinClick = () => {
+    const now = Date.now();
+    if (now - lastSpinClickTimeRef.current < 450) return;
+    lastSpinClickTimeRef.current = now;
+
     // Attempt socket reconnection if currently disconnected
     const socket = getSocket();
     if (!socket.connected) {
@@ -307,26 +313,9 @@ export const RemoteControl: React.FC<RemoteControlProps> = ({
   return (
     <div className="bg-[#121418] text-white min-h-screen p-3.5 sm:p-5 max-w-sm sm:max-w-md mx-auto flex flex-col justify-between font-sans select-none">
       <div className="space-y-3">
-        {/* Header: Stage Remote title and live connection indicator */}
+        {/* Header: Strictly 'Stage Remote' only (school name and online/offline pill removed) */}
         <div className="flex items-center justify-between pb-3 mb-1 border-b border-gray-800">
-          <div className="flex items-center gap-2">
-            <h1 className="text-lg sm:text-xl font-bold tracking-tight text-white">Stage Remote</h1>
-            <span
-              className={`inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-full ${
-                isConnected
-                  ? 'bg-emerald-500/15 text-emerald-400 border border-emerald-500/30'
-                  : 'bg-rose-500/15 text-rose-400 border border-rose-500/30 animate-pulse'
-              }`}
-              title={isConnected ? 'Connected to stage' : 'Disconnected from stage - click to reconnect'}
-              onClick={() => {
-                const s = getSocket();
-                if (!s.connected) s.connect();
-              }}
-            >
-              <span className={`w-1.5 h-1.5 rounded-full ${isConnected ? 'bg-emerald-400' : 'bg-rose-400'}`} />
-              {isConnected ? 'LIVE' : 'OFFLINE'}
-            </span>
-          </div>
+          <h1 className="text-lg sm:text-xl font-bold tracking-tight text-white">Stage Remote</h1>
           {stageState.currentWheelName && (
             <span className="text-[11px] font-bold text-amber-400 bg-amber-400/10 px-2 py-0.5 rounded-md truncate max-w-[160px]">
               {stageState.currentWheelName}
@@ -383,10 +372,6 @@ export const RemoteControl: React.FC<RemoteControlProps> = ({
                 <button
                   type="button"
                   onClick={handleSpinClick}
-                  onTouchEnd={(e) => {
-                    e.preventDefault();
-                    handleSpinClick();
-                  }}
                   className="w-full py-3.5 px-4 rounded-xl font-black text-sm tracking-wide uppercase transition-all flex items-center justify-center gap-2 cursor-pointer shadow-md active:scale-98 bg-amber-400 hover:bg-amber-300 text-[#061a3e] hover:shadow-amber-400/20 touch-manipulation"
                 >
                   {stageState.isSpinning ? (

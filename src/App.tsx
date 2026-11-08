@@ -258,6 +258,9 @@ export default function App() {
     setShowWinnerModal(false);
   };
 
+  const isSpinningRef = useRef(false);
+  isSpinningRef.current = isWheelSpinning;
+
   const spinWatchdogRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const clearSpinWatchdog = () => {
@@ -269,7 +272,8 @@ export default function App() {
 
   // Spin lifecycle
   const handleSpinStart = useCallback(() => {
-    if (isWheelSpinning) return;
+    if (isSpinningRef.current) return;
+    isSpinningRef.current = true;
     setIsWheelSpinning(true);
     setWinningSlice(null);
     setShowWinnerModal(false);
@@ -277,6 +281,7 @@ export default function App() {
     clearSpinWatchdog();
     // 7.5s fail-safe watchdog timer guarantees the wheel never gets trapped spinning
     spinWatchdogRef.current = setTimeout(() => {
+      isSpinningRef.current = false;
       setIsWheelSpinning(false);
       const validSlices = activeWheel.slices.filter((s) => s.enabled !== false && s.text.trim());
       const fallback = validSlices[Math.floor(Math.random() * validSlices.length)] || activeWheel.slices[0];
@@ -285,10 +290,11 @@ export default function App() {
         setShowWinnerModal(true);
       }
     }, 7500);
-  }, [isWheelSpinning, activeWheel]);
+  }, [activeWheel]);
 
   const handleSpinEnd = useCallback((slice: WheelSlice) => {
     clearSpinWatchdog();
+    isSpinningRef.current = false;
     setIsWheelSpinning(false);
     setWinningSlice(slice);
     // Modal opens with timer strictly stopped; only starts on explicit user action
@@ -297,6 +303,7 @@ export default function App() {
 
   const handleSpinStop = useCallback(() => {
     clearSpinWatchdog();
+    isSpinningRef.current = false;
     setIsWheelSpinning(false);
     const validSlices = activeWheel.slices.filter((s) => s.enabled !== false && s.text.trim());
     const picked = validSlices[Math.floor(Math.random() * validSlices.length)] || activeWheel.slices[0];
@@ -339,9 +346,7 @@ export default function App() {
           setCurrentSlide(1);
           setShowWinnerModal(false);
           setWinningSlice(null);
-          if (!isWheelSpinning) {
-            handleSpinStart();
-          }
+          handleSpinStart();
           break;
         case 'set_slide':
           if (typeof payload === 'number') {
@@ -370,7 +375,7 @@ export default function App() {
           break;
       }
     },
-    [isWheelSpinning, handleSpinStart, handleSpinStop, handleRemoveWinningWord, setCurrentMode, setCurrentSlide]
+    [handleSpinStart, handleSpinStop, handleRemoveWinningWord, setCurrentMode, setCurrentSlide]
   );
 
   // Centralized Stage & Remote sync hook
