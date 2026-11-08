@@ -7,7 +7,7 @@ A complete solution providing seamless cross-device wheel persistence across mul
 > [!IMPORTANT]
 > **How to open and edit wheels across different PCs without user accounts:**
 > - **The Problem with Browser Storage (`localStorage`)**: Standard `localStorage` is tied strictly to a single browser profile on a single physical computer. If you import or customize wheels on your laptop, the classroom presentation PC or judge's desktop cannot see them.
-> - **The Recommended Solution (Firebase Cloud Sync - 0 Login Needed)**: We store the shared wheels list in a central cloud document (`app_state/wheels`). When you open the URL on **any PC**, it automatically fetches the latest saved wheels in real-time. No username, password, or sign-in is required.
+> - **The Recommended Solution (Centralized Shared Server Persistence)**: We store the shared wheels list in the server's atomic storage (`data/wheels.json` via `/api/wheels`). When you open the URL on **any PC**, it automatically fetches the latest saved wheels in real-time. No username, password, or sign-in is required.
 > - **Offline / Zero-Config Safety Net (1-Click Portable JSON Backup)**: In addition to cloud sync, the app includes a 1-click **"Export All Wheels" / "Import Wheels"** button. This lets you download your entire competition setup as a `.json` file that can be carried on a USB drive or emailed as an instant failsafe.
 
 ---
@@ -15,13 +15,13 @@ A complete solution providing seamless cross-device wheel persistence across mul
 ## 1. Overview & Core Concept
 
 - **Zero-Login Cross-Device Persistence**:
-  - Automatically syncs all wheels to cloud storage whenever an update, creation, or deletion occurs.
+  - Automatically syncs all wheels to storage whenever an update, creation, or deletion occurs.
   - Any computer opening the app (teacher laptop, podium presentation PC, judge monitor) instantly loads the latest configuration.
   - If a device is offline, it seamlessly falls back to local storage and allows instant import from a backup file.
 - **Hybrid Document Analyzer & Wheel Generator**:
   - Upload Word (.docx), Excel (.xlsx/.csv), or plain text files containing words organized by grade and year.
   - **Fast Rule-Based Parser**: Instantly extracts well-structured headings, bullet lists, or spreadsheet tables offline.
-  - **Gemini 2.5 Flash Server Classifier**: Intelligently interprets freeform Word text, messy notes, or custom grade labels, producing standardized wheel schemas.
+  - **Gemini Server Classifier**: Intelligently interprets freeform Word text, messy notes, or custom grade labels, producing standardized wheel schemas.
   - **Append Mode**: Appends newly created grade wheels alongside existing competition wheels.
 - **Auto-Hide Presentation Navigation Zones**:
   - Left and right navigation arrows and the top dropdown menu trigger default to `opacity: 0` with a smooth `transition: opacity 0.3s ease;`.
@@ -43,10 +43,10 @@ A complete solution providing seamless cross-device wheel persistence across mul
 │                   TEACHER'S LAPTOP                     │
 │  1. Uploads Word/Excel word list                       │
 │  2. Wheels automatically created & appended            │
-│  3. Changes auto-saved to Cloud Sync                   │
+│  3. Changes auto-saved to Shared Server                │
 └──────────────────────────┬─────────────────────────────┘
                            │
-                 [Cloud Sync (Firestore)]
+                 [Shared API /api/wheels]
                            │
                            ▼
 ┌────────────────────────────────────────────────────────┐
@@ -68,11 +68,10 @@ A complete solution providing seamless cross-device wheel persistence across mul
 ## 3. Key Product Decisions & Trade-Offs
 
 - **Cross-PC Persistence**:
-  - *Chosen Approach*: Firebase Firestore cloud persistence for shared app state, paired with a client-side localStorage fallback and portable JSON file export/import.
+  - *Chosen Approach*: Server atomic JSON storage for shared app state, paired with a client-side localStorage fallback and portable JSON file export/import.
   - *Why*: Eliminates the need for user accounts, registration, or logins while guaranteeing that any PC loading the app URL gets the exact same wheels.
-  - *Alternative Considered*: LocalStorage only (fails because it cannot sync across different computers); User login accounts (rejected because it adds unnecessary friction for a single-organizer event).
 - **Hybrid Document Parsing**:
-  - *Chosen Approach*: Instant browser-based text/table parsing for standard formats, backed by Gemini 2.5 Flash on `/api/analyze-words` for unstructured documents.
+  - *Chosen Approach*: Instant browser-based text/table parsing for standard formats, backed by Gemini on `/api/analyze-words` for unstructured documents.
   - *Why*: Gives users zero-latency uploads for clean files while handling human-formatted Word documents with high accuracy.
 - **Auto-Hide Navigation Controls**:
   - *Chosen Approach*: Full-height edge hover zones (`w-20` on left/right screen edges) and a top-edge zone (`w-48 h-10`).
@@ -92,7 +91,7 @@ A complete solution providing seamless cross-device wheel persistence across mul
 │  WheelCreatorStudio (Add, edit, remove wheels)               │
 │                                                              │
 │  Sync Engine:                                                │
-│  ├── 1. Reads/writes Cloud Sync (Firestore)                  │
+│  ├── 1. Reads/writes Shared Server (/api/wheels)             │
 │  ├── 2. Syncs to localStorage cache for instant boot         │
 │  └── 3. 1-Click "Export All Wheels (.json)" backup file      │
 └───────────────┬──────────────────────────────────────────────┘
@@ -109,10 +108,5 @@ A complete solution providing seamless cross-device wheel persistence across mul
 └──────────────────────────────────────────────────────────────┘
 ```
 
-### Planned Change Sequence
-1. **Cloud Persistence & Backup**: Wire cloud storage sync for wheels so changes made on one PC appear automatically on another, alongside 1-click JSON backup/restore.
-2. **Server API for Word Classification**: Set up `/api/analyze-words` using `@google/genai` (`gemini-3.8-flash`) with structured schema.
-3. **Document Analyzer Modal**: Implement `DocumentAnalyzerModal.tsx` for dragging and dropping `.docx`, `.xlsx`, `.csv`, and `.txt` files with interactive wheel preview and append actions.
-4. **Auto-Hide Hover CSS**: Update `PresentationDeck.tsx` and `TopGeniallyBar.tsx` with edge hover zones and 0.3s opacity transitions.
-5. **Top Dropdown Redesign**: Restyle `TopGeniallyBar.tsx` with presentation navy backgrounds, golden-yellow buttons, and uncluttered headers.
-6. **Verification**: Run `compile_applet` and `lint_applet` to ensure clean build and typing.
+### Execution Status
+All items in this plan are fully implemented, verified, and active in the codebase.
