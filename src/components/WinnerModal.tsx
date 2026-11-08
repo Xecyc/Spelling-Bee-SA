@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import confetti from 'canvas-confetti';
-import { Trash2, CheckCircle2, Play } from 'lucide-react';
+import { Trash2, CheckCircle2, Play, Pause } from 'lucide-react';
 import { StopwatchTimer } from './StopwatchTimer';
 
 interface WinnerModalProps {
@@ -24,12 +24,14 @@ export const WinnerModal: React.FC<WinnerModalProps> = ({
 }) => {
   const [modalTimerTrigger, setModalTimerTrigger] = useState(0);
   const [isTimerRunning, setIsTimerRunning] = useState(false);
+  const [hasStarted, setHasStarted] = useState(false);
 
   useEffect(() => {
     if (isOpen && word) {
       // Reset modal timer state when opened with a word
       setModalTimerTrigger(0);
       setIsTimerRunning(false);
+      setHasStarted(false);
 
       // Trigger confetti explosion (visual only, no sound)
       confetti({
@@ -59,10 +61,19 @@ export const WinnerModal: React.FC<WinnerModalProps> = ({
 
   if (!isOpen || !word) return null;
 
-  const handleStartTimer = () => {
-    setModalTimerTrigger((prev) => prev + 1);
-    setIsTimerRunning(true);
-    onStartTimer();
+  const handleToggleTimer = () => {
+    if (isTimerRunning) {
+      // Pause timer logic - no restart
+      setIsTimerRunning(false);
+    } else {
+      // Start or Resume timer
+      if (!hasStarted) {
+        setModalTimerTrigger((prev) => prev + 1);
+        setHasStarted(true);
+      }
+      setIsTimerRunning(true);
+      onStartTimer();
+    }
   };
 
   // Dynamic font sizing based on word length to always guarantee one single line
@@ -96,33 +107,44 @@ export const WinnerModal: React.FC<WinnerModalProps> = ({
             key={`timer-${word}-${timerDuration}`}
             initialSeconds={timerDuration}
             autoStartTrigger={modalTimerTrigger}
+            isRunning={isTimerRunning}
+            onRunningChange={setIsTimerRunning}
           />
         </div>
 
         {/* Action Buttons: Flat solid golden-yellow primary button, ghost secondary buttons */}
-        <div className="flex flex-col sm:flex-row items-center justify-center gap-3.5 mt-4 w-full">
+        <div className="flex flex-col sm:flex-row items-center justify-center gap-2.5 sm:gap-3 mt-4 w-full">
           <button
-            onClick={handleStartTimer}
-            className="w-full sm:w-auto flex-1 inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl bg-amber-400 hover:bg-amber-300 text-[#061a3e] font-black text-sm tracking-wide shadow-none transition-all active:scale-95 cursor-pointer"
+            onClick={handleToggleTimer}
+            className="w-full sm:w-auto inline-flex items-center justify-center gap-1.5 px-4 py-2 sm:py-2.5 rounded-xl bg-amber-400 hover:bg-amber-300 text-[#061a3e] font-black text-xs sm:text-sm tracking-wide shadow-none transition-all active:scale-95 cursor-pointer"
           >
-            <Play className="w-4 h-4 fill-current" />
-            <span>{isTimerRunning ? `Restart ${timerDuration}s Timer` : `Start ${timerDuration}s Timer`}</span>
+            {isTimerRunning ? (
+              <>
+                <Pause className="w-3.5 h-3.5 fill-current" />
+                <span>Pause Timer</span>
+              </>
+            ) : (
+              <>
+                <Play className="w-3.5 h-3.5 fill-current" />
+                <span>Start timer</span>
+              </>
+            )}
           </button>
 
           <button
             onClick={onRemoveWord}
-            className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-3.5 rounded-xl bg-transparent hover:bg-white/10 text-white border border-white/50 hover:border-white font-bold text-sm tracking-wide shadow-none transition-all active:scale-95 cursor-pointer"
+            className="w-full sm:w-auto inline-flex items-center justify-center gap-1.5 px-4 py-2 sm:py-2.5 rounded-xl bg-transparent hover:bg-white/10 text-white border border-white/50 hover:border-white font-bold text-xs sm:text-sm tracking-wide shadow-none transition-all active:scale-95 cursor-pointer"
             title="Remove this word from the wheel so it won't appear again"
           >
-            <Trash2 className="w-4 h-4 text-white" />
+            <Trash2 className="w-3.5 h-3.5 text-white" />
             <span>Remove Word</span>
           </button>
 
           <button
             onClick={onClose}
-            className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-3.5 rounded-xl bg-transparent hover:bg-white/10 text-white border border-white/50 hover:border-white font-bold text-sm tracking-wide shadow-none transition-all active:scale-95 cursor-pointer"
+            className="w-full sm:w-auto inline-flex items-center justify-center gap-1.5 px-4 py-2 sm:py-2.5 rounded-xl bg-transparent hover:bg-white/10 text-white border border-white/50 hover:border-white font-bold text-xs sm:text-sm tracking-wide shadow-none transition-all active:scale-95 cursor-pointer"
           >
-            <CheckCircle2 className="w-4 h-4 text-white" />
+            <CheckCircle2 className="w-3.5 h-3.5 text-white" />
             <span>Close</span>
           </button>
         </div>

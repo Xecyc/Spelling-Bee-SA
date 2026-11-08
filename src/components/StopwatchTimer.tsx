@@ -5,35 +5,57 @@ import { audioManager } from '../utils/audio';
 interface StopwatchTimerProps {
   initialSeconds?: number;
   autoStartTrigger?: number; // increments or changes when auto-start requested
+  isRunning?: boolean;
+  onRunningChange?: (running: boolean) => void;
   onTimeEnd?: () => void;
 }
 
 export const StopwatchTimer: React.FC<StopwatchTimerProps> = ({
   initialSeconds = 40,
   autoStartTrigger,
+  isRunning: controlledIsRunning,
+  onRunningChange,
   onTimeEnd,
 }) => {
   const [totalSeconds, setTotalSeconds] = useState(initialSeconds);
   const [secondsRemaining, setSecondsRemaining] = useState(initialSeconds);
-  const [isRunning, setIsRunning] = useState(false);
+  const [internalIsRunning, setInternalIsRunning] = useState(false);
   const intervalRef = useRef<number | null>(null);
   const lastTriggerRef = useRef(autoStartTrigger || 0);
+
+  const isRunning = typeof controlledIsRunning === 'boolean' ? controlledIsRunning : internalIsRunning;
+
+  const setRunningState = (val: boolean) => {
+    setInternalIsRunning(val);
+    if (onRunningChange) {
+      onRunningChange(val);
+    }
+  };
+
+  // Sync with controlled prop if passed
+  useEffect(() => {
+    if (typeof controlledIsRunning === 'boolean') {
+      setInternalIsRunning(controlledIsRunning);
+    }
+  }, [controlledIsRunning]);
 
   // Sync when initialSeconds changes - always ensure stopped state
   useEffect(() => {
     setTotalSeconds(initialSeconds);
     setSecondsRemaining(initialSeconds);
-    setIsRunning(false);
+    setRunningState(false);
   }, [initialSeconds]);
 
   // Handle auto-start trigger only when explicitly incremented by user action
   useEffect(() => {
     if (autoStartTrigger && autoStartTrigger > 0 && autoStartTrigger !== lastTriggerRef.current) {
       lastTriggerRef.current = autoStartTrigger;
-      setSecondsRemaining(totalSeconds);
-      setIsRunning(true);
+      if (secondsRemaining <= 0) {
+        setSecondsRemaining(totalSeconds);
+      }
+      setRunningState(true);
     }
-  }, [autoStartTrigger, totalSeconds]);
+  }, [autoStartTrigger, totalSeconds, secondsRemaining]);
 
   // Timer interval
   useEffect(() => {
@@ -43,7 +65,7 @@ export const StopwatchTimer: React.FC<StopwatchTimerProps> = ({
           if (prev <= 1) {
             audioManager.playTimerFinished();
             if (onTimeEnd) onTimeEnd();
-            setIsRunning(false);
+            setRunningState(false);
             return 0;
           }
           if (prev <= 6) {
@@ -69,14 +91,14 @@ export const StopwatchTimer: React.FC<StopwatchTimerProps> = ({
   const toggleRunning = () => {
     if (secondsRemaining === 0) {
       setSecondsRemaining(totalSeconds);
-      setIsRunning(true);
+      setRunningState(true);
     } else {
-      setIsRunning(!isRunning);
+      setRunningState(!isRunning);
     }
   };
 
   const handleReset = () => {
-    setIsRunning(false);
+    setRunningState(false);
     setSecondsRemaining(totalSeconds);
   };
 
