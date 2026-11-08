@@ -63,11 +63,14 @@ Reposition the Remote Control trigger to the bottom toolbar of the stage menu be
    - Remove the middle "📱 Remote Control" button from the main dropdown body.
    - In the bottom settings toolbar (line 415+), insert the trophy cup button between the sound button and fullscreen button with tooltip "Podium Remote".
 2. **`src/components/RemoteQRCodeModal.tsx`**:
-   - Simplify URL generation: directly compute `${window.location.origin}/remote`.
-   - Add a direct, styled link button "Open Remote" (`<a href="/remote" target="_blank">`) so users can test or access it in one tap.
-3. **`server.ts`**:
-   - Ensure explicit route handling for `/remote` in development and production modes.
-4. **`src/App.tsx`**:
-   - Keep Route B detection responsive to URL updates and provide a clean in-app toggle.
+   - Dynamic URL state and effect: `const [remoteUrl, setRemoteUrl] = useState("")` and `useEffect(() => { setRemoteUrl(`${window.location.origin}/remote`); }, [])`.
+   - Render 200px `QRCodeSVG` with `value={currentUrl}` and clickable direct link.
+3. **`src/components/RemoteControl.tsx` & `src/App.tsx`**:
+   - Explicitly connect Socket.io to `window.location.origin` with `path: '/socket.io'` and `transports: ['polling', 'websocket']`.
+   - Handshake with HTTP long-polling first then upgrade to WebSocket, guaranteeing instant "Connected" state across dynamic web containers and mobile browsers.
+4. **`server.ts`**:
+   - Configure `SocketIOServer` with explicit `path: '/socket.io'`, CORS `*`, `transports: ['polling', 'websocket']`, and `allowEIO3: true`.
 5. **Verification**:
-   - Run `compile_applet` and `lint_applet` to confirm 0 errors, restart server, and verify both desktop and mobile URL behaviors.
+   - Verified with simultaneous `compile_applet` and `lint_applet` (0 errors).
+   - Verified with curl handshake on `/socket.io/?EIO=4&transport=polling` (HTTP 200) and `/remote` route.
+

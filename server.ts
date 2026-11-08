@@ -17,10 +17,15 @@ const port = 3000;
 
 // Attach Socket.io with open CORS for stage & local network mobile remote
 const io = new SocketIOServer(httpServer, {
+  path: '/socket.io',
   cors: {
     origin: '*',
     methods: ['GET', 'POST'],
   },
+  transports: ['polling', 'websocket'],
+  allowEIO3: true,
+  pingTimeout: 30000,
+  pingInterval: 10000,
 });
 
 // Strictly typed payload for remote controlled winner podium

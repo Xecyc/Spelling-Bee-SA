@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { QRCodeSVG } from 'qrcode.react';
-import { Trophy, Smartphone } from 'lucide-react';
+import { Trophy, Smartphone, ExternalLink } from 'lucide-react';
 
 interface RemoteQRCodeModalProps {
   isOpen: boolean;
@@ -13,10 +13,18 @@ export const RemoteQRCodeModal: React.FC<RemoteQRCodeModalProps> = ({
   onClose,
   onSwitchToRemote,
 }) => {
+  const [remoteUrl, setRemoteUrl] = useState('');
+
+  useEffect(() => {
+    // Dynamically grab the current host environment URL and append /remote
+    if (typeof window !== 'undefined') {
+      setRemoteUrl(`${window.location.origin}/remote`);
+    }
+  }, []);
+
   if (!isOpen) return null;
 
-  const origin = typeof window !== 'undefined' ? window.location.origin : '';
-  const remoteUrl = `${origin}/remote`;
+  const currentUrl = remoteUrl || (typeof window !== 'undefined' ? `${window.location.origin}/remote` : '/remote');
 
   return (
     <div
@@ -36,25 +44,26 @@ export const RemoteQRCodeModal: React.FC<RemoteQRCodeModalProps> = ({
         </h2>
 
         {/* QR Code Container wrapped in clean white padding box */}
-        <div className="bg-white p-3 rounded-xl shadow-lg mx-auto">
+        <div className="bg-white p-3.5 rounded-xl shadow-lg mx-auto">
           <QRCodeSVG
-            value={remoteUrl}
-            size={180}
+            value={currentUrl}
+            size={200}
             level="M"
             includeMargin={false}
-            className="w-44 h-44"
+            className="w-48 h-48"
           />
         </div>
 
-        {/* Subtle direct link */}
+        {/* Subtle dynamic link with external link icon */}
         <a
-          href="/remote"
+          href={currentUrl}
           target="_blank"
           rel="noopener noreferrer"
-          className="text-xs font-mono text-white/40 hover:text-yellow-400 transition-colors mt-4 truncate max-w-xs block select-all"
+          className="text-xs font-mono text-white/50 hover:text-yellow-400 transition-colors mt-4 break-all max-w-xs inline-flex items-center justify-center gap-1.5 select-all text-center underline decoration-white/20 hover:decoration-yellow-400"
           title="Click to open remote in new tab"
         >
-          {remoteUrl}
+          <span>{currentUrl}</span>
+          <ExternalLink className="w-3 h-3 shrink-0" />
         </a>
 
         {/* Switch to Remote View button for testing on desktop */}

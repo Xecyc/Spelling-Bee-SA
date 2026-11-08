@@ -117,9 +117,14 @@ export default function App() {
   useEffect(() => {
     if (isRemoteRoute) return;
 
-    const socket = io({
-      transports: ['websocket', 'polling'],
-      reconnectionAttempts: 10,
+    const socketOrigin = typeof window !== 'undefined' ? window.location.origin : '';
+    const socket = io(socketOrigin, {
+      path: '/socket.io',
+      transports: ['polling', 'websocket'],
+      reconnection: true,
+      reconnectionAttempts: Infinity,
+      reconnectionDelay: 1000,
+      timeout: 20000,
     });
 
     // When show_winners is received from mobile remote:

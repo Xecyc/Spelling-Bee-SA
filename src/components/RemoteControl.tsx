@@ -20,20 +20,37 @@ export const RemoteControl: React.FC = () => {
   const socketRef = useRef<Socket | null>(null);
 
   useEffect(() => {
-    // Connect to Socket.io server (uses current host/port or origin)
-    const socket = io({
-      transports: ['websocket', 'polling'],
-      reconnectionAttempts: 10,
+    // Explicit dynamic origin from current host environment
+    const socketOrigin = typeof window !== 'undefined' ? window.location.origin : '';
+
+    // Connect to Socket.io server with polling first for web container compatibility
+    const socket = io(socketOrigin, {
+      path: '/socket.io',
+      transports: ['polling', 'websocket'],
+      reconnection: true,
+      reconnectionAttempts: Infinity,
       reconnectionDelay: 1000,
+      timeout: 20000,
     });
 
     socketRef.current = socket;
 
+    if (socket.connected) {
+      setIsConnected(true);
+    }
+
     socket.on('connect', () => {
+      console.log('[Remote] Connected to stage server, socket id:', socket.id);
       setIsConnected(true);
     });
 
-    socket.on('disconnect', () => {
+    socket.on('connect_error', (err) => {
+      console.warn('[Remote] Socket connection error:', err.message);
+      setIsConnected(false);
+    });
+
+    socket.on('disconnect', (reason) => {
+      console.log('[Remote] Disconnected from stage server:', reason);
       setIsConnected(false);
     });
 
