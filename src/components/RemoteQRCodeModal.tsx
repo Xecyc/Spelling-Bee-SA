@@ -8,24 +8,34 @@ interface RemoteQRCodeModalProps {
   onSwitchToRemote?: () => void;
 }
 
+function getDynamicRemoteUrl(): string {
+  if (typeof window === 'undefined') return '/remote';
+  const cleanBase = window.location.href
+    .split('?')[0]
+    .split('#')[0]
+    .replace(/\/remote(\/index\.html|\.html)?\/?$/, '')
+    .replace(/\/$/, '');
+  const stageBase = cleanBase ? `${cleanBase}/` : `${window.location.origin}/`;
+  try {
+    localStorage.setItem('salto_angel_stage_base_url', stageBase);
+  } catch {}
+  return `${stageBase}?view=remote`;
+}
+
 export const RemoteQRCodeModal: React.FC<RemoteQRCodeModalProps> = ({
   isOpen,
   onClose,
   onSwitchToRemote,
 }) => {
-  const [remoteUrl, setRemoteUrl] = useState('');
+  const [remoteUrl, setRemoteUrl] = useState<string>(getDynamicRemoteUrl);
 
   useEffect(() => {
-    // Dynamically grab the current host environment URL and append /remote
-    if (typeof window !== 'undefined') {
-      const pathname = window.location.pathname.replace(/\/remote\/?$/, '').replace(/\/$/, '');
-      setRemoteUrl(`${window.location.origin}${pathname}/remote`);
-    }
+    setRemoteUrl(getDynamicRemoteUrl());
   }, []);
 
   if (!isOpen) return null;
 
-  const currentUrl = remoteUrl || (typeof window !== 'undefined' ? `${window.location.origin}/remote` : '/remote');
+  const currentUrl = remoteUrl || getDynamicRemoteUrl();
 
   return (
     <div

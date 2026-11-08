@@ -16,9 +16,62 @@ const socket = io(typeof window !== 'undefined' ? window.location.origin : '', {
 
 interface RemoteControlProps {
   onReturnToStage?: () => void;
+  onPushWinners?: (data: WinnersState) => void;
 }
 
-export const RemoteControl: React.FC<RemoteControlProps> = ({ onReturnToStage }) => {
+function computeStageReturnUrl(): string {
+  if (typeof window === 'undefined') return '/';
+
+  // 1. Query parameter ?from=
+  try {
+    const params = new URLSearchParams(window.location.search);
+    const fromParam = params.get('from');
+    if (fromParam) {
+      const decoded = decodeURIComponent(fromParam);
+      if (decoded.startsWith('http') || decoded.startsWith('/')) {
+        return decoded;
+      }
+    }
+  } catch {}
+
+  // 2. Saved base URL from localStorage (saved whenever Stage presentation is viewed)
+  try {
+    const saved = localStorage.getItem('salto_angel_stage_base_url');
+    if (saved && !saved.includes('/remote') && !saved.includes('view=remote')) {
+      return saved;
+    }
+  } catch {}
+
+  // 3. If currently at e.g. https://xecyc.github.io/my-repo/?view=remote
+  if (window.location.search.includes('view=remote') || window.location.search.includes('remote=')) {
+    try {
+      const u = new URL(window.location.href);
+      u.searchParams.delete('view');
+      u.searchParams.delete('remote');
+      return u.toString();
+    } catch {}
+  }
+
+  // 4. If pathname ends with /remote (e.g. /my-repo/remote)
+  const pathname = window.location.pathname.replace(/\/remote(\/index\.html|\.html)?\/?$/, '');
+  if (pathname && pathname !== '/') {
+    return `${window.location.origin}${pathname.endsWith('/') ? pathname : pathname + '/'}`;
+  }
+
+  // 5. If document.referrer has a repository path on the same host
+  if (document.referrer && document.referrer.includes(window.location.hostname)) {
+    try {
+      const refUrl = new URL(document.referrer);
+      if (refUrl.pathname && refUrl.pathname !== '/' && !refUrl.pathname.includes('/remote')) {
+        return `${window.location.origin}${refUrl.pathname.endsWith('/') ? refUrl.pathname : refUrl.pathname + '/'}`;
+      }
+    } catch {}
+  }
+
+  return `${window.location.origin}/`;
+}
+
+export const RemoteControl: React.FC<RemoteControlProps> = ({ onReturnToStage, onPushWinners }) => {
   const [winners, setWinners] = useState<WinnersState>({
     first: '',
     second: '',
@@ -27,15 +80,13 @@ export const RemoteControl: React.FC<RemoteControlProps> = ({ onReturnToStage })
 
   const [isConnected, setIsConnected] = useState<boolean>(() => socket.connected);
   const [lastAction, setLastAction] = useState<string | null>(null);
-  const [stagePath, setStagePath] = useState<string>('/');
+  const [stageReturnUrl, setStageReturnUrl] = useState<string>('/');
+
+  // Persistent BroadcastChannel reference
+  const channelRef = React.useRef<BroadcastChannel | null>(null);
 
   useEffect(() => {
-    if (typeof window !== 'undefined') {
-      const cleanBase = window.location.pathname
-        .replace(/\/remote(\/index\.html|\.html)?\/?$/, '')
-        .replace(/\/$/, '');
-      setStagePath(cleanBase ? `${cleanBase}/` : '/');
-    }
+    setStageReturnUrl(computeStageReturnUrl());
   }, []);
 
   useEffect(() => {
@@ -74,10 +125,10 @@ export const RemoteControl: React.FC<RemoteControlProps> = ({ onReturnToStage })
     socket.on('show_winners', handleShowWinners);
 
     // Cross-tab broadcast channel for static environments like GitHub Pages
-    let channel: BroadcastChannel | null = null;
     try {
       if (typeof BroadcastChannel !== 'undefined') {
-        channel = new BroadcastChannel('salto_angel_podium_channel');
+        const channel = new BroadcastChannel('salto_angel_podium_channel');
+        channelRef.current = channel;
         channel.onmessage = (event) => {
           if (event.data?.type === 'show_winners' && event.data?.data) {
             setWinners(event.data.data);
@@ -93,7 +144,10 @@ export const RemoteControl: React.FC<RemoteControlProps> = ({ onReturnToStage })
       socket.off('connect_error', handleConnectError);
       socket.off('disconnect', handleDisconnect);
       socket.off('show_winners', handleShowWinners);
-      if (channel) channel.close();
+      if (channelRef.current) {
+        channelRef.current.close();
+        channelRef.current = null;
+      }
     };
   }, []);
 
@@ -101,12 +155,10 @@ export const RemoteControl: React.FC<RemoteControlProps> = ({ onReturnToStage })
     setWinners({ first: '', second: '', third: '' });
     socket.emit('clear_board');
 
-    // Cross-tab fallback for static hosts like GitHub Pages
+    // Cross-tab broadcast
     try {
-      if (typeof BroadcastChannel !== 'undefined') {
-        const channel = new BroadcastChannel('salto_angel_podium_channel');
-        channel.postMessage({ type: 'hide_winners' });
-        channel.close();
+      if (channelRef.current) {
+        channelRef.current.postMessage({ type: 'hide_winners' });
       }
       localStorage.setItem('salto_angel_remote_winners', JSON.stringify({ type: 'hide_winners', ts: Date.now() }));
     } catch {
@@ -125,22 +177,45 @@ export const RemoteControl: React.FC<RemoteControlProps> = ({ onReturnToStage })
       third: winners.third.trim(),
     };
 
+    // 1. Send via WebSocket / Socket.io
     socket.emit('push_winners', payload);
 
-    // Cross-tab fallback for static hosts like GitHub Pages
+    // 2. Broadcast via BroadcastChannel to all open browser tabs/windows
     try {
-      if (typeof BroadcastChannel !== 'undefined') {
-        const channel = new BroadcastChannel('salto_angel_podium_channel');
-        channel.postMessage({ type: 'show_winners', data: payload });
-        channel.close();
+      if (channelRef.current) {
+        channelRef.current.postMessage({ type: 'show_winners', data: payload });
       }
       localStorage.setItem('salto_angel_remote_winners', JSON.stringify({ type: 'show_winners', data: payload, ts: Date.now() }));
     } catch {
       // Ignore
     }
 
-    setLastAction('Winners pushed to stage!');
+    // 3. Automatically send current user to podium slide if testing on same screen
+    if (onPushWinners) {
+      onPushWinners(payload);
+    } else if (onReturnToStage) {
+      onReturnToStage();
+    }
+
+    setLastAction('Winners pushed! Everyone redirected to Podium slide.');
     setTimeout(() => setLastAction(null), 3500);
+  };
+
+  const handleReturnClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    if (onReturnToStage) {
+      onReturnToStage();
+      return;
+    }
+    if (window.opener) {
+      window.close();
+      return;
+    }
+    if (window.history.length > 1 && document.referrer && document.referrer.includes(window.location.hostname)) {
+      window.history.back();
+      return;
+    }
+    window.location.href = stageReturnUrl;
   };
 
   return (
@@ -246,15 +321,10 @@ export const RemoteControl: React.FC<RemoteControlProps> = ({ onReturnToStage })
         <p>Live control connected to stage auditorium</p>
         <div className="flex items-center justify-center gap-4 mt-2">
           <a
-            href={stagePath}
-            onClick={(e) => {
-              if (onReturnToStage) {
-                e.preventDefault();
-                onReturnToStage();
-              }
-            }}
-            className="inline-flex items-center gap-1.5 text-gray-400 hover:text-white transition cursor-pointer"
-            title="Return to main stage presentation deck"
+            href={stageReturnUrl}
+            onClick={handleReturnClick}
+            className="inline-flex items-center gap-1.5 text-yellow-400/90 hover:text-yellow-300 transition cursor-pointer"
+            title={stageReturnUrl}
           >
             <span>Open Stage Display</span>
             <ExternalLink className="w-3 h-3" />

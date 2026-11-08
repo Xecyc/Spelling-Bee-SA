@@ -428,7 +428,21 @@ export default function App() {
     }
   };
 
-  // Route B: Backstage Mobile Remote view (/remote)
+  // Save current Stage Presentation base URL so remote links can return safely without 404
+  useEffect(() => {
+    if (!isRemoteRoute && typeof window !== 'undefined') {
+      const stageBase = window.location.href
+        .split('?')[0]
+        .split('#')[0]
+        .replace(/\/remote(\/index\.html|\.html)?\/?$/, '')
+        .replace(/\/$/, '') + '/';
+      try {
+        localStorage.setItem('salto_angel_stage_base_url', stageBase);
+      } catch {}
+    }
+  }, [isRemoteRoute]);
+
+  // Route B: Backstage Mobile Remote view (/remote or ?view=remote)
   if (isRemoteRoute) {
     const cleanBase = typeof window !== 'undefined'
       ? window.location.pathname.replace(/\/remote(\/index\.html|\.html)?\/?$/, '').replace(/\/$/, '')
@@ -442,6 +456,15 @@ export default function App() {
             window.history.pushState({}, '', stagePath);
             setIsRemoteRoute(false);
           }
+        }}
+        onPushWinners={(data) => {
+          setWinnersData(data);
+          if (typeof window !== 'undefined') {
+            window.history.pushState({}, '', stagePath);
+            setIsRemoteRoute(false);
+          }
+          setCurrentMode('presentation');
+          setCurrentSlide(2);
         }}
       />
     );
