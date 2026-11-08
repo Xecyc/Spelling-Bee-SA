@@ -25,6 +25,28 @@ const SLIDE_TITLES = [
   'Winner Podium',
 ];
 
+// CRITICAL: Connect to the dynamic origin, not localhost or a hardcoded domain.
+// Use useMemo or place outside the component if appropriate to prevent infinite reconnects.
+const socket = io(typeof window !== 'undefined' ? window.location.origin : '', {
+  transports: ['websocket', 'polling']
+});
+
+function checkIsRemotePath(): boolean {
+  if (typeof window === 'undefined') return false;
+  const p = window.location.pathname.toLowerCase();
+  const s = window.location.search.toLowerCase();
+  const h = window.location.hash.toLowerCase();
+  return (
+    p.endsWith('/remote') ||
+    p.includes('/remote/') ||
+    s.includes('view=remote') ||
+    s.includes('remote=true') ||
+    s.includes('remote=1') ||
+    s.includes('p=/remote') ||
+    h.includes('remote')
+  );
+}
+
 export default function App() {
   // Mode: Presentation Deck vs. Wheel Studio
   const [currentMode, setCurrentMode] = useState<'presentation' | 'studio'>('presentation');
@@ -79,27 +101,20 @@ export default function App() {
   // Fullscreen state
   const [isFullscreen, setIsFullscreen] = useState<boolean>(false);
 
-  // Route B: Mobile Remote backstage check (/remote or ?view=remote)
-  const [isRemoteRoute, setIsRemoteRoute] = useState<boolean>(() => {
-    if (typeof window !== 'undefined') {
-      return (
-        window.location.pathname.startsWith('/remote') ||
-        window.location.search.includes('view=remote')
-      );
-    }
-    return false;
-  });
+  // Route B: Mobile Remote backstage check (/remote, ?view=remote, #remote, etc.)
+  const [isRemoteRoute, setIsRemoteRoute] = useState<boolean>(checkIsRemotePath);
 
-  // Keep route synced on back/forward browser navigation or pushState
+  // Keep route synced on back/forward browser navigation or pushState/hashchange
   useEffect(() => {
     const handleUrlChange = () => {
-      const isRemote =
-        window.location.pathname.startsWith('/remote') ||
-        window.location.search.includes('view=remote');
-      setIsRemoteRoute(isRemote);
+      setIsRemoteRoute(checkIsRemotePath());
     };
     window.addEventListener('popstate', handleUrlChange);
-    return () => window.removeEventListener('popstate', handleUrlChange);
+    window.addEventListener('hashchange', handleUrlChange);
+    return () => {
+      window.removeEventListener('popstate', handleUrlChange);
+      window.removeEventListener('hashchange', handleUrlChange);
+    };
   }, []);
 
   // Remote Controlled Winner Podium State
@@ -113,37 +128,63 @@ export default function App() {
   const [autoStartTimerTrigger, setAutoStartTimerTrigger] = useState<number>(0);
   const [showDocumentAnalyzer, setShowDocumentAnalyzer] = useState(false);
 
-  // Socket.io integration for Stage Display: Listen to remote control events
+  // Socket.io & BroadcastChannel integration for Stage Display: Listen to remote control events
   useEffect(() => {
     if (isRemoteRoute) return;
 
-    const socketOrigin = typeof window !== 'undefined' ? window.location.origin : '';
-    const socket = io(socketOrigin, {
-      path: '/socket.io',
-      transports: ['polling', 'websocket'],
-      reconnection: true,
-      reconnectionAttempts: Infinity,
-      reconnectionDelay: 1000,
-      timeout: 20000,
-    });
+    const handleShowWinners = (data: WinnersData) => {
+      if (data) {
+        setWinnersData(data);
+        setCurrentMode('presentation');
+        setCurrentSlide(2);
+      }
+    };
 
-    // When show_winners is received from mobile remote:
-    // Set activeSlide state to Winner Podium slide and pass winner data
-    socket.on('show_winners', (data: WinnersData) => {
-      setWinnersData(data);
-      setCurrentMode('presentation');
-      setCurrentSlide(2);
-    });
-
-    // When hide_winners is received:
-    // Set activeSlide back to 1 (the wheel) and clear winner data
-    socket.on('hide_winners', () => {
+    const handleHideWinners = () => {
       setWinnersData(null);
       setCurrentSlide(1);
-    });
+    };
+
+    socket.on('show_winners', handleShowWinners);
+    socket.on('hide_winners', handleHideWinners);
+
+    // Cross-tab BroadcastChannel fallback for GitHub Pages and static deployments
+    let channel: BroadcastChannel | null = null;
+    try {
+      if (typeof BroadcastChannel !== 'undefined') {
+        channel = new BroadcastChannel('salto_angel_podium_channel');
+        channel.onmessage = (event) => {
+          if (event.data?.type === 'show_winners' && event.data?.data) {
+            handleShowWinners(event.data.data);
+          } else if (event.data?.type === 'hide_winners') {
+            handleHideWinners();
+          }
+        };
+      }
+    } catch {
+      // Ignore
+    }
+
+    // localStorage storage event fallback for cross-tab updates
+    const handleStorage = (e: StorageEvent) => {
+      if (e.key === 'salto_angel_remote_winners' && e.newValue) {
+        try {
+          const parsed = JSON.parse(e.newValue);
+          if (parsed.type === 'show_winners' && parsed.data) {
+            handleShowWinners(parsed.data);
+          } else if (parsed.type === 'hide_winners') {
+            handleHideWinners();
+          }
+        } catch {}
+      }
+    };
+    window.addEventListener('storage', handleStorage);
 
     return () => {
-      socket.disconnect();
+      socket.off('show_winners', handleShowWinners);
+      socket.off('hide_winners', handleHideWinners);
+      if (channel) channel.close();
+      window.removeEventListener('storage', handleStorage);
     };
   }, [isRemoteRoute]);
 

@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { io, Socket } from 'socket.io-client';
+import React, { useState, useEffect } from 'react';
+import { io } from 'socket.io-client';
 import { Radio, CheckCircle2, RotateCcw, Send, ExternalLink } from 'lucide-react';
 
 interface WinnersState {
@@ -8,6 +8,12 @@ interface WinnersState {
   third: string;
 }
 
+// CRITICAL: Connect to the dynamic origin, not localhost or a hardcoded domain.
+// Use useMemo or place outside the component if appropriate to prevent infinite reconnects.
+const socket = io(typeof window !== 'undefined' ? window.location.origin : '', {
+  transports: ['websocket', 'polling']
+});
+
 export const RemoteControl: React.FC = () => {
   const [winners, setWinners] = useState<WinnersState>({
     first: '',
@@ -15,47 +21,26 @@ export const RemoteControl: React.FC = () => {
     third: '',
   });
 
-  const [isConnected, setIsConnected] = useState<boolean>(false);
+  const [isConnected, setIsConnected] = useState<boolean>(() => socket.connected);
   const [lastAction, setLastAction] = useState<string | null>(null);
-  const socketRef = useRef<Socket | null>(null);
 
   useEffect(() => {
-    // Explicit dynamic origin from current host environment
-    const socketOrigin = typeof window !== 'undefined' ? window.location.origin : '';
-
-    // Connect to Socket.io server with polling first for web container compatibility
-    const socket = io(socketOrigin, {
-      path: '/socket.io',
-      transports: ['polling', 'websocket'],
-      reconnection: true,
-      reconnectionAttempts: Infinity,
-      reconnectionDelay: 1000,
-      timeout: 20000,
-    });
-
-    socketRef.current = socket;
-
-    if (socket.connected) {
-      setIsConnected(true);
-    }
-
-    socket.on('connect', () => {
+    const handleConnect = () => {
       console.log('[Remote] Connected to stage server, socket id:', socket.id);
       setIsConnected(true);
-    });
+    };
 
-    socket.on('connect_error', (err) => {
-      console.warn('[Remote] Socket connection error:', err.message);
+    const handleConnectError = (err: any) => {
+      console.warn('[Remote] Socket connection error:', err?.message);
       setIsConnected(false);
-    });
+    };
 
-    socket.on('disconnect', (reason) => {
+    const handleDisconnect = (reason: string) => {
       console.log('[Remote] Disconnected from stage server:', reason);
       setIsConnected(false);
-    });
+    };
 
-    // Listen to updates from server or other remotes
-    socket.on('show_winners', (data: WinnersState) => {
+    const handleShowWinners = (data: WinnersState) => {
       if (data) {
         setWinners({
           first: data.first || '',
@@ -63,35 +48,83 @@ export const RemoteControl: React.FC = () => {
           third: data.third || '',
         });
       }
-    });
+    };
 
-    socket.on('hide_winners', () => {
-      // Board cleared
-    });
+    if (socket.connected) {
+      setIsConnected(true);
+    }
+
+    socket.on('connect', handleConnect);
+    socket.on('connect_error', handleConnectError);
+    socket.on('disconnect', handleDisconnect);
+    socket.on('show_winners', handleShowWinners);
+
+    // Cross-tab broadcast channel for static environments like GitHub Pages
+    let channel: BroadcastChannel | null = null;
+    try {
+      if (typeof BroadcastChannel !== 'undefined') {
+        channel = new BroadcastChannel('salto_angel_podium_channel');
+        channel.onmessage = (event) => {
+          if (event.data?.type === 'show_winners' && event.data?.data) {
+            setWinners(event.data.data);
+          }
+        };
+      }
+    } catch {
+      // Ignore
+    }
 
     return () => {
-      socket.disconnect();
+      socket.off('connect', handleConnect);
+      socket.off('connect_error', handleConnectError);
+      socket.off('disconnect', handleDisconnect);
+      socket.off('show_winners', handleShowWinners);
+      if (channel) channel.close();
     };
   }, []);
 
   const handleClearBoard = () => {
     setWinners({ first: '', second: '', third: '' });
-    if (socketRef.current) {
-      socketRef.current.emit('clear_board');
+    socket.emit('clear_board');
+
+    // Cross-tab fallback for static hosts like GitHub Pages
+    try {
+      if (typeof BroadcastChannel !== 'undefined') {
+        const channel = new BroadcastChannel('salto_angel_podium_channel');
+        channel.postMessage({ type: 'hide_winners' });
+        channel.close();
+      }
+      localStorage.setItem('salto_angel_remote_winners', JSON.stringify({ type: 'hide_winners', ts: Date.now() }));
+    } catch {
+      // Ignore
     }
+
     setLastAction('Board cleared on stage');
     setTimeout(() => setLastAction(null), 3000);
   };
 
   const handlePushWinners = (e: React.FormEvent) => {
     e.preventDefault();
-    if (socketRef.current) {
-      socketRef.current.emit('push_winners', {
-        first: winners.first.trim(),
-        second: winners.second.trim(),
-        third: winners.third.trim(),
-      });
+    const payload = {
+      first: winners.first.trim(),
+      second: winners.second.trim(),
+      third: winners.third.trim(),
+    };
+
+    socket.emit('push_winners', payload);
+
+    // Cross-tab fallback for static hosts like GitHub Pages
+    try {
+      if (typeof BroadcastChannel !== 'undefined') {
+        const channel = new BroadcastChannel('salto_angel_podium_channel');
+        channel.postMessage({ type: 'show_winners', data: payload });
+        channel.close();
+      }
+      localStorage.setItem('salto_angel_remote_winners', JSON.stringify({ type: 'show_winners', data: payload, ts: Date.now() }));
+    } catch {
+      // Ignore
     }
+
     setLastAction('Winners pushed to stage!');
     setTimeout(() => setLastAction(null), 3500);
   };

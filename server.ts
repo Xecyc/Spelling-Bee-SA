@@ -286,6 +286,18 @@ async function startServer() {
       appType: 'spa',
     });
     app.use(vite.middlewares);
+
+    // Explicit fallback for /remote and any SPA sub-routes in dev mode
+    app.get(['/remote', '/remote/*'], async (req, res, next) => {
+      try {
+        const indexHtmlPath = path.resolve(process.cwd(), 'index.html');
+        const rawTemplate = fs.readFileSync(indexHtmlPath, 'utf-8');
+        const transformedHtml = await vite.transformIndexHtml(req.originalUrl, rawTemplate);
+        res.status(200).set({ 'Content-Type': 'text/html' }).end(transformedHtml);
+      } catch (err) {
+        next(err);
+      }
+    });
   } else {
     app.use(express.static(path.resolve(process.cwd(), 'dist')));
     app.get('*', (req, res) => {

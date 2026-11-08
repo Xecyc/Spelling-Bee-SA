@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Salto Ángel Spelling Bee 2026</title>
+    <script type="text/javascript">
+      // GitHub Pages SPA router redirect:
+      // When a user visits /remote on GitHub Pages, this script encodes the route
+      // into a query parameter and redirects to the root index.html so the SPA router can handle it.
+      var pathSegmentsToKeep = 1;
+      var l = window.location;
+      var search = l.search ? '&q=' + l.search.slice(1).replace(/&/g, '~and~') : '';
+      var query = '/?p=/' + l.pathname.slice(1).split('/').slice(pathSegmentsToKeep).join('/').replace(/&/g, '~and~') + search + l.hash;
+      var repoBase = l.pathname.split('/').slice(0, 1 + pathSegmentsToKeep).join('/');
+      
+      // If deployed at root domain instead of a subfolder
+      if (l.pathname.startsWith('/remote')) {
+        l.replace(l.protocol + '//' + l.host + '/?p=' + encodeURIComponent(l.pathname) + (l.search ? '&' + l.search.slice(1) : '') + l.hash);
+      } else {
+        l.replace(l.protocol + '//' + l.host + repoBase + query);
+      }
+    </script>
+  </head>
+  <body>
+    <p>Redirecting to Salto Ángel Spelling Bee...</p>
+  </body>
+</html>

@@ -1,7 +1,8 @@
-import React, { useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Trophy, Award, Medal, Crown } from 'lucide-react';
 import confetti from 'canvas-confetti';
+import { io } from 'socket.io-client';
 import { WinnersData } from '../types/presentation';
 
 export interface Winners {
@@ -9,6 +10,12 @@ export interface Winners {
   second: string;
   third: string;
 }
+
+// CRITICAL: Connect to the dynamic origin, not localhost or a hardcoded domain.
+// Use useMemo or place outside the component if appropriate to prevent infinite reconnects.
+const socket = io(typeof window !== 'undefined' ? window.location.origin : '', {
+  transports: ['websocket', 'polling']
+});
 
 const FourPointStar = ({ className, delay = 0 }: { className?: string; delay?: number | string }) => {
   const numericDelay = typeof delay === 'string' ? parseFloat(delay.replace(/[{}]/g, '')) || 0 : delay;
@@ -46,7 +53,19 @@ export const PodiumSlide: React.FC<PodiumSlideProps> = ({
   winners,
   backgroundUrl = `${import.meta.env.BASE_URL}assets/image_d24fda.jpg`,
 }) => {
-  const safeWinners = winners || { first: '', second: '', third: '' };
+  const [socketWinners, setSocketWinners] = useState<Winners | null>(null);
+
+  useEffect(() => {
+    const handleShowWinners = (data: Winners) => {
+      if (data) setSocketWinners(data);
+    };
+    socket.on('show_winners', handleShowWinners);
+    return () => {
+      socket.off('show_winners', handleShowWinners);
+    };
+  }, []);
+
+  const safeWinners = winners || socketWinners || { first: '', second: '', third: '' };
 
   useEffect(() => {
     const timer = setTimeout(() => {

@@ -18,7 +18,8 @@ export const RemoteQRCodeModal: React.FC<RemoteQRCodeModalProps> = ({
   useEffect(() => {
     // Dynamically grab the current host environment URL and append /remote
     if (typeof window !== 'undefined') {
-      setRemoteUrl(`${window.location.origin}/remote`);
+      const pathname = window.location.pathname.replace(/\/remote\/?$/, '').replace(/\/$/, '');
+      setRemoteUrl(`${window.location.origin}${pathname}/remote`);
     }
   }, []);
 
