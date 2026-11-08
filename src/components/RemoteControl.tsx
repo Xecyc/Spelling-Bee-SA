@@ -190,14 +190,12 @@ export const RemoteControl: React.FC<RemoteControlProps> = ({ onReturnToStage, o
       // Ignore
     }
 
-    // 3. Automatically send current user to podium slide if testing on same screen
+    // 3. Update background state if loaded in same app without leaving remote view
     if (onPushWinners) {
       onPushWinners(payload);
-    } else if (onReturnToStage) {
-      onReturnToStage();
     }
 
-    setLastAction('Winners pushed! Everyone redirected to Podium slide.');
+    setLastAction('Winners pushed to stage! Stage updated to Podium.');
     setTimeout(() => setLastAction(null), 3500);
   };
 

@@ -458,11 +458,8 @@ export default function App() {
           }
         }}
         onPushWinners={(data) => {
+          // Update the presentation deck to Podium slide in the background without leaving remote controls
           setWinnersData(data);
-          if (typeof window !== 'undefined') {
-            window.history.pushState({}, '', stagePath);
-            setIsRemoteRoute(false);
-          }
           setCurrentMode('presentation');
           setCurrentSlide(2);
         }}
