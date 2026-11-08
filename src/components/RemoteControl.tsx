@@ -1,18 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import { io } from 'socket.io-client';
-import { Radio, CheckCircle2, RotateCcw, Send, ExternalLink } from 'lucide-react';
+import { CheckCircle2, RotateCcw, Send, ExternalLink } from 'lucide-react';
+import { useStageSync, getSocket } from '../hooks/useStageSync';
+import { useContestStore } from '../store';
+import { ConnectionPill } from './ui/ConnectionPill';
 
 interface WinnersState {
   first: string;
   second: string;
   third: string;
 }
-
-// CRITICAL: Connect to the dynamic origin, not localhost or a hardcoded domain.
-// Use useMemo or place outside the component if appropriate to prevent infinite reconnects.
-const socket = io(typeof window !== 'undefined' ? window.location.origin : '', {
-  transports: ['websocket', 'polling']
-});
 
 interface RemoteControlProps {
   onReturnToStage?: () => void;
@@ -78,33 +74,19 @@ export const RemoteControl: React.FC<RemoteControlProps> = ({ onReturnToStage, o
     third: '',
   });
 
-  const [isConnected, setIsConnected] = useState<boolean>(() => socket.connected);
+  const { pushWinners, clearBoard } = useStageSync();
+  const isConnected = useContestStore((s) => s.isConnected);
+  const latency = useContestStore((s) => s.latency);
+
   const [lastAction, setLastAction] = useState<string | null>(null);
   const [stageReturnUrl, setStageReturnUrl] = useState<string>('/');
-
-  // Persistent BroadcastChannel reference
-  const channelRef = React.useRef<BroadcastChannel | null>(null);
 
   useEffect(() => {
     setStageReturnUrl(computeStageReturnUrl());
   }, []);
 
   useEffect(() => {
-    const handleConnect = () => {
-      console.log('[Remote] Connected to stage server, socket id:', socket.id);
-      setIsConnected(true);
-    };
-
-    const handleConnectError = (err: any) => {
-      console.warn('[Remote] Socket connection error:', err?.message);
-      setIsConnected(false);
-    };
-
-    const handleDisconnect = (reason: string) => {
-      console.log('[Remote] Disconnected from stage server:', reason);
-      setIsConnected(false);
-    };
-
+    const socket = getSocket();
     const handleShowWinners = (data: WinnersState) => {
       if (data) {
         setWinners({
@@ -115,55 +97,15 @@ export const RemoteControl: React.FC<RemoteControlProps> = ({ onReturnToStage, o
       }
     };
 
-    if (socket.connected) {
-      setIsConnected(true);
-    }
-
-    socket.on('connect', handleConnect);
-    socket.on('connect_error', handleConnectError);
-    socket.on('disconnect', handleDisconnect);
     socket.on('show_winners', handleShowWinners);
-
-    // Cross-tab broadcast channel for static environments like GitHub Pages
-    try {
-      if (typeof BroadcastChannel !== 'undefined') {
-        const channel = new BroadcastChannel('salto_angel_podium_channel');
-        channelRef.current = channel;
-        channel.onmessage = (event) => {
-          if (event.data?.type === 'show_winners' && event.data?.data) {
-            setWinners(event.data.data);
-          }
-        };
-      }
-    } catch {
-      // Ignore
-    }
-
     return () => {
-      socket.off('connect', handleConnect);
-      socket.off('connect_error', handleConnectError);
-      socket.off('disconnect', handleDisconnect);
       socket.off('show_winners', handleShowWinners);
-      if (channelRef.current) {
-        channelRef.current.close();
-        channelRef.current = null;
-      }
     };
   }, []);
 
   const handleClearBoard = () => {
     setWinners({ first: '', second: '', third: '' });
-    socket.emit('clear_board');
-
-    // Cross-tab broadcast
-    try {
-      if (channelRef.current) {
-        channelRef.current.postMessage({ type: 'hide_winners' });
-      }
-      localStorage.setItem('salto_angel_remote_winners', JSON.stringify({ type: 'hide_winners', ts: Date.now() }));
-    } catch {
-      // Ignore
-    }
+    clearBoard();
 
     setLastAction('Board cleared on stage');
     setTimeout(() => setLastAction(null), 3000);
@@ -177,20 +119,8 @@ export const RemoteControl: React.FC<RemoteControlProps> = ({ onReturnToStage, o
       third: winners.third.trim(),
     };
 
-    // 1. Send via WebSocket / Socket.io
-    socket.emit('push_winners', payload);
+    pushWinners(payload);
 
-    // 2. Broadcast via BroadcastChannel to all open browser tabs/windows
-    try {
-      if (channelRef.current) {
-        channelRef.current.postMessage({ type: 'show_winners', data: payload });
-      }
-      localStorage.setItem('salto_angel_remote_winners', JSON.stringify({ type: 'show_winners', data: payload, ts: Date.now() }));
-    } catch {
-      // Ignore
-    }
-
-    // 3. Update background state if loaded in same app without leaving remote view
     if (onPushWinners) {
       onPushWinners(payload);
     }
@@ -225,16 +155,7 @@ export const RemoteControl: React.FC<RemoteControlProps> = ({ onReturnToStage, o
             <h1 className="text-xl font-semibold tracking-tight">Stage Remote</h1>
             <p className="text-xs text-gray-400 mt-0.5">U.E.P. Salto Ángel Spelling Bee 2026</p>
           </div>
-          <div
-            className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium ${
-              isConnected
-                ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20'
-                : 'bg-rose-500/10 text-rose-400 border border-rose-500/20'
-            }`}
-          >
-            <Radio className={`w-3 h-3 ${isConnected ? 'animate-pulse' : ''}`} />
-            <span>{isConnected ? 'Connected' : 'Offline'}</span>
-          </div>
+          <ConnectionPill isConnected={isConnected} latency={latency} />
         </div>
 
         {/* Status Toast */}

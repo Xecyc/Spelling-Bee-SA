@@ -225,12 +225,16 @@ export const PresentationDeck: React.FC<PresentationDeckProps> = ({
           </div>
         )}
 
-        {/* SLIDE 2 / 3: Remote Controlled Winner Podium (Empty Stage with Glassmorphic Pedestals) */}
+        {/* SLIDE 2 / 3: Remote Controlled Winner Podium (Dynamic Elementary vs High School) */}
         {(currentSlide === 2 || currentSlide === 3) && (
           <div className="relative w-full h-full animate-in fade-in duration-300">
             <PodiumSlide
               winners={winnersData || { first: '', second: '', third: '' }}
-              backgroundUrl={`${import.meta.env.BASE_URL}assets/image_d24fda.jpg`}
+              backgroundUrl={
+                activeWheel.group === 'high_school'
+                  ? `${import.meta.env.BASE_URL}assets/image_d24fda.jpg`
+                  : `${import.meta.env.BASE_URL}assets/aistudio/image_93e345e1.png`
+              }
             />
           </div>
         )}

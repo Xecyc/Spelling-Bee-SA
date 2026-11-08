@@ -18,18 +18,14 @@ import { WinnerModal } from './components/WinnerModal';
 import { DocumentAnalyzerModal } from './components/DocumentAnalyzerModal';
 import { RemoteControl } from './components/RemoteControl';
 import { RemoteQRCodeModal } from './components/RemoteQRCodeModal';
+import { useContestStore } from './store';
+import { useStageSync } from './hooks/useStageSync';
 
 const SLIDE_TITLES = [
   'Welcome & Title',
   'Interactive Wheel & Timer',
   'Winner Podium',
 ];
-
-// CRITICAL: Connect to the dynamic origin, not localhost or a hardcoded domain.
-// Use useMemo or place outside the component if appropriate to prevent infinite reconnects.
-const socket = io(typeof window !== 'undefined' ? window.location.origin : '', {
-  transports: ['websocket', 'polling']
-});
 
 function checkIsRemotePath(): boolean {
   if (typeof window === 'undefined') return false;
@@ -48,11 +44,18 @@ function checkIsRemotePath(): boolean {
 }
 
 export default function App() {
-  // Mode: Presentation Deck vs. Wheel Studio
-  const [currentMode, setCurrentMode] = useState<'presentation' | 'studio'>('presentation');
+  // Centralized Stage & Remote sync hook (singleton WebSocket, BroadcastChannel, latency ping)
+  useStageSync();
 
-  // Presentation Slide index: 0, 1, 2
-  const [currentSlide, setCurrentSlide] = useState<PresentationSlideId>(0);
+  // Unified Contest Store
+  const currentMode = useContestStore((s) => s.currentMode);
+  const setCurrentMode = useContestStore((s) => s.setCurrentMode);
+  const currentSlide = useContestStore((s) => s.currentSlide);
+  const setCurrentSlide = useContestStore((s) => s.setCurrentSlide);
+  const winnersData = useContestStore((s) => s.winnersData);
+  const setWinnersData = useContestStore((s) => s.setWinnersData);
+  const isRemoteRoute = useContestStore((s) => s.isRemoteRoute);
+  const setIsRemoteRoute = useContestStore((s) => s.setIsRemoteRoute);
 
   // Wheels state with localStorage persistence
   const [wheels, setWheels] = useState<WheelConfig[]>(() => {
@@ -101,9 +104,6 @@ export default function App() {
   // Fullscreen state
   const [isFullscreen, setIsFullscreen] = useState<boolean>(false);
 
-  // Route B: Mobile Remote backstage check (/remote, ?view=remote, #remote, etc.)
-  const [isRemoteRoute, setIsRemoteRoute] = useState<boolean>(checkIsRemotePath);
-
   // Keep route synced on back/forward browser navigation or pushState/hashchange
   useEffect(() => {
     const handleUrlChange = () => {
@@ -115,10 +115,8 @@ export default function App() {
       window.removeEventListener('popstate', handleUrlChange);
       window.removeEventListener('hashchange', handleUrlChange);
     };
-  }, []);
+  }, [setIsRemoteRoute]);
 
-  // Remote Controlled Winner Podium State
-  const [winnersData, setWinnersData] = useState<WinnersData | null>(null);
   const [showRemoteModal, setShowRemoteModal] = useState<boolean>(false);
 
   // Wheel spin state
@@ -127,66 +125,6 @@ export default function App() {
   const [showWinnerModal, setShowWinnerModal] = useState(false);
   const [autoStartTimerTrigger, setAutoStartTimerTrigger] = useState<number>(0);
   const [showDocumentAnalyzer, setShowDocumentAnalyzer] = useState(false);
-
-  // Socket.io & BroadcastChannel integration for Stage Display: Listen to remote control events
-  useEffect(() => {
-    if (isRemoteRoute) return;
-
-    const handleShowWinners = (data: WinnersData) => {
-      if (data) {
-        setWinnersData(data);
-        setCurrentMode('presentation');
-        setCurrentSlide(2);
-      }
-    };
-
-    const handleHideWinners = () => {
-      setWinnersData(null);
-      setCurrentSlide(1);
-    };
-
-    socket.on('show_winners', handleShowWinners);
-    socket.on('hide_winners', handleHideWinners);
-
-    // Cross-tab BroadcastChannel fallback for GitHub Pages and static deployments
-    let channel: BroadcastChannel | null = null;
-    try {
-      if (typeof BroadcastChannel !== 'undefined') {
-        channel = new BroadcastChannel('salto_angel_podium_channel');
-        channel.onmessage = (event) => {
-          if (event.data?.type === 'show_winners' && event.data?.data) {
-            handleShowWinners(event.data.data);
-          } else if (event.data?.type === 'hide_winners') {
-            handleHideWinners();
-          }
-        };
-      }
-    } catch {
-      // Ignore
-    }
-
-    // localStorage storage event fallback for cross-tab updates
-    const handleStorage = (e: StorageEvent) => {
-      if (e.key === 'salto_angel_remote_winners' && e.newValue) {
-        try {
-          const parsed = JSON.parse(e.newValue);
-          if (parsed.type === 'show_winners' && parsed.data) {
-            handleShowWinners(parsed.data);
-          } else if (parsed.type === 'hide_winners') {
-            handleHideWinners();
-          }
-        } catch {}
-      }
-    };
-    window.addEventListener('storage', handleStorage);
-
-    return () => {
-      socket.off('show_winners', handleShowWinners);
-      socket.off('hide_winners', handleHideWinners);
-      if (channel) channel.close();
-      window.removeEventListener('storage', handleStorage);
-    };
-  }, [isRemoteRoute]);
 
   // Load shared wheels from server on mount (syncs across multiple PCs)
   useEffect(() => {

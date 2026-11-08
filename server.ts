@@ -9,6 +9,8 @@ import dotenv from 'dotenv';
 import { GoogleGenAI, Type } from '@google/genai';
 import { INITIAL_WHEELS } from './src/utils/defaultData.ts';
 
+import { AtomicStore } from './server/storage/atomicStore.ts';
+
 dotenv.config();
 
 const app = express();
@@ -38,7 +40,17 @@ interface WinnersPayload {
 let currentWinners: WinnersPayload | null = null;
 let isWinnersActive = false;
 
+// Persistent wheels storage with atomic temp-file swap & corruption recovery
+const DATA_DIR = path.resolve(process.cwd(), 'data');
+const WHEELS_FILE = path.join(DATA_DIR, 'wheels.json');
+const wheelsStore = new AtomicStore<any[]>(WHEELS_FILE);
+
 io.on('connection', (socket) => {
+  // Heartbeat ping-pong for live latency calculation
+  socket.on('ping', (startTime: number) => {
+    socket.emit('pong', startTime);
+  });
+
   // If podium is active, sync newly connected stage display or remote
   if (isWinnersActive && currentWinners) {
     socket.emit('show_winners', currentWinners);
@@ -65,28 +77,10 @@ io.on('connection', (socket) => {
 
 app.use(express.json({ limit: '50mb' }));
 
-// Wheels persistence file path (shared for all PCs accessing server)
-const DATA_DIR = path.resolve(process.cwd(), 'data');
-const WHEELS_FILE = path.join(DATA_DIR, 'wheels.json');
-
-if (!fs.existsSync(DATA_DIR)) {
-  fs.mkdirSync(DATA_DIR, { recursive: true });
-}
-
-// Helper to read wheels
+// Helper to read wheels safely
 function getSavedWheels() {
-  try {
-    if (fs.existsSync(WHEELS_FILE)) {
-      const content = fs.readFileSync(WHEELS_FILE, 'utf-8');
-      const parsed = JSON.parse(content);
-      if (Array.isArray(parsed) && parsed.length > 0) {
-        return parsed;
-      }
-    }
-  } catch (err) {
-    console.error('Error reading wheels file:', err);
-  }
-  return INITIAL_WHEELS;
+  const wheels = wheelsStore.read(INITIAL_WHEELS);
+  return Array.isArray(wheels) && wheels.length > 0 ? wheels : INITIAL_WHEELS;
 }
 
 // API: Get wheels (shared across all PCs)
@@ -100,8 +94,11 @@ app.post('/api/wheels', (req, res) => {
   try {
     const { wheels } = req.body;
     if (Array.isArray(wheels)) {
-      fs.writeFileSync(WHEELS_FILE, JSON.stringify(wheels, null, 2), 'utf-8');
-      return res.json({ success: true, count: wheels.length });
+      const success = wheelsStore.write(wheels);
+      if (success) {
+        return res.json({ success: true, count: wheels.length });
+      }
+      return res.status(500).json({ error: 'Failed atomic write for wheels' });
     }
     return res.status(400).json({ error: 'Invalid wheels payload' });
   } catch (err) {
