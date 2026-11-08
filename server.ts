@@ -8,8 +8,24 @@ import fs from 'fs';
 import dotenv from 'dotenv';
 import { GoogleGenAI, Type } from '@google/genai';
 import { INITIAL_WHEELS } from './src/utils/defaultData.ts';
+import {
+  VIBRANT_STAGE_PALETTE,
+  CHAMPIONSHIP_PALETTE,
+  recalibrateSliceColors,
+} from './src/utils/palette.ts';
 
 import { AtomicStore } from './server/storage/atomicStore.ts';
+
+function sanitizeServerWheel(wheel: any): any {
+  if (!wheel || !Array.isArray(wheel.slices)) return wheel;
+  const palette = (wheel.group === 'high_school' && wheel.place === 'championship')
+    ? CHAMPIONSHIP_PALETTE
+    : VIBRANT_STAGE_PALETTE;
+  return {
+    ...wheel,
+    slices: recalibrateSliceColors(wheel.slices, palette),
+  };
+}
 
 dotenv.config();
 
@@ -77,10 +93,11 @@ io.on('connection', (socket) => {
 
 app.use(express.json({ limit: '50mb' }));
 
-// Helper to read wheels safely
+// Helper to read wheels safely (sanitized with odd-boundary protection)
 function getSavedWheels() {
   const wheels = wheelsStore.read(INITIAL_WHEELS);
-  return Array.isArray(wheels) && wheels.length > 0 ? wheels : INITIAL_WHEELS;
+  const rawWheels = Array.isArray(wheels) && wheels.length > 0 ? wheels : INITIAL_WHEELS;
+  return rawWheels.map(sanitizeServerWheel);
 }
 
 // API: Get wheels (shared across all PCs)
@@ -94,9 +111,10 @@ app.post('/api/wheels', (req, res) => {
   try {
     const { wheels } = req.body;
     if (Array.isArray(wheels)) {
-      const success = wheelsStore.write(wheels);
+      const sanitized = wheels.map(sanitizeServerWheel);
+      const success = wheelsStore.write(sanitized);
       if (success) {
-        return res.json({ success: true, count: wheels.length });
+        return res.json({ success: true, count: sanitized.length });
       }
       return res.status(500).json({ error: 'Failed atomic write for wheels' });
     }

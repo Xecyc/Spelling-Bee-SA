@@ -65,3 +65,14 @@ export function getBalancedSliceColor(
 
   return palette[colorIndex];
 }
+
+// Recalibrate all slices in an array to ensure odd-boundary protection and balanced colors
+export function recalibrateSliceColors<T extends { color?: string }>(
+  slices: T[],
+  palette: string[] = VIBRANT_STAGE_PALETTE
+): T[] {
+  return slices.map((slice, index) => ({
+    ...slice,
+    color: getBalancedSliceColor(index, slices.length, palette),
+  }));
+}

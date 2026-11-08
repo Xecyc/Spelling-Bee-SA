@@ -57,7 +57,7 @@ export const WinnerModal: React.FC<WinnerModalProps> = ({
         });
       }, 250);
     }
-  }, [isOpen, word]);
+  }, [isOpen, word, timerDuration]);
 
   if (!isOpen || !word) return null;
 

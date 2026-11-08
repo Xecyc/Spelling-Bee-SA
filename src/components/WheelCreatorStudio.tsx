@@ -45,6 +45,11 @@ import {
   SoundSettings,
 } from '../types/presentation';
 import { MAX_SLICES } from '../utils/defaultData';
+import {
+  VIBRANT_STAGE_PALETTE,
+  CHAMPIONSHIP_PALETTE,
+  recalibrateSliceColors,
+} from '../utils/palette.ts';
 
 /***************************************************************************
  * 1. CURATED COLOR PALETTES & PRESETS
@@ -1235,9 +1240,14 @@ export const WheelCreatorStudio: React.FC<WheelCreatorStudioProps> = ({
     if (idx !== -1) {
       const removed = currentWheel.slices[idx];
       setRemovedEntries((prev) => [...prev, removed]);
+      const remainingSlices = currentWheel.slices.filter((s) => s.id !== winningSlice.id);
+      const palette = (currentWheel.group === 'high_school' && currentWheel.place === 'championship')
+        ? CHAMPIONSHIP_PALETTE
+        : VIBRANT_STAGE_PALETTE;
+      const recalibratedSlices = recalibrateSliceColors(remainingSlices, palette);
       onUpdateWheel({
         ...currentWheel,
-        slices: currentWheel.slices.filter((s) => s.id !== winningSlice.id),
+        slices: recalibratedSlices,
       });
       showToast(`Removed "${winningSlice.text}" from wheel`);
     }

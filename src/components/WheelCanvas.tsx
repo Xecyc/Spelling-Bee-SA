@@ -1,6 +1,11 @@
 import React, { useEffect, useRef, useState, useCallback } from 'react';
 import { WheelSlice } from '../types/presentation';
 import { audioManager } from '../utils/audio';
+import {
+  getSliceTextColor,
+  getBalancedSliceColor,
+  VIBRANT_STAGE_PALETTE,
+} from '../utils/palette.ts';
 
 interface WheelCanvasProps {
   slices: WheelSlice[];
@@ -30,23 +35,24 @@ export const WheelCanvas: React.FC<WheelCanvasProps> = ({
 
   const activeSlices = slices.length > 0
     ? slices.filter((s) => s.enabled !== false && (s.text.trim() !== '' || s.image))
-    : [{ id: 'ph-1', text: 'WORD 1', color: '#FBBF24' }];
+    : [{ id: 'ph-1', text: 'WORD 1', color: '#FACC15' }];
 
   const totalWeight = activeSlices.reduce((acc, s) => acc + (s.weight || 1), 0);
 
-  // Compute slice angles with weights
+  // Compute slice angles with weights and balanced colors
   const computedSlices = React.useMemo(() => {
     let currentAngle = 0;
     return activeSlices.map((slice, idx) => {
       const weight = slice.weight || 1;
       const arc = (weight / totalWeight) * (Math.PI * 2);
+      const color = slice.color || getBalancedSliceColor(idx, activeSlices.length, VIBRANT_STAGE_PALETTE);
       const res = {
         slice,
         index: idx,
         startAngle: currentAngle,
         endAngle: currentAngle + arc,
         arcAngle: arc,
-        color: slice.color,
+        color,
       };
       currentAngle += arc;
       return res;
@@ -55,15 +61,6 @@ export const WheelCanvas: React.FC<WheelCanvasProps> = ({
 
   // Pointer angle relative to center: right is 0, top is -PI/2
   const pointerAngle = pointerPosition === 'top' ? -Math.PI / 2 : 0;
-
-  const getLuminance = (hexColor: string) => {
-    const hex = hexColor.replace('#', '');
-    if (hex.length !== 6) return 0.5;
-    const r = parseInt(hex.substring(0, 2), 16) / 255;
-    const g = parseInt(hex.substring(2, 4), 16) / 255;
-    const b = parseInt(hex.substring(4, 6), 16) / 255;
-    return 0.299 * r + 0.587 * g + 0.114 * b;
-  };
 
   const drawWheel = useCallback((angle: number) => {
     const canvas = canvasRef.current;
@@ -126,8 +123,15 @@ export const WheelCanvas: React.FC<WheelCanvasProps> = ({
         ctx.translate(centerX, centerY);
         ctx.rotate(mid);
 
-        const lum = getLuminance(cs.color);
-        ctx.fillStyle = lum > 0.58 ? '#0f172a' : '#ffffff';
+        // Strict unified text contrast logic (YIQ >= 95 -> #0F172A, else #FFFFFF)
+        const textColor = getSliceTextColor(cs.color);
+        ctx.fillStyle = textColor;
+
+        // Clear any shadow or stroke that muddies the dark navy typography
+        ctx.shadowColor = 'transparent';
+        ctx.shadowBlur = 0;
+        ctx.shadowOffsetX = 0;
+        ctx.shadowOffsetY = 0;
 
         const hubR = maxRadius * 0.16;
         const outerPad = 16;
@@ -148,11 +152,6 @@ export const WheelCanvas: React.FC<WheelCanvasProps> = ({
             displayStr = displayStr.slice(0, -1);
           }
           displayStr += '…';
-        }
-
-        if (lum <= 0.58) {
-          ctx.shadowColor = 'rgba(0, 0, 0, 0.35)';
-          ctx.shadowBlur = 3;
         }
 
         ctx.fillText(displayStr, maxRadius - outerPad, 0);

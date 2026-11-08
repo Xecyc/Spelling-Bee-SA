@@ -9,6 +9,11 @@ import {
   WinnersData,
 } from './types/presentation';
 import { INITIAL_WHEELS, PASTEL_PALETTE } from './utils/defaultData';
+import {
+  VIBRANT_STAGE_PALETTE,
+  CHAMPIONSHIP_PALETTE,
+  recalibrateSliceColors,
+} from './utils/palette.ts';
 import { audioManager } from './utils/audio';
 import { PresentationDeck } from './components/PresentationDeck';
 import { WheelCreatorStudio } from './components/WheelCreatorStudio';
@@ -20,6 +25,16 @@ import { RemoteControl } from './components/RemoteControl';
 import { RemoteQRCodeModal } from './components/RemoteQRCodeModal';
 import { useContestStore } from './store';
 import { useStageSync } from './hooks/useStageSync';
+
+const sanitizeWheel = (wheel: WheelConfig): WheelConfig => {
+  const palette = (wheel.group === 'high_school' && wheel.place === 'championship')
+    ? CHAMPIONSHIP_PALETTE
+    : VIBRANT_STAGE_PALETTE;
+  return {
+    ...wheel,
+    slices: recalibrateSliceColors(wheel.slices, palette),
+  };
+};
 
 const SLIDE_TITLES = [
   'Welcome & Title',
@@ -57,7 +72,7 @@ export default function App() {
   const isRemoteRoute = useContestStore((s) => s.isRemoteRoute);
   const setIsRemoteRoute = useContestStore((s) => s.setIsRemoteRoute);
 
-  // Wheels state with localStorage persistence
+  // Wheels state with localStorage persistence (sanitized for balanced palette)
   const [wheels, setWheels] = useState<WheelConfig[]>(() => {
     try {
       const saved = localStorage.getItem('salto_angel_wheels_2026_v7');
@@ -68,13 +83,13 @@ export default function App() {
           parsed.length >= 10 &&
           parsed.some((w) => w.group === 'high_school')
         ) {
-          return parsed;
+          return parsed.map(sanitizeWheel);
         }
       }
     } catch {
       // Fallback
     }
-    return INITIAL_WHEELS;
+    return INITIAL_WHEELS.map(sanitizeWheel);
   });
 
   // Active wheel id
@@ -133,8 +148,9 @@ export default function App() {
       .then((res) => res.json())
       .then((data) => {
         if (Array.isArray(data.wheels) && data.wheels.length > 0) {
-          setWheels(data.wheels);
-          localStorage.setItem('salto_angel_wheels_2026_v7', JSON.stringify(data.wheels));
+          const sanitized = data.wheels.map(sanitizeWheel);
+          setWheels(sanitized);
+          localStorage.setItem('salto_angel_wheels_2026_v7', JSON.stringify(sanitized));
         }
       })
       .catch(() => {
@@ -156,11 +172,12 @@ export default function App() {
     }
   }, [wheels]);
 
-  // Append newly analyzed wheels
+  // Append newly analyzed wheels (sanitized with odd-boundary protection)
   const handleAppendWheels = (newWheels: WheelConfig[]) => {
-    setWheels((prev) => [...prev, ...newWheels]);
-    if (newWheels.length > 0) {
-      setActiveWheelId(newWheels[0].id);
+    const sanitized = newWheels.map(sanitizeWheel);
+    setWheels((prev) => [...prev, ...sanitized]);
+    if (sanitized.length > 0) {
+      setActiveWheelId(sanitized[0].id);
     }
   };
 
@@ -234,6 +251,14 @@ export default function App() {
     }
   };
 
+  // Select wheel (resets winning slice and modal to prevent unwanted timer auto-start when switching wheels/places)
+  const handleSelectWheel = (wheelId: string) => {
+    setActiveWheelId(wheelId);
+    setIsWheelSpinning(false);
+    setWinningSlice(null);
+    setShowWinnerModal(false);
+  };
+
   // Spin lifecycle
   const handleSpinStart = () => {
     if (isWheelSpinning) return;
@@ -245,18 +270,24 @@ export default function App() {
   const handleSpinEnd = (slice: WheelSlice) => {
     setIsWheelSpinning(false);
     setWinningSlice(slice);
+    // Modal opens with timer strictly stopped; only starts on explicit user action
     setShowWinnerModal(true);
   };
 
-  // Remove winning word from current wheel
+  // Remove winning word from current wheel and dynamically recalculate colors
   const handleRemoveWinningWord = () => {
     if (!winningSlice) return;
     setWheels((prev) =>
       prev.map((w) => {
         if (w.id === activeWheel.id) {
+          const remainingSlices = w.slices.filter((s) => s.id !== winningSlice.id);
+          const palette = (w.group === 'high_school' && w.place === 'championship')
+            ? CHAMPIONSHIP_PALETTE
+            : VIBRANT_STAGE_PALETTE;
+          const recalibratedSlices = recalibrateSliceColors(remainingSlices, palette);
           return {
             ...w,
-            slices: w.slices.filter((s) => s.id !== winningSlice.id),
+            slices: recalibratedSlices,
           };
         }
         return w;
@@ -328,13 +359,14 @@ export default function App() {
   // 4. Replace all wheels with an entire array (e.g. from JSON import or Analyzer)
   const handleReplaceAllWheels = (newWheels: WheelConfig[]) => {
     if (newWheels.length === 0) return;
-    setWheels(newWheels);
-    setActiveWheelId(newWheels[0].id);
+    const sanitized = newWheels.map(sanitizeWheel);
+    setWheels(sanitized);
+    setActiveWheelId(sanitized[0].id);
   };
 
   // 5. Replace words in existing wheels
   const handleReplaceWordsInExistingWheels = (updatedWheels: WheelConfig[]) => {
-    setWheels(updatedWheels);
+    setWheels(updatedWheels.map(sanitizeWheel));
   };
 
   // 6. Test celebration modal trigger
@@ -414,7 +446,7 @@ export default function App() {
         activeWheelName={activeWheel.name}
         wheels={wheels}
         activeWheelId={activeWheelId}
-        onSelectWheel={setActiveWheelId}
+        onSelectWheel={handleSelectWheel}
         soundSettings={soundSettings}
         onUpdateSoundSettings={setSoundSettings}
         isFullscreen={isFullscreen}
@@ -462,7 +494,7 @@ export default function App() {
         <WheelCreatorStudio
           wheels={wheels}
           activeWheelId={activeWheelId}
-          onSelectWheel={setActiveWheelId}
+          onSelectWheel={handleSelectWheel}
           onUpdateWheel={handleUpdateWheel}
           onCreateWheel={handleCreateWheel}
           onDeleteWheel={handleDeleteWheel}
@@ -485,12 +517,15 @@ export default function App() {
       {/* Winner Celebration Modal */}
       {showWinnerModal && winningSlice && (
         <WinnerModal
-          key={`winner-${activeWheel.id}-${winningSlice.id}`}
+          key={`winner-${activeWheel.id}-${winningSlice.id}-${activeWheel.timerDuration ?? 40}`}
           isOpen={showWinnerModal}
           word={winningSlice.text}
           sliceColor={winningSlice.color}
           timerDuration={activeWheel.timerDuration ?? 40}
-          onClose={() => setShowWinnerModal(false)}
+          onClose={() => {
+            setShowWinnerModal(false);
+            setWinningSlice(null);
+          }}
           onRemoveWord={handleRemoveWinningWord}
           onStartTimer={() => {
             setAutoStartTimerTrigger((prev) => prev + 1);

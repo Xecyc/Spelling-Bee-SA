@@ -14,6 +14,11 @@ import {
 import mammoth from 'mammoth';
 import * as XLSX from 'xlsx';
 import { WheelConfig, WheelSlice } from '../types/presentation';
+import {
+  VIBRANT_STAGE_PALETTE,
+  CHAMPIONSHIP_PALETTE,
+  getBalancedSliceColor,
+} from '../utils/palette.ts';
 
 interface DocumentAnalyzerModalProps {
   isOpen: boolean;
@@ -32,12 +37,6 @@ interface ParsedWheelCandidate {
   timerDuration: number;
   words: string[];
 }
-
-const VIBRANT_SLICE_COLORS = [
-  '#3b82f6', '#ef4444', '#10b981', '#f59e0b', '#8b5cf6',
-  '#ec4899', '#06b6d4', '#f97316', '#6366f1', '#14b8a6',
-  '#84cc16', '#eab308', '#d946ef', '#0ea5e9', '#f43f5e',
-];
 
 export const DocumentAnalyzerModal: React.FC<DocumentAnalyzerModalProps> = ({
   isOpen,
@@ -416,10 +415,13 @@ export const DocumentAnalyzerModal: React.FC<DocumentAnalyzerModalProps> = ({
           const candIdx = Number(candIndexEntry[0]);
           const candidate = parsedCandidates[candIdx];
           if (candidate && candidate.words.length > 0) {
+            const palette = (wheel.group === 'high_school' && wheel.place === 'championship')
+              ? CHAMPIONSHIP_PALETTE
+              : VIBRANT_STAGE_PALETTE;
             const newSlices: WheelSlice[] = candidate.words.map((w, wIdx) => ({
               id: `slice-${Date.now()}-${wheel.id}-${wIdx}`,
               text: w,
-              color: VIBRANT_SLICE_COLORS[wIdx % VIBRANT_SLICE_COLORS.length],
+              color: getBalancedSliceColor(wIdx, candidate.words.length, palette),
               weight: 1,
               enabled: true,
             }));
@@ -440,10 +442,13 @@ export const DocumentAnalyzerModal: React.FC<DocumentAnalyzerModalProps> = ({
 
     if (importMode === 'overwrite' && onReplaceAllWheels) {
       const newWheels: WheelConfig[] = parsedCandidates.map((cand, idx) => {
+        const palette = (cand.group === 'high_school' && cand.place === '1st')
+          ? CHAMPIONSHIP_PALETTE
+          : VIBRANT_STAGE_PALETTE;
         const slices: WheelSlice[] = cand.words.map((w, wIdx) => ({
           id: `slice-${Date.now()}-${idx}-${wIdx}`,
           text: w,
-          color: VIBRANT_SLICE_COLORS[wIdx % VIBRANT_SLICE_COLORS.length],
+          color: getBalancedSliceColor(wIdx, cand.words.length, palette),
           weight: 1,
           enabled: true,
         }));
@@ -456,7 +461,7 @@ export const DocumentAnalyzerModal: React.FC<DocumentAnalyzerModalProps> = ({
           role: cand.place === '1st' ? '1st' : '2nd',
           timerDuration: cand.timerDuration,
           spinDuration: 7,
-          slices: slices.length > 0 ? slices : [{ id: `s-ph-${idx}`, text: 'SAMPLE', color: '#FBBF24' }],
+          slices: slices.length > 0 ? slices : [{ id: `s-ph-${idx}`, text: 'SAMPLE', color: '#FACC15' }],
         };
       });
       onReplaceAllWheels(newWheels);
@@ -474,10 +479,13 @@ export const DocumentAnalyzerModal: React.FC<DocumentAnalyzerModalProps> = ({
     if (parsedCandidates.length === 0) return;
 
     const newWheels: WheelConfig[] = parsedCandidates.map((cand, idx) => {
+      const palette = (cand.group === 'high_school' && cand.place === '1st')
+        ? CHAMPIONSHIP_PALETTE
+        : VIBRANT_STAGE_PALETTE;
       const slices: WheelSlice[] = cand.words.map((w, wIdx) => ({
         id: `slice-${Date.now()}-${idx}-${wIdx}`,
         text: w,
-        color: VIBRANT_SLICE_COLORS[wIdx % VIBRANT_SLICE_COLORS.length],
+        color: getBalancedSliceColor(wIdx, cand.words.length, palette),
         weight: 1,
         enabled: true,
       }));
@@ -491,7 +499,7 @@ export const DocumentAnalyzerModal: React.FC<DocumentAnalyzerModalProps> = ({
         role: cand.place === '1st' ? '1st' : '2nd',
         timerDuration: cand.timerDuration,
         spinDuration: 7,
-        slices: slices.length > 0 ? slices : [{ id: `s-ph-${idx}`, text: 'SAMPLE', color: '#FBBF24' }],
+        slices: slices.length > 0 ? slices : [{ id: `s-ph-${idx}`, text: 'SAMPLE', color: '#FACC15' }],
       };
     });
 

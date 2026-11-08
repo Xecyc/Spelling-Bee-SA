@@ -48,14 +48,14 @@ export const StopwatchTimer: React.FC<StopwatchTimerProps> = ({
 
   // Handle auto-start trigger only when explicitly incremented by user action
   useEffect(() => {
-    if (autoStartTrigger && autoStartTrigger > 0 && autoStartTrigger !== lastTriggerRef.current) {
+    if (autoStartTrigger && autoStartTrigger > 0 && autoStartTrigger > lastTriggerRef.current) {
       lastTriggerRef.current = autoStartTrigger;
-      if (secondsRemaining <= 0) {
-        setSecondsRemaining(totalSeconds);
-      }
+      setSecondsRemaining((prev) => (prev <= 0 ? totalSeconds : prev));
       setRunningState(true);
+    } else if (typeof autoStartTrigger === 'number') {
+      lastTriggerRef.current = autoStartTrigger;
     }
-  }, [autoStartTrigger, totalSeconds, secondsRemaining]);
+  }, [autoStartTrigger, totalSeconds]);
 
   // Timer interval
   useEffect(() => {

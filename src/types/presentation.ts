@@ -7,9 +7,9 @@ export interface WheelSlice {
   image?: string | null;
 }
 
-export type WheelRole = 'general' | 'tiebreak' | '1st' | '2nd' | '3rd' | 'custom';
+export type WheelRole = 'general' | 'tiebreak' | '1st' | '2nd' | '3rd' | 'championship' | 'custom';
 export type WheelGroup = 'elementary' | 'high_school' | 'custom';
-export type WheelPlace = 'general' | 'tiebreak' | '1st' | '2nd_3rd' | 'custom';
+export type WheelPlace = 'general' | 'tiebreak' | '1st' | '2nd_3rd' | 'championship' | 'custom';
 
 export interface WheelConfig {
   id: string;
