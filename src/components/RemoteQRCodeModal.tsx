@@ -30,8 +30,23 @@ export const RemoteQRCodeModal: React.FC<RemoteQRCodeModalProps> = ({
   const [remoteUrl, setRemoteUrl] = useState<string>(getDynamicRemoteUrl);
 
   useEffect(() => {
-    setRemoteUrl(getDynamicRemoteUrl());
-  }, []);
+    const base = getDynamicRemoteUrl();
+    setRemoteUrl(base);
+
+    // If on localhost or 127.0.0.1, query host network IP so phone QR code works across Wi-Fi
+    if (typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')) {
+      fetch('/api/network-ip')
+        .then((res) => res.json())
+        .then((data) => {
+          if (data?.localIp && data.localIp !== 'localhost' && data.localIp !== '127.0.0.1') {
+            const urlObj = new URL(base, window.location.origin);
+            urlObj.hostname = data.localIp;
+            setRemoteUrl(urlObj.toString());
+          }
+        })
+        .catch(() => {});
+    }
+  }, [isOpen]);
 
   if (!isOpen) return null;
 

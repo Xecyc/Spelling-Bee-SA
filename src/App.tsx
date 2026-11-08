@@ -331,12 +331,22 @@ export default function App() {
 
   // Remote Control action handler from WebSocket / BroadcastChannel
   const handleRemoteAction = useCallback(
-    (action: string) => {
+    (action: string, payload?: any) => {
       switch (action) {
         case 'spin_wheel':
+          // Ensure stage display is in Presentation mode and on Slide 1 (Wheel Slide)
+          setCurrentMode('presentation');
+          setCurrentSlide(1);
+          setShowWinnerModal(false);
+          setWinningSlice(null);
           if (!isWheelSpinning) {
-            // Stage/TV slide remains completely independent; wheel runs in background
             handleSpinStart();
+          }
+          break;
+        case 'set_slide':
+          if (typeof payload === 'number') {
+            setCurrentMode('presentation');
+            setCurrentSlide(payload as PresentationSlideId);
           }
           break;
         case 'stop_spin':
@@ -360,7 +370,7 @@ export default function App() {
           break;
       }
     },
-    [isWheelSpinning, handleSpinStart, handleSpinStop, handleRemoveWinningWord]
+    [isWheelSpinning, handleSpinStart, handleSpinStop, handleRemoveWinningWord, setCurrentMode, setCurrentSlide]
   );
 
   // Centralized Stage & Remote sync hook

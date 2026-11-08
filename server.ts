@@ -138,6 +138,10 @@ io.on('connection', (socket) => {
   socket.on('close_modal', () => {
     io.emit('close_modal');
   });
+
+  socket.on('set_slide', (slide: number) => {
+    io.emit('set_slide', slide);
+  });
 });
 
 app.use(express.json({ limit: '50mb' }));

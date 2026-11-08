@@ -406,6 +406,10 @@ export const WheelCanvas: React.FC<WheelCanvasProps> = ({
       className="relative flex items-center justify-center cursor-pointer select-none group w-full h-full aspect-square touch-manipulation"
       style={size ? { maxWidth: size, maxHeight: size } : undefined}
       onClick={handleWheelClick}
+      onTouchEnd={(e) => {
+        e.preventDefault();
+        handleWheelClick();
+      }}
       role="button"
       tabIndex={0}
       aria-label={isSpinning ? 'Wheel is spinning. Click to stop.' : 'Interactive Wheel of Names. Click to spin.'}

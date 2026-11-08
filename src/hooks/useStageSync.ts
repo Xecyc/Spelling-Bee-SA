@@ -78,7 +78,7 @@ export function useStageSync(options?: UseStageSyncOptions) {
             onStageStateRef.current(payload);
           }
         } else if (
-          ['spin_wheel', 'stop_spin', 'start_timer', 'pause_timer', 'reset_timer', 'remove_word', 'close_modal'].includes(type)
+          ['spin_wheel', 'stop_spin', 'start_timer', 'pause_timer', 'reset_timer', 'remove_word', 'close_modal', 'set_slide'].includes(type)
         ) {
           if (!isRemoteRoute && onRemoteActionRef.current) {
             onRemoteActionRef.current(type, payload);
@@ -185,6 +185,7 @@ export function useStageSync(options?: UseStageSyncOptions) {
     const handleResetTimer = onRemoteCommand('reset_timer');
     const handleRemoveWord = onRemoteCommand('remove_word');
     const handleCloseModal = onRemoteCommand('close_modal');
+    const handleSetSlide = onRemoteCommand('set_slide');
 
     socket.on('connect', onConnect);
     socket.on('disconnect', onDisconnect);
@@ -201,6 +202,7 @@ export function useStageSync(options?: UseStageSyncOptions) {
     socket.on('reset_timer', handleResetTimer);
     socket.on('remove_word', handleRemoveWord);
     socket.on('close_modal', handleCloseModal);
+    socket.on('set_slide', handleSetSlide);
 
     if (socket.connected) {
       setIsConnected(true);
@@ -228,6 +230,7 @@ export function useStageSync(options?: UseStageSyncOptions) {
       socket.off('reset_timer', handleResetTimer);
       socket.off('remove_word', handleRemoveWord);
       socket.off('close_modal', handleCloseModal);
+      socket.off('set_slide', handleSetSlide);
 
       clearInterval(pingTimer);
       window.removeEventListener('storage', handleStorage);
@@ -281,6 +284,7 @@ export function useStageSync(options?: UseStageSyncOptions) {
   const resetTimer = () => broadcastAction('reset_timer');
   const removeWord = () => broadcastAction('remove_word');
   const closeModal = () => broadcastAction('close_modal');
+  const setSlide = (slide: number) => broadcastAction('set_slide', slide);
 
   const broadcastStageState = (state: StageSyncState) => {
     socket.emit('sync_stage_state', state);
@@ -306,6 +310,7 @@ export function useStageSync(options?: UseStageSyncOptions) {
     resetTimer,
     removeWord,
     closeModal,
+    setSlide,
     broadcastStageState,
     requestStageState,
     socket,
