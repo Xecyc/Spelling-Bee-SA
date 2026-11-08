@@ -430,7 +430,21 @@ export default function App() {
 
   // Route B: Backstage Mobile Remote view (/remote)
   if (isRemoteRoute) {
-    return <RemoteControl />;
+    const cleanBase = typeof window !== 'undefined'
+      ? window.location.pathname.replace(/\/remote(\/index\.html|\.html)?\/?$/, '').replace(/\/$/, '')
+      : '';
+    const stagePath = cleanBase ? `${cleanBase}/` : '/';
+
+    return (
+      <RemoteControl
+        onReturnToStage={() => {
+          if (typeof window !== 'undefined') {
+            window.history.pushState({}, '', stagePath);
+            setIsRemoteRoute(false);
+          }
+        }}
+      />
+    );
   }
 
   return (

@@ -14,7 +14,11 @@ const socket = io(typeof window !== 'undefined' ? window.location.origin : '', {
   transports: ['websocket', 'polling']
 });
 
-export const RemoteControl: React.FC = () => {
+interface RemoteControlProps {
+  onReturnToStage?: () => void;
+}
+
+export const RemoteControl: React.FC<RemoteControlProps> = ({ onReturnToStage }) => {
   const [winners, setWinners] = useState<WinnersState>({
     first: '',
     second: '',
@@ -23,6 +27,16 @@ export const RemoteControl: React.FC = () => {
 
   const [isConnected, setIsConnected] = useState<boolean>(() => socket.connected);
   const [lastAction, setLastAction] = useState<string | null>(null);
+  const [stagePath, setStagePath] = useState<string>('/');
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const cleanBase = window.location.pathname
+        .replace(/\/remote(\/index\.html|\.html)?\/?$/, '')
+        .replace(/\/$/, '');
+      setStagePath(cleanBase ? `${cleanBase}/` : '/');
+    }
+  }, []);
 
   useEffect(() => {
     const handleConnect = () => {
@@ -230,13 +244,22 @@ export const RemoteControl: React.FC = () => {
       {/* Backstage footer note */}
       <div className="pt-8 text-center text-xs text-gray-500 border-t border-gray-800/60 mt-8">
         <p>Live control connected to stage auditorium</p>
-        <a
-          href="/"
-          className="inline-flex items-center gap-1 mt-2 text-gray-400 hover:text-white transition"
-        >
-          <span>Open Stage Display</span>
-          <ExternalLink className="w-3 h-3" />
-        </a>
+        <div className="flex items-center justify-center gap-4 mt-2">
+          <a
+            href={stagePath}
+            onClick={(e) => {
+              if (onReturnToStage) {
+                e.preventDefault();
+                onReturnToStage();
+              }
+            }}
+            className="inline-flex items-center gap-1.5 text-gray-400 hover:text-white transition cursor-pointer"
+            title="Return to main stage presentation deck"
+          >
+            <span>Open Stage Display</span>
+            <ExternalLink className="w-3 h-3" />
+          </a>
+        </div>
       </div>
     </div>
   );
