@@ -88,6 +88,7 @@ export const RemoteControl: React.FC<RemoteControlProps> = ({
   onSpinWheel,
 }) => {
   const isConnected = useContestStore((s) => s.isConnected);
+
   const [winners, setWinners] = useState<WinnersState>({
     first: '',
     second: '',

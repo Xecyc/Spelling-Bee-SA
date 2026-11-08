@@ -146,6 +146,122 @@ io.on('connection', (socket) => {
 
 app.use(express.json({ limit: '50mb' }));
 
+// ============================================================================
+// UNIVERSAL REMOTE CONTROL HTTP & SSE RELAY (Guarantees Cloud Run & mobile sync)
+// ============================================================================
+interface RemoteMessage {
+  id: number;
+  type: string;
+  payload?: any;
+  timestamp: number;
+}
+let messageHistory: RemoteMessage[] = [];
+let nextMsgId = 1;
+const sseClients: express.Response[] = [];
+
+// Broadcast remote event to all connected channels
+function dispatchRemoteMessage(type: string, payload?: any) {
+  const msg: RemoteMessage = { id: nextMsgId++, type, payload, timestamp: Date.now() };
+  messageHistory.push(msg);
+  if (messageHistory.length > 80) messageHistory.shift();
+
+  // 1. Relay to Socket.io clients
+  io.emit(type, payload);
+  io.emit('remote_action', msg);
+
+  // 2. Relay to Server-Sent Events (SSE) clients
+  const sseData = `data: ${JSON.stringify(msg)}\n\n`;
+  for (let i = sseClients.length - 1; i >= 0; i--) {
+    try {
+      sseClients[i].write(sseData);
+    } catch {
+      sseClients.splice(i, 1);
+    }
+  }
+  return msg;
+}
+
+// 1. HTTP POST: Dispatch any remote command (spin_wheel, set_slide, push_winners, etc.)
+app.post('/api/remote/action', (req, res) => {
+  const { type, payload } = req.body;
+  if (!type || typeof type !== 'string') {
+    return res.status(400).json({ error: 'Missing or invalid action type' });
+  }
+
+  if (type === 'push_winners' && payload) {
+    currentWinners = {
+      first: typeof payload.first === 'string' ? payload.first.trim() : '',
+      second: typeof payload.second === 'string' ? payload.second.trim() : '',
+      third: typeof payload.third === 'string' ? payload.third.trim() : '',
+    };
+    isWinnersActive = true;
+    io.emit('show_winners', currentWinners);
+  } else if (type === 'clear_board') {
+    currentWinners = null;
+    isWinnersActive = false;
+    io.emit('hide_winners');
+  }
+
+  const msg = dispatchRemoteMessage(type, payload);
+  res.json({ ok: true, id: msg.id });
+});
+
+// 2. SSE Stream: Real-time event stream for stage and remote clients
+app.get('/api/remote/events', (req, res) => {
+  res.writeHead(200, {
+    'Content-Type': 'text/event-stream',
+    'Cache-Control': 'no-cache, no-transform',
+    Connection: 'keep-alive',
+    'Access-Control-Allow-Origin': '*',
+  });
+  res.write(': connected\n\n');
+  sseClients.push(res);
+
+  // Heartbeat ping every 15s to keep connection alive
+  const heartbeat = setInterval(() => {
+    try {
+      res.write(': ping\n\n');
+    } catch {
+      clearInterval(heartbeat);
+    }
+  }, 15000);
+
+  req.on('close', () => {
+    clearInterval(heartbeat);
+    const idx = sseClients.indexOf(res);
+    if (idx !== -1) sseClients.splice(idx, 1);
+  });
+});
+
+// 3. HTTP Poll fallback: In case SSE is buffered by proxies
+app.get('/api/remote/poll', (req, res) => {
+  const since = parseInt(req.query.since as string) || 0;
+  const newMessages = messageHistory.filter((m) => m.id > since);
+  res.json({
+    messages: newMessages,
+    latestId: messageHistory[messageHistory.length - 1]?.id || 0,
+    latestStageState,
+    currentWinners,
+  });
+});
+
+// 4. Stage State sync endpoint
+app.post('/api/remote/stage-state', (req, res) => {
+  const { state } = req.body;
+  if (state) {
+    latestStageState = state;
+    dispatchRemoteMessage('stage_state', state);
+  }
+  res.json({ ok: true });
+});
+
+app.get('/api/remote/stage-state', (req, res) => {
+  res.json({
+    state: latestStageState,
+    winners: currentWinners,
+  });
+});
+
 // Helper to read wheels safely (sanitized with odd-boundary protection)
 function getSavedWheels() {
   const wheels = wheelsStore.read(INITIAL_WHEELS);

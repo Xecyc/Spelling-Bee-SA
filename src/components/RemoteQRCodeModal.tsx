@@ -77,15 +77,27 @@ export const RemoteQRCodeModal: React.FC<RemoteQRCodeModalProps> = ({
           <ExternalLink className="w-3 h-3 shrink-0" />
         </a>
 
+        {/* Open Remote in New Tab for side-by-side desktop testing */}
+        <a
+          href={currentUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          onClick={onClose}
+          className="bg-amber-400 hover:bg-amber-300 text-[#061a3e] transition-colors rounded-lg py-2.5 mt-5 w-full text-xs font-black uppercase tracking-wider flex items-center justify-center gap-2 cursor-pointer active:scale-98 shadow-md"
+        >
+          <ExternalLink className="w-4 h-4 stroke-[2.5]" />
+          <span>Open Remote in New Tab</span>
+        </a>
+
         {/* Switch to Remote View button for testing on desktop */}
         {onSwitchToRemote && (
           <button
             type="button"
             onClick={onSwitchToRemote}
-            className="bg-white/5 border border-white/15 text-white/90 hover:bg-white/10 hover:text-white transition-colors rounded-lg py-2.5 mt-5 w-full text-xs font-semibold tracking-wide flex items-center justify-center gap-2 cursor-pointer active:scale-98"
+            className="bg-white/5 border border-white/15 text-white/90 hover:bg-white/10 hover:text-white transition-colors rounded-lg py-2 mt-2 w-full text-xs font-semibold tracking-wide flex items-center justify-center gap-2 cursor-pointer active:scale-98"
           >
             <Smartphone className="w-3.5 h-3.5 text-yellow-400" />
-            <span>Switch to Remote View on this Screen</span>
+            <span>Switch Entire Screen to Remote</span>
           </button>
         )}
 

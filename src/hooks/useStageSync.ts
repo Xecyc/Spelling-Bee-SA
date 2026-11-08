@@ -11,6 +11,7 @@ export function getSocket(): Socket {
     socketInstance = io(origin, {
       path: '/socket.io',
       transports: ['polling', 'websocket'],
+      withCredentials: true,
       reconnection: true,
       reconnectionAttempts: Infinity,
       reconnectionDelay: 1000,
@@ -208,12 +209,73 @@ export function useStageSync(options?: UseStageSyncOptions) {
       setIsConnected(true);
     }
 
-    // Ping interval for genuine latency & connection health check
     const pingTimer = setInterval(() => {
       if (socket.connected) {
         socket.emit('ping', Date.now());
       }
     }, 10000);
+
+    // 4. Universal Server-Sent Events (SSE) & HTTP Relay (Guarantees Cloud Run & mobile delivery)
+    let eventSource: EventSource | null = null;
+    let pollInterval: ReturnType<typeof setInterval> | null = null;
+    let lastSeenMsgId = 0;
+
+    const handleRemoteMessage = (type: string, payload: any) => {
+      if (type === 'show_winners' && payload) {
+        if (!isRemoteRoute) {
+          setWinnersData(payload);
+          setCurrentMode('presentation');
+          setCurrentSlide(2);
+        }
+      } else if (type === 'clear_board' || type === 'hide_winners') {
+        if (!isRemoteRoute) {
+          setWinnersData(null);
+          setCurrentSlide(1);
+        }
+      } else if (type === 'stage_state' && payload) {
+        if (onStageStateRef.current) {
+          onStageStateRef.current(payload);
+        }
+      } else if (
+        ['spin_wheel', 'stop_spin', 'start_timer', 'pause_timer', 'reset_timer', 'remove_word', 'close_modal', 'set_slide'].includes(type)
+      ) {
+        if (!isRemoteRoute && onRemoteActionRef.current) {
+          onRemoteActionRef.current(type, payload);
+        }
+      }
+    };
+
+    if (typeof window !== 'undefined' && typeof EventSource !== 'undefined') {
+      try {
+        eventSource = new EventSource('/api/remote/events');
+        eventSource.onmessage = (event) => {
+          if (!event.data || event.data.startsWith(':')) return;
+          try {
+            const parsed = JSON.parse(event.data);
+            if (parsed.id) lastSeenMsgId = Math.max(lastSeenMsgId, parsed.id);
+            handleRemoteMessage(parsed.type, parsed.payload);
+          } catch {}
+        };
+      } catch {}
+    }
+
+    // HTTP polling backup every 1.5s for environments where WebSocket or SSE is buffered
+    pollInterval = setInterval(() => {
+      fetch(`/api/remote/poll?since=${lastSeenMsgId}`)
+        .then((res) => res.json())
+        .then((data) => {
+          if (Array.isArray(data?.messages) && data.messages.length > 0) {
+            data.messages.forEach((m: any) => {
+              lastSeenMsgId = Math.max(lastSeenMsgId, m.id);
+              handleRemoteMessage(m.type, m.payload);
+            });
+          }
+          if (data?.latestStageState && onStageStateRef.current) {
+            onStageStateRef.current(data.latestStageState);
+          }
+        })
+        .catch(() => {});
+    }, 1500);
 
     return () => {
       socket.off('connect', onConnect);
@@ -233,6 +295,8 @@ export function useStageSync(options?: UseStageSyncOptions) {
       socket.off('set_slide', handleSetSlide);
 
       clearInterval(pingTimer);
+      if (pollInterval) clearInterval(pollInterval);
+      if (eventSource) eventSource.close();
       window.removeEventListener('storage', handleStorage);
       if (channelRef.current) {
         channelRef.current.close();
@@ -248,6 +312,15 @@ export function useStageSync(options?: UseStageSyncOptions) {
     }
     try {
       localStorage.setItem('salto_angel_remote_action', JSON.stringify({ type, payload, ts: Date.now() }));
+    } catch {}
+
+    // HTTP POST fallback ensures instantaneous cross-device delivery through any proxy
+    try {
+      fetch('/api/remote/action', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ type, payload }),
+      }).catch(() => {});
     } catch {}
   };
 
@@ -294,10 +367,32 @@ export function useStageSync(options?: UseStageSyncOptions) {
     try {
       localStorage.setItem('salto_angel_stage_state', JSON.stringify({ state, ts: Date.now() }));
     } catch {}
+
+    // HTTP stage state sync fallback
+    try {
+      fetch('/api/remote/stage-state', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ state }),
+      }).catch(() => {});
+    } catch {}
   };
 
   const requestStageState = () => {
     socket.emit('request_stage_state');
+    try {
+      fetch('/api/remote/stage-state')
+        .then((res) => res.json())
+        .then((data) => {
+          if (data?.state && onStageStateRef.current) {
+            onStageStateRef.current(data.state);
+          }
+          if (data?.winners && !isRemoteRoute) {
+            setWinnersData(data.winners);
+          }
+        })
+        .catch(() => {});
+    } catch {}
   };
 
   return {
