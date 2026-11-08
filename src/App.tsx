@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { io } from 'socket.io-client';
 import {
   WheelConfig,
@@ -19,12 +19,12 @@ import { PresentationDeck } from './components/PresentationDeck';
 import { WheelCreatorStudio } from './components/WheelCreatorStudio';
 import { TopGeniallyBar } from './components/TopGeniallyBar';
 import { BottomGeniallyBar } from './components/BottomGeniallyBar';
-import { WinnerModal } from './components/WinnerModal';
+import { WinnerModal, TimerActionSignal } from './components/WinnerModal';
 import { DocumentAnalyzerModal } from './components/DocumentAnalyzerModal';
 import { RemoteControl } from './components/RemoteControl';
 import { RemoteQRCodeModal } from './components/RemoteQRCodeModal';
 import { useContestStore } from './store';
-import { useStageSync } from './hooks/useStageSync';
+import { useStageSync, getSocket } from './hooks/useStageSync';
 
 const sanitizeWheel = (wheel: WheelConfig): WheelConfig => {
   const palette = (wheel.group === 'high_school' && wheel.place === 'championship')
@@ -59,9 +59,6 @@ function checkIsRemotePath(): boolean {
 }
 
 export default function App() {
-  // Centralized Stage & Remote sync hook (singleton WebSocket, BroadcastChannel, latency ping)
-  useStageSync();
-
   // Unified Contest Store
   const currentMode = useContestStore((s) => s.currentMode);
   const setCurrentMode = useContestStore((s) => s.setCurrentMode);
@@ -138,6 +135,7 @@ export default function App() {
   const [isWheelSpinning, setIsWheelSpinning] = useState(false);
   const [winningSlice, setWinningSlice] = useState<WheelSlice | null>(null);
   const [showWinnerModal, setShowWinnerModal] = useState(false);
+  const [remoteTimerSignal, setRemoteTimerSignal] = useState<TimerActionSignal | null>(null);
   const [autoStartTimerTrigger, setAutoStartTimerTrigger] = useState<number>(0);
   const [showDocumentAnalyzer, setShowDocumentAnalyzer] = useState(false);
 
@@ -296,6 +294,90 @@ export default function App() {
     setWinningSlice(null);
     setShowWinnerModal(false);
   };
+
+  // Remote Control action handler from WebSocket / BroadcastChannel
+  const handleRemoteAction = useCallback(
+    (action: string) => {
+      switch (action) {
+        case 'spin_wheel':
+          if (!isWheelSpinning) {
+            if (currentMode !== 'presentation') {
+              setCurrentMode('presentation');
+            }
+            setCurrentSlide(1);
+            handleSpinStart();
+          }
+          break;
+        case 'start_timer':
+          setRemoteTimerSignal({ type: 'start', ts: Date.now() });
+          break;
+        case 'pause_timer':
+          setRemoteTimerSignal({ type: 'pause', ts: Date.now() });
+          break;
+        case 'reset_timer':
+          setRemoteTimerSignal({ type: 'reset', ts: Date.now() });
+          break;
+        case 'remove_word':
+          handleRemoveWinningWord();
+          break;
+        case 'close_modal':
+          setShowWinnerModal(false);
+          setWinningSlice(null);
+          break;
+      }
+    },
+    [isWheelSpinning, currentMode, setCurrentMode, setCurrentSlide]
+  );
+
+  // Centralized Stage & Remote sync hook
+  const { broadcastStageState } = useStageSync({ onRemoteAction: handleRemoteAction });
+
+  // Broadcast stage state to remotes whenever state changes
+  useEffect(() => {
+    if (isRemoteRoute) return;
+    broadcastStageState({
+      isSpinning: isWheelSpinning,
+      showWinnerModal,
+      winningWord: winningSlice?.text || null,
+      currentWheelName: activeWheel.name,
+      timerDuration: activeWheel.timerDuration ?? 40,
+    });
+  }, [
+    isRemoteRoute,
+    isWheelSpinning,
+    showWinnerModal,
+    winningSlice,
+    activeWheel.name,
+    activeWheel.timerDuration,
+    broadcastStageState,
+  ]);
+
+  // Reply immediately with current stage state when a remote requests it
+  useEffect(() => {
+    if (isRemoteRoute) return;
+    const socket = getSocket();
+    const handleRequest = () => {
+      broadcastStageState({
+        isSpinning: isWheelSpinning,
+        showWinnerModal,
+        winningWord: winningSlice?.text || null,
+        currentWheelName: activeWheel.name,
+        timerDuration: activeWheel.timerDuration ?? 40,
+      });
+    };
+    socket.on('request_stage_state', handleRequest);
+    return () => {
+      socket.off('request_stage_state', handleRequest);
+    };
+  }, [
+    isRemoteRoute,
+    isWheelSpinning,
+    showWinnerModal,
+    winningSlice,
+    activeWheel.name,
+    activeWheel.timerDuration,
+    broadcastStageState,
+  ]);
 
   // Keyboard shortcut Ctrl+Enter to spin
   useEffect(() => {
@@ -522,6 +604,7 @@ export default function App() {
           word={winningSlice.text}
           sliceColor={winningSlice.color}
           timerDuration={activeWheel.timerDuration ?? 40}
+          timerActionSignal={remoteTimerSignal}
           onClose={() => {
             setShowWinnerModal(false);
             setWinningSlice(null);

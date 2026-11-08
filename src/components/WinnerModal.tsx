@@ -3,6 +3,11 @@ import confetti from 'canvas-confetti';
 import { Trash2, CheckCircle2, Play, Pause } from 'lucide-react';
 import { StopwatchTimer } from './StopwatchTimer';
 
+export interface TimerActionSignal {
+  type: 'start' | 'pause' | 'reset';
+  ts: number;
+}
+
 interface WinnerModalProps {
   isOpen: boolean;
   word: string | null;
@@ -11,6 +16,7 @@ interface WinnerModalProps {
   onClose: () => void;
   onRemoveWord: () => void;
   onStartTimer: () => void;
+  timerActionSignal?: TimerActionSignal | null;
 }
 
 export const WinnerModal: React.FC<WinnerModalProps> = ({
@@ -21,10 +27,30 @@ export const WinnerModal: React.FC<WinnerModalProps> = ({
   onClose,
   onRemoveWord,
   onStartTimer,
+  timerActionSignal,
 }) => {
   const [modalTimerTrigger, setModalTimerTrigger] = useState(0);
   const [isTimerRunning, setIsTimerRunning] = useState(false);
   const [hasStarted, setHasStarted] = useState(false);
+
+  // Sync external remote timer action signals
+  useEffect(() => {
+    if (!timerActionSignal) return;
+    if (timerActionSignal.type === 'start') {
+      if (!hasStarted) {
+        setModalTimerTrigger((prev) => prev + 1);
+        setHasStarted(true);
+      }
+      setIsTimerRunning(true);
+      onStartTimer();
+    } else if (timerActionSignal.type === 'pause') {
+      setIsTimerRunning(false);
+    } else if (timerActionSignal.type === 'reset') {
+      setModalTimerTrigger((prev) => prev + 1);
+      setIsTimerRunning(false);
+      setHasStarted(false);
+    }
+  }, [timerActionSignal, onStartTimer, hasStarted]);
 
   useEffect(() => {
     if (isOpen && word) {

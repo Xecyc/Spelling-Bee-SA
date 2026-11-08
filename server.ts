@@ -61,6 +61,8 @@ const DATA_DIR = path.resolve(process.cwd(), 'data');
 const WHEELS_FILE = path.join(DATA_DIR, 'wheels.json');
 const wheelsStore = new AtomicStore<any[]>(WHEELS_FILE);
 
+let latestStageState: any = null;
+
 io.on('connection', (socket) => {
   // Heartbeat ping-pong for live latency calculation
   socket.on('ping', (startTime: number) => {
@@ -71,6 +73,18 @@ io.on('connection', (socket) => {
   if (isWinnersActive && currentWinners) {
     socket.emit('show_winners', currentWinners);
   }
+
+  // If stage state is active, sync newly connected remote immediately
+  if (latestStageState) {
+    socket.emit('stage_state', latestStageState);
+  }
+
+  // Allow remote to request immediate stage state snapshot
+  socket.on('request_stage_state', () => {
+    if (latestStageState) {
+      socket.emit('stage_state', latestStageState);
+    }
+  });
 
   // Listen for push_winners event from mobile remote
   socket.on('push_winners', (data: WinnersPayload) => {
@@ -88,6 +102,37 @@ io.on('connection', (socket) => {
     currentWinners = null;
     isWinnersActive = false;
     io.emit('hide_winners');
+  });
+
+  // Stage state synchronization
+  socket.on('sync_stage_state', (state: any) => {
+    latestStageState = state;
+    socket.broadcast.emit('stage_state', state);
+  });
+
+  // Remote roulette & timer action relays
+  socket.on('spin_wheel', () => {
+    io.emit('spin_wheel');
+  });
+
+  socket.on('start_timer', () => {
+    io.emit('start_timer');
+  });
+
+  socket.on('pause_timer', () => {
+    io.emit('pause_timer');
+  });
+
+  socket.on('reset_timer', () => {
+    io.emit('reset_timer');
+  });
+
+  socket.on('remove_word', () => {
+    io.emit('remove_word');
+  });
+
+  socket.on('close_modal', () => {
+    io.emit('close_modal');
   });
 });
 

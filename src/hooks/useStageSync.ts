@@ -20,7 +20,21 @@ export function getSocket(): Socket {
   return socketInstance;
 }
 
-export function useStageSync() {
+export interface StageSyncState {
+  isSpinning?: boolean;
+  showWinnerModal?: boolean;
+  winningWord?: string | null;
+  currentWheelName?: string;
+  timerDuration?: number;
+  timerRunning?: boolean;
+}
+
+interface UseStageSyncOptions {
+  onRemoteAction?: (action: string, data?: any) => void;
+  onStageState?: (state: StageSyncState) => void;
+}
+
+export function useStageSync(options?: UseStageSyncOptions) {
   const socket = getSocket();
   const setIsConnected = useContestStore((s) => s.setIsConnected);
   const setLatency = useContestStore((s) => s.setLatency);
@@ -30,6 +44,13 @@ export function useStageSync() {
   const isRemoteRoute = useContestStore((s) => s.isRemoteRoute);
 
   const channelRef = useRef<BroadcastChannel | null>(null);
+  const onRemoteActionRef = useRef(options?.onRemoteAction);
+  const onStageStateRef = useRef(options?.onStageState);
+
+  useEffect(() => {
+    onRemoteActionRef.current = options?.onRemoteAction;
+    onStageStateRef.current = options?.onStageState;
+  });
 
   useEffect(() => {
     // 1. Persistent BroadcastChannel for static hosts (GitHub Pages) and multi-window sync
@@ -39,16 +60,28 @@ export function useStageSync() {
 
       channel.onmessage = (event) => {
         const payload = event.data?.payload || event.data?.data;
-        if (event.data?.type === 'show_winners' && payload) {
+        const type = event.data?.type;
+
+        if (type === 'show_winners' && payload) {
           if (!isRemoteRoute) {
             setWinnersData(payload);
             setCurrentMode('presentation');
             setCurrentSlide(2);
           }
-        } else if (event.data?.type === 'clear_board' || event.data?.type === 'hide_winners') {
+        } else if (type === 'clear_board' || type === 'hide_winners') {
           if (!isRemoteRoute) {
             setWinnersData(null);
             setCurrentSlide(1);
+          }
+        } else if (type === 'stage_state' && payload) {
+          if (onStageStateRef.current) {
+            onStageStateRef.current(payload);
+          }
+        } else if (
+          ['spin_wheel', 'start_timer', 'pause_timer', 'reset_timer', 'remove_word', 'close_modal'].includes(type)
+        ) {
+          if (!isRemoteRoute && onRemoteActionRef.current) {
+            onRemoteActionRef.current(type, payload);
           }
         }
       };
@@ -73,21 +106,46 @@ export function useStageSync() {
             }
           }
         } catch {}
+      } else if (e.key === 'salto_angel_remote_action' && e.newValue) {
+        try {
+          const parsed = JSON.parse(e.newValue);
+          if (parsed.type && !isRemoteRoute && onRemoteActionRef.current) {
+            onRemoteActionRef.current(parsed.type, parsed.payload);
+          }
+        } catch {}
+      } else if (e.key === 'salto_angel_stage_state' && e.newValue) {
+        try {
+          const parsed = JSON.parse(e.newValue);
+          if (parsed.state && onStageStateRef.current) {
+            onStageStateRef.current(parsed.state);
+          }
+        } catch {}
       }
     };
+    // Load immediate cached stage state from localStorage
+    try {
+      const saved = localStorage.getItem('salto_angel_stage_state');
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (parsed.state && onStageStateRef.current) {
+          onStageStateRef.current(parsed.state);
+        }
+      }
+    } catch {}
+
     window.addEventListener('storage', handleStorage);
 
     // 3. Socket.io Event Listeners
     const onConnect = () => {
       setIsConnected(true);
       socket.emit('ping', Date.now());
+      socket.emit('request_stage_state');
     };
 
     const onDisconnect = () => setIsConnected(false);
     const onConnectError = () => setIsConnected(false);
 
     const onShowWinners = (payload: WinnersData) => {
-      // Remote operators stay in controls; TV audience screens switch to Podium Slide
       if (!isRemoteRoute) {
         setWinnersData(payload);
         setCurrentMode('presentation');
@@ -108,12 +166,39 @@ export function useStageSync() {
       }
     };
 
+    const onStageState = (state: StageSyncState) => {
+      if (onStageStateRef.current) {
+        onStageStateRef.current(state);
+      }
+    };
+
+    const onRemoteCommand = (action: string) => (data?: any) => {
+      if (!isRemoteRoute && onRemoteActionRef.current) {
+        onRemoteActionRef.current(action, data);
+      }
+    };
+
+    const handleSpin = onRemoteCommand('spin_wheel');
+    const handleStartTimer = onRemoteCommand('start_timer');
+    const handlePauseTimer = onRemoteCommand('pause_timer');
+    const handleResetTimer = onRemoteCommand('reset_timer');
+    const handleRemoveWord = onRemoteCommand('remove_word');
+    const handleCloseModal = onRemoteCommand('close_modal');
+
     socket.on('connect', onConnect);
     socket.on('disconnect', onDisconnect);
     socket.on('connect_error', onConnectError);
     socket.on('show_winners', onShowWinners);
     socket.on('hide_winners', onHideWinners);
     socket.on('pong', onPong);
+    socket.on('stage_state', onStageState);
+
+    socket.on('spin_wheel', handleSpin);
+    socket.on('start_timer', handleStartTimer);
+    socket.on('pause_timer', handlePauseTimer);
+    socket.on('reset_timer', handleResetTimer);
+    socket.on('remove_word', handleRemoveWord);
+    socket.on('close_modal', handleCloseModal);
 
     if (socket.connected) {
       setIsConnected(true);
@@ -133,6 +218,14 @@ export function useStageSync() {
       socket.off('show_winners', onShowWinners);
       socket.off('hide_winners', onHideWinners);
       socket.off('pong', onPong);
+      socket.off('stage_state', onStageState);
+      socket.off('spin_wheel', handleSpin);
+      socket.off('start_timer', handleStartTimer);
+      socket.off('pause_timer', handlePauseTimer);
+      socket.off('reset_timer', handleResetTimer);
+      socket.off('remove_word', handleRemoveWord);
+      socket.off('close_modal', handleCloseModal);
+
       clearInterval(pingTimer);
       window.removeEventListener('storage', handleStorage);
       if (channelRef.current) {
@@ -142,16 +235,21 @@ export function useStageSync() {
     };
   }, [isRemoteRoute, setCurrentMode, setCurrentSlide, setIsConnected, setLatency, setWinnersData, socket]);
 
-  const pushWinners = (payload: WinnersData) => {
-    // 1. Emit to Socket.io backend
-    socket.emit('push_winners', payload);
+  const broadcastAction = (type: string, payload?: any) => {
+    socket.emit(type, payload);
+    if (channelRef.current) {
+      channelRef.current.postMessage({ type, payload });
+    }
+    try {
+      localStorage.setItem('salto_angel_remote_action', JSON.stringify({ type, payload, ts: Date.now() }));
+    } catch {}
+  };
 
-    // 2. Broadcast to open tabs
+  const pushWinners = (payload: WinnersData) => {
+    socket.emit('push_winners', payload);
     if (channelRef.current) {
       channelRef.current.postMessage({ type: 'show_winners', payload });
     }
-
-    // 3. LocalStorage fallback
     try {
       localStorage.setItem(
         'salto_angel_remote_winners',
@@ -173,5 +271,38 @@ export function useStageSync() {
     } catch {}
   };
 
-  return { pushWinners, clearBoard, socket };
+  const spinWheel = () => broadcastAction('spin_wheel');
+  const startTimer = () => broadcastAction('start_timer');
+  const pauseTimer = () => broadcastAction('pause_timer');
+  const resetTimer = () => broadcastAction('reset_timer');
+  const removeWord = () => broadcastAction('remove_word');
+  const closeModal = () => broadcastAction('close_modal');
+
+  const broadcastStageState = (state: StageSyncState) => {
+    socket.emit('sync_stage_state', state);
+    if (channelRef.current) {
+      channelRef.current.postMessage({ type: 'stage_state', payload: state });
+    }
+    try {
+      localStorage.setItem('salto_angel_stage_state', JSON.stringify({ state, ts: Date.now() }));
+    } catch {}
+  };
+
+  const requestStageState = () => {
+    socket.emit('request_stage_state');
+  };
+
+  return {
+    pushWinners,
+    clearBoard,
+    spinWheel,
+    startTimer,
+    pauseTimer,
+    resetTimer,
+    removeWord,
+    closeModal,
+    broadcastStageState,
+    requestStageState,
+    socket,
+  };
 }

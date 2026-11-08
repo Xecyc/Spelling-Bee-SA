@@ -80,7 +80,7 @@ A complete solution providing seamless cross-device wheel persistence across mul
 
 ---
 
-## 4. Technical Architecture & Component Structure
+## 4. Technical Architecture & Data Strategy *(Technical Reference)*
 
 ```
 ┌──────────────────────────────────────────────────────────────┐
