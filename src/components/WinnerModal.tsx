@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import confetti from 'canvas-confetti';
 import { Trash2, CheckCircle2, Play, Pause } from 'lucide-react';
 import { StopwatchTimer } from './StopwatchTimer';
 
@@ -58,30 +57,6 @@ export const WinnerModal: React.FC<WinnerModalProps> = ({
       setModalTimerTrigger(0);
       setIsTimerRunning(false);
       setHasStarted(false);
-
-      // Trigger confetti explosion (visual only, no sound)
-      confetti({
-        particleCount: 80,
-        spread: 90,
-        origin: { y: 0.6 },
-        colors: ['#FBBF24', '#60A5FA', '#34D399', '#F472B6', '#A78BFA'],
-      });
-
-      // Secondary burst for celebration
-      setTimeout(() => {
-        confetti({
-          particleCount: 50,
-          angle: 60,
-          spread: 55,
-          origin: { x: 0 },
-        });
-        confetti({
-          particleCount: 50,
-          angle: 120,
-          spread: 55,
-          origin: { x: 1 },
-        });
-      }, 250);
     }
   }, [isOpen, word, timerDuration]);
 

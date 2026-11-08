@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { io } from 'socket.io-client';
 import {
   WheelConfig,
@@ -118,6 +118,7 @@ export default function App() {
 
   // Keep route synced on back/forward browser navigation or pushState/hashchange
   useEffect(() => {
+    setIsRemoteRoute(checkIsRemotePath());
     const handleUrlChange = () => {
       setIsRemoteRoute(checkIsRemotePath());
     };
@@ -257,23 +258,56 @@ export default function App() {
     setShowWinnerModal(false);
   };
 
+  const spinWatchdogRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const clearSpinWatchdog = () => {
+    if (spinWatchdogRef.current) {
+      clearTimeout(spinWatchdogRef.current);
+      spinWatchdogRef.current = null;
+    }
+  };
+
   // Spin lifecycle
-  const handleSpinStart = () => {
+  const handleSpinStart = useCallback(() => {
     if (isWheelSpinning) return;
     setIsWheelSpinning(true);
     setWinningSlice(null);
     setShowWinnerModal(false);
-  };
 
-  const handleSpinEnd = (slice: WheelSlice) => {
+    clearSpinWatchdog();
+    // 7.5s fail-safe watchdog timer guarantees the wheel never gets trapped spinning
+    spinWatchdogRef.current = setTimeout(() => {
+      setIsWheelSpinning(false);
+      const validSlices = activeWheel.slices.filter((s) => s.enabled !== false && s.text.trim());
+      const fallback = validSlices[Math.floor(Math.random() * validSlices.length)] || activeWheel.slices[0];
+      if (fallback) {
+        setWinningSlice(fallback);
+        setShowWinnerModal(true);
+      }
+    }, 7500);
+  }, [isWheelSpinning, activeWheel]);
+
+  const handleSpinEnd = useCallback((slice: WheelSlice) => {
+    clearSpinWatchdog();
     setIsWheelSpinning(false);
     setWinningSlice(slice);
     // Modal opens with timer strictly stopped; only starts on explicit user action
     setShowWinnerModal(true);
-  };
+  }, []);
+
+  const handleSpinStop = useCallback(() => {
+    clearSpinWatchdog();
+    setIsWheelSpinning(false);
+    const validSlices = activeWheel.slices.filter((s) => s.enabled !== false && s.text.trim());
+    const picked = validSlices[Math.floor(Math.random() * validSlices.length)] || activeWheel.slices[0];
+    if (picked) {
+      setWinningSlice(picked);
+      setShowWinnerModal(true);
+    }
+  }, [activeWheel]);
 
   // Remove winning word from current wheel and dynamically recalculate colors
-  const handleRemoveWinningWord = () => {
+  const handleRemoveWinningWord = useCallback(() => {
     if (!winningSlice) return;
     setWheels((prev) =>
       prev.map((w) => {
@@ -293,7 +327,7 @@ export default function App() {
     );
     setWinningSlice(null);
     setShowWinnerModal(false);
-  };
+  }, [winningSlice, activeWheel.id]);
 
   // Remote Control action handler from WebSocket / BroadcastChannel
   const handleRemoteAction = useCallback(
@@ -301,12 +335,12 @@ export default function App() {
       switch (action) {
         case 'spin_wheel':
           if (!isWheelSpinning) {
-            if (currentMode !== 'presentation') {
-              setCurrentMode('presentation');
-            }
-            setCurrentSlide(1);
+            // Stage/TV slide remains completely independent; wheel runs in background
             handleSpinStart();
           }
+          break;
+        case 'stop_spin':
+          handleSpinStop();
           break;
         case 'start_timer':
           setRemoteTimerSignal({ type: 'start', ts: Date.now() });
@@ -326,7 +360,7 @@ export default function App() {
           break;
       }
     },
-    [isWheelSpinning, currentMode, setCurrentMode, setCurrentSlide]
+    [isWheelSpinning, handleSpinStart, handleSpinStop, handleRemoveWinningWord]
   );
 
   // Centralized Stage & Remote sync hook
@@ -509,6 +543,11 @@ export default function App() {
             setIsRemoteRoute(false);
           }
         }}
+        onSpinWheel={() => {
+          // Auto switch to wheel slide in the background on this remote device without leaving remote menu
+          setCurrentMode('presentation');
+          setCurrentSlide(1);
+        }}
         onPushWinners={(data) => {
           // Update the presentation deck to Podium slide in the background without leaving remote controls
           setWinnersData(data);
@@ -546,6 +585,7 @@ export default function App() {
             isWheelSpinning={isWheelSpinning}
             onSpinStart={handleSpinStart}
             onSpinEnd={handleSpinEnd}
+            onStopSpin={handleSpinStop}
             autoStartTimerTrigger={autoStartTimerTrigger}
             winnersData={winnersData}
           />

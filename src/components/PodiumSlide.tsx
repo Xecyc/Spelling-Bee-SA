@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { Trophy, Award, Medal, Crown } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { WinnersData } from '../types/presentation';
@@ -40,15 +40,25 @@ const FourPointStar = ({ className, delay = 0 }: { className?: string; delay?: n
 export interface PodiumSlideProps {
   winners?: Winners | WinnersData | null;
   backgroundUrl?: string;
+  isActive?: boolean;
 }
 
 export const PodiumSlide: React.FC<PodiumSlideProps> = ({
   winners,
   backgroundUrl = `${import.meta.env.BASE_URL}assets/image_d24fda.jpg`,
+  isActive = false,
 }) => {
   const safeWinners = winners || { first: '', second: '', third: '' };
+  const hasActualWinners = Boolean(
+    safeWinners.first?.trim() || safeWinners.second?.trim() || safeWinners.third?.trim()
+  );
 
   useEffect(() => {
+    // Strictly trigger ONLY when podium slide is actively viewed AND actual winners exist
+    if (!isActive || !hasActualWinners) {
+      return;
+    }
+
     const timer = setTimeout(() => {
       try {
         confetti({
@@ -60,9 +70,10 @@ export const PodiumSlide: React.FC<PodiumSlideProps> = ({
       } catch (e) {
         // Fallback if canvas-confetti is not installed
       }
-    }, 3300);
+    }, 1200);
+
     return () => clearTimeout(timer);
-  }, [winners]);
+  }, [isActive, winners]);
 
   return (
     <div
@@ -72,13 +83,17 @@ export const PodiumSlide: React.FC<PodiumSlideProps> = ({
       {/* Full-Screen Subtle Vignette Overlay to unify background */}
       <div className="absolute inset-0 bg-gradient-to-t from-[#040B1A]/90 via-[#07132B]/55 to-transparent pointer-events-none z-0" />
 
-      {/* Center Framed Stage Backdrop Card */}
-      <motion.div
-        initial={{ opacity: 0, scale: 0.95, y: 20 }}
-        animate={{ opacity: 1, scale: 1, y: 0 }}
-        transition={{ duration: 0.6, ease: 'easeOut' }}
-        className="relative z-10 w-[88%] max-w-5xl h-[72%] rounded-3xl bg-[#07132B]/85 backdrop-blur-md border-2 border-yellow-400/30 shadow-[0_25px_70px_rgba(0,0,0,0.85),inset_0_0_60px_rgba(30,58,138,0.35)] flex flex-col items-center justify-end px-8 pb-6 overflow-hidden"
-      >
+      {/* Center Framed Stage Backdrop Card - only displayed once winners have been chosen and pushed */}
+      <AnimatePresence>
+        {hasActualWinners && (
+          <motion.div
+            key="podium-stage-card"
+            initial={{ opacity: 0, scale: 0.95, y: 20 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.95, y: 20 }}
+            transition={{ duration: 0.6, ease: 'easeOut' }}
+            className="relative z-10 w-[88%] max-w-5xl h-[72%] rounded-3xl bg-[#07132B]/85 backdrop-blur-md border-2 border-yellow-400/30 shadow-[0_25px_70px_rgba(0,0,0,0.85),inset_0_0_60px_rgba(30,58,138,0.35)] flex flex-col items-center justify-end px-8 pb-6 overflow-hidden"
+          >
         {/* Ambient Center Spotlight Glow inside Stage Card */}
         <motion.div
           initial={{ opacity: 0, scale: 0.5 }}
@@ -261,6 +276,8 @@ export const PodiumSlide: React.FC<PodiumSlideProps> = ({
           className="w-full max-w-4xl h-1.5 rounded-full bg-gradient-to-r from-transparent via-yellow-400/80 to-transparent shadow-[0_0_20px_rgba(250,204,21,0.8)] z-20"
         />
       </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 };

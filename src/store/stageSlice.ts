@@ -18,11 +18,27 @@ export interface StageStateSlice {
   toggleFullscreen: () => void;
 }
 
+function initialCheckIsRemote(): boolean {
+  if (typeof window === 'undefined') return false;
+  const p = window.location.pathname.toLowerCase();
+  const s = window.location.search.toLowerCase();
+  const h = window.location.hash.toLowerCase();
+  return (
+    p.endsWith('/remote') ||
+    p.includes('/remote/') ||
+    s.includes('view=remote') ||
+    s.includes('remote=true') ||
+    s.includes('remote=1') ||
+    s.includes('p=/remote') ||
+    h.includes('remote')
+  );
+}
+
 export const createStageSlice: StateCreator<StageStateSlice> = (set, get) => ({
   currentMode: 'presentation',
   currentSlide: 0,
   isFullscreen: false,
-  isRemoteRoute: false,
+  isRemoteRoute: initialCheckIsRemote(),
   showRemoteModal: false,
   soundSettings: {
     enabled: true,

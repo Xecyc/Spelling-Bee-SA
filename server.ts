@@ -115,6 +115,10 @@ io.on('connection', (socket) => {
     io.emit('spin_wheel');
   });
 
+  socket.on('stop_spin', () => {
+    io.emit('stop_spin');
+  });
+
   socket.on('start_timer', () => {
     io.emit('start_timer');
   });

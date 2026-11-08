@@ -3,7 +3,6 @@ import {
   ChevronLeft,
   ChevronRight,
 } from 'lucide-react';
-import confetti from 'canvas-confetti';
 import { PresentationSlideId, WheelConfig, WheelSlice, WinnersData } from '../types/presentation';
 import { WheelCanvas } from './WheelCanvas';
 import { PodiumSlide } from './PodiumSlide';
@@ -15,6 +14,7 @@ interface PresentationDeckProps {
   isWheelSpinning: boolean;
   onSpinStart: () => void;
   onSpinEnd: (slice: WheelSlice) => void;
+  onStopSpin?: () => void;
   autoStartTimerTrigger: number;
   winnersData?: WinnersData | null;
 }
@@ -26,6 +26,7 @@ export const PresentationDeck: React.FC<PresentationDeckProps> = ({
   isWheelSpinning,
   onSpinStart,
   onSpinEnd,
+  onStopSpin,
   autoStartTimerTrigger,
   winnersData,
 }) => {
@@ -85,15 +86,6 @@ export const PresentationDeck: React.FC<PresentationDeckProps> = ({
     }
   };
 
-  const triggerCelebrationConfetti = () => {
-    confetti({
-      particleCount: 100,
-      spread: 100,
-      origin: { y: 0.5 },
-      colors: ['#FBBF24', '#60A5FA', '#34D399', '#F472B6', '#F87171'],
-    });
-  };
-
   return (
     <div className="relative w-screen h-screen overflow-hidden bg-[#061229] flex items-center justify-center select-none">
       {/* 1. Left Navigation Arrow with Transparent Hover-Zone */}
@@ -139,105 +131,116 @@ export const PresentationDeck: React.FC<PresentationDeckProps> = ({
         onTouchEnd={handleTouchEnd}
       >
         {/* SLIDE 0: Title Slide (Dynamic Elementary vs High School) */}
-        {currentSlide === 0 && (
-          <div className="relative w-full h-full animate-in fade-in duration-300">
-            <img
-              src={
-                activeWheel.group === 'high_school'
-                  ? `${import.meta.env.BASE_URL}assets/aistudio/480b2e32-4249-44c9-83bd-7e91fc5cbdba_0097f3f2.jpg`
-                  : `${import.meta.env.BASE_URL}assets/aistudio/image_b5f00fc8.png`
-              }
-              alt={
-                activeWheel.group === 'high_school'
-                  ? 'Salto Ángel Spelling Bee High School 2026'
-                  : 'Salto Ángel Spelling Bee Elementary 2026'
-              }
-              className="absolute inset-0 w-full h-full object-cover pointer-events-none"
-            />
-          </div>
-        )}
+        <div
+          className={`absolute inset-0 w-full h-full transition-opacity duration-300 ${
+            currentSlide === 0 ? 'opacity-100 z-10 pointer-events-auto' : 'opacity-0 z-0 pointer-events-none'
+          }`}
+        >
+          <img
+            src={
+              activeWheel.group === 'high_school'
+                ? `${import.meta.env.BASE_URL}assets/aistudio/480b2e32-4249-44c9-83bd-7e91fc5cbdba_0097f3f2.jpg`
+                : `${import.meta.env.BASE_URL}assets/aistudio/image_b5f00fc8.png`
+            }
+            alt={
+              activeWheel.group === 'high_school'
+                ? 'Salto Ángel Spelling Bee High School 2026'
+                : 'Salto Ángel Spelling Bee Elementary 2026'
+            }
+            className="absolute inset-0 w-full h-full object-cover pointer-events-none"
+          />
+        </div>
 
         {/* SLIDE 1: Interactive Wheel & Stopwatch Timer (Dynamic Elementary vs High School) */}
-        {currentSlide === 1 && (
-          <div className="relative w-full h-full animate-in fade-in duration-300 overflow-hidden">
-            {/* Clean background without static wheel/timer */}
-            <img
-              src={
-                activeWheel.group === 'high_school'
-                  ? `${import.meta.env.BASE_URL}assets/aistudio/600be532-29f8-42b3-b71b-aff6b649f0e8_0b8ecf00.jpg`
-                  : `${import.meta.env.BASE_URL}assets/aistudio/Gemini_Generated_Image_wxqydhwxqydhwxqy__1__ed331ba7.jpg`
-              }
-              alt={
-                activeWheel.group === 'high_school'
-                  ? 'Salto Ángel High School Wheel Challenge'
-                  : 'Salto Ángel Elementary Wheel Challenge'
-              }
-              className="absolute inset-0 w-full h-full object-cover pointer-events-none"
-            />
+        {/* Permanently mounted so WheelCanvas physics and rotation runs in background across all slides */}
+        <div
+          className={`absolute inset-0 w-full h-full transition-opacity duration-300 overflow-hidden ${
+            currentSlide === 1 ? 'opacity-100 z-10 pointer-events-auto' : 'opacity-0 z-0 pointer-events-none'
+          }`}
+        >
+          {/* Clean background without static wheel/timer */}
+          <img
+            src={
+              activeWheel.group === 'high_school'
+                ? `${import.meta.env.BASE_URL}assets/aistudio/600be532-29f8-42b3-b71b-aff6b649f0e8_0b8ecf00.jpg`
+                : `${import.meta.env.BASE_URL}assets/aistudio/Gemini_Generated_Image_wxqydhwxqydhwxqy__1__ed331ba7.jpg`
+            }
+            alt={
+              activeWheel.group === 'high_school'
+                ? 'Salto Ángel High School Wheel Challenge'
+                : 'Salto Ángel Elementary Wheel Challenge'
+            }
+            className="absolute inset-0 w-full h-full object-cover pointer-events-none"
+          />
 
-            {/* Minimal Group & Wheel Header Indicator (Zero Bloat) */}
-            <div
-              className="absolute z-20 pointer-events-none select-none text-center"
-              style={{
-                left: '50%',
-                top: '5%',
-                transform: 'translateX(-50%)',
-              }}
-            >
-              <div className="text-xs sm:text-sm md:text-base font-black tracking-wider text-amber-300 drop-shadow-[0_2px_8px_rgba(0,0,0,0.8)] uppercase">
-                {(() => {
-                  const isGeneral =
-                    activeWheel.role === 'general' ||
-                    activeWheel.place === 'general' ||
-                    activeWheel.name.toLowerCase().includes('general');
+          {/* Minimal Group & Wheel Header Indicator (Zero Bloat) */}
+          <div
+            className="absolute z-20 pointer-events-none select-none text-center"
+            style={{
+              left: '50%',
+              top: '5%',
+              transform: 'translateX(-50%)',
+            }}
+          >
+            <div className="text-xs sm:text-sm md:text-base font-black tracking-wider text-amber-300 drop-shadow-[0_2px_8px_rgba(0,0,0,0.8)] uppercase">
+              {(() => {
+                const isGeneral =
+                  activeWheel.role === 'general' ||
+                  activeWheel.place === 'general' ||
+                  activeWheel.name.toLowerCase().includes('general');
 
-                  const cleanName = isGeneral
-                    ? activeWheel.name.replace(/\s*[-–—]?\s*general\s*/gi, '').trim()
-                    : activeWheel.name;
+                const cleanName = isGeneral
+                  ? activeWheel.name.replace(/\s*[-–—]?\s*general\s*/gi, '').trim()
+                  : activeWheel.name;
 
-                  return activeWheel.group === 'elementary'
-                    ? `Elementary · ${cleanName}`
-                    : cleanName || activeWheel.name;
-                })()}
-              </div>
-            </div>
-
-            {/* The Real Interactive Wheel Component in the center - Enlarged */}
-            <div
-              className="absolute flex items-center justify-center touch-manipulation"
-              style={{
-                left: '50%',
-                top: '52%',
-                height: '84%',
-                maxHeight: 'calc(100% - 44px)',
-                aspectRatio: '1 / 1',
-                transform: 'translate(-50%, -50%)',
-              }}
-            >
-              <WheelCanvas
-                slices={activeWheel.slices}
-                isSpinning={isWheelSpinning}
-                onSpinStart={onSpinStart}
-                onSpinEnd={onSpinEnd}
-                pointerPosition="right"
-              />
+                return activeWheel.group === 'elementary'
+                  ? `Elementary · ${cleanName}`
+                  : cleanName || activeWheel.name;
+              })()}
             </div>
           </div>
-        )}
+
+          {/* The Real Interactive Wheel Component in the center - Enlarged */}
+          <div
+            className="absolute flex items-center justify-center touch-manipulation"
+            style={{
+              left: '50%',
+              top: '52%',
+              height: '84%',
+              maxHeight: 'calc(100% - 44px)',
+              aspectRatio: '1 / 1',
+              transform: 'translate(-50%, -50%)',
+            }}
+          >
+            <WheelCanvas
+              slices={activeWheel.slices}
+              isSpinning={isWheelSpinning}
+              onSpinStart={onSpinStart}
+              onSpinEnd={onSpinEnd}
+              onStopSpin={onStopSpin}
+              pointerPosition="right"
+            />
+          </div>
+        </div>
 
         {/* SLIDE 2 / 3: Remote Controlled Winner Podium (Dynamic Elementary vs High School) */}
-        {(currentSlide === 2 || currentSlide === 3) && (
-          <div className="relative w-full h-full animate-in fade-in duration-300">
-            <PodiumSlide
-              winners={winnersData || { first: '', second: '', third: '' }}
-              backgroundUrl={
-                activeWheel.group === 'high_school'
-                  ? `${import.meta.env.BASE_URL}assets/image_d24fda.jpg`
-                  : `${import.meta.env.BASE_URL}assets/aistudio/image_93e345e1.png`
-              }
-            />
-          </div>
-        )}
+        <div
+          className={`absolute inset-0 w-full h-full transition-opacity duration-300 ${
+            (currentSlide === 2 || currentSlide === 3)
+              ? 'opacity-100 z-10 pointer-events-auto'
+              : 'opacity-0 z-0 pointer-events-none'
+          }`}
+        >
+          <PodiumSlide
+            isActive={currentSlide === 2 || currentSlide === 3}
+            winners={winnersData || { first: '', second: '', third: '' }}
+            backgroundUrl={
+              activeWheel.group === 'high_school'
+                ? `${import.meta.env.BASE_URL}assets/image_d24fda.jpg`
+                : `${import.meta.env.BASE_URL}assets/aistudio/image_93e345e1.png`
+            }
+          />
+        </div>
       </div>
     </div>
   );

@@ -12,6 +12,7 @@ interface WheelCanvasProps {
   isSpinning: boolean;
   onSpinStart: () => void;
   onSpinEnd: (slice: WheelSlice) => void;
+  onStopSpin?: () => void;
   pointerPosition?: 'top' | 'right';
   size?: number;
   showCenterText?: boolean;
@@ -22,6 +23,7 @@ export const WheelCanvas: React.FC<WheelCanvasProps> = ({
   isSpinning,
   onSpinStart,
   onSpinEnd,
+  onStopSpin,
   pointerPosition = 'right',
   size,
   showCenterText = true,
@@ -197,11 +199,11 @@ export const WheelCanvas: React.FC<WheelCanvasProps> = ({
     ctx.stroke();
 
     if (showCenterText) {
-      ctx.fillStyle = '#4f46e5';
+      ctx.fillStyle = isSpinning ? '#e11d48' : '#4f46e5';
       ctx.font = `800 ${Math.max(10, Math.round(hubR * 0.38))}px sans-serif`;
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
-      ctx.fillText(isSpinning ? '•••' : 'SPIN', centerX, centerY);
+      ctx.fillText(isSpinning ? 'STOP' : 'SPIN', centerX, centerY);
     }
     ctx.restore();
 
@@ -390,7 +392,12 @@ export const WheelCanvas: React.FC<WheelCanvasProps> = ({
   }, [isSpinning, computedSlices, drawWheel, onSpinEnd, pointerAngle]);
 
   const handleWheelClick = () => {
-    if (isSpinning) return;
+    if (isSpinning) {
+      if (onStopSpin) {
+        onStopSpin();
+      }
+      return;
+    }
     onSpinStart();
   };
 
@@ -401,11 +408,15 @@ export const WheelCanvas: React.FC<WheelCanvasProps> = ({
       onClick={handleWheelClick}
       role="button"
       tabIndex={0}
-      aria-label="Interactive Wheel of Names. Click to spin."
+      aria-label={isSpinning ? 'Wheel is spinning. Click to stop.' : 'Interactive Wheel of Names. Click to spin.'}
       onKeyDown={(e) => {
-        if ((e.key === 'Enter' || e.key === ' ') && !isSpinning) {
+        if (e.key === 'Enter' || e.key === ' ') {
           e.preventDefault();
-          onSpinStart();
+          if (isSpinning) {
+            if (onStopSpin) onStopSpin();
+          } else {
+            onSpinStart();
+          }
         }
       }}
     >

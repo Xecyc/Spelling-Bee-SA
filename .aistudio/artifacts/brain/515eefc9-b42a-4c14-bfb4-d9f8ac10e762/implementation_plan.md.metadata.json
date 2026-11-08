@@ -1,6 +1,6 @@
 {
-  "summary": "Restructure all Spelling Bee wheels into the official 10-wheel competition system: 3 general round wheels (1st-3rd, 4th-6th, and High School) with 40s timers, plus 7 cumulative tiebreak wheels (1st, 2nd, 3rd, 4th, 5th, 6th grades and High School) combining general words with grade tiebreak vocabulary and 20s timers. Updates UI buttons to display 'General' and 'Tiebreak'.",
-  "updatedAt": "2026-11-06T23:33:18.560279667Z",
-  "requestFeedback": true,
-  "userFacing": true
+  "summary":  "Revised plan clarifying and implementing true background wheel spinning: WheelCanvas remains continuously mounted and running in the background across all slides (using CSS opacity/z-index instead of conditional DOM destruction). If the presenter spins from Slide 0 and switches to Slide 1 mid-spin, the wheel is seen actively rotating in real-time at the exact elapsed point, with 100% slide independence (TV never auto-switches slides on spin).",
+  "updatedAt":  "2026-11-08T22:18:40.023963788Z",
+  "requestFeedback":  true,
+  "userFacing":  true
 }

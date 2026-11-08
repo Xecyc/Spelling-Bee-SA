@@ -13,6 +13,7 @@ import {
   CheckCircle2,
   Sparkles,
   Loader2,
+  Square,
 } from 'lucide-react';
 import { useStageSync, StageSyncState, getSocket } from '../hooks/useStageSync';
 import { useContestStore } from '../store';
@@ -26,6 +27,7 @@ interface WinnersState {
 interface RemoteControlProps {
   onReturnToStage?: () => void;
   onPushWinners?: (data: WinnersState) => void;
+  onSpinWheel?: () => void;
 }
 
 function computeStageReturnUrl(): string {
@@ -80,7 +82,11 @@ function computeStageReturnUrl(): string {
   return `${window.location.origin}/`;
 }
 
-export const RemoteControl: React.FC<RemoteControlProps> = ({ onReturnToStage, onPushWinners }) => {
+export const RemoteControl: React.FC<RemoteControlProps> = ({
+  onReturnToStage,
+  onPushWinners,
+  onSpinWheel,
+}) => {
   const [winners, setWinners] = useState<WinnersState>({
     first: '',
     second: '',
@@ -113,6 +119,7 @@ export const RemoteControl: React.FC<RemoteControlProps> = ({ onReturnToStage, o
     pushWinners,
     clearBoard,
     spinWheel,
+    stopSpin,
     startTimer,
     pauseTimer,
     resetTimer,
@@ -182,11 +189,20 @@ export const RemoteControl: React.FC<RemoteControlProps> = ({ onReturnToStage, o
     };
   }, []);
 
-  // Action: Spin the stage wheel
+  // Action: Spin or Stop the stage wheel
   const handleSpinClick = () => {
-    if (stageState.isSpinning) return;
+    if (stageState.isSpinning) {
+      stopSpin();
+      setStageState((prev) => ({ ...prev, isSpinning: false }));
+      showToast('Stopping wheel...');
+      return;
+    }
     setIsRemoteTimerRunning(false);
+    setStageState((prev) => ({ ...prev, isSpinning: true }));
     spinWheel();
+    if (onSpinWheel) {
+      onSpinWheel();
+    }
     showToast('Wheel spun on stage!');
   };
 
@@ -313,7 +329,7 @@ export const RemoteControl: React.FC<RemoteControlProps> = ({ onReturnToStage, o
                   Word Chosen
                 </span>
               ) : stageState.isSpinning ? (
-                <span className="text-[10px] font-black uppercase px-2 py-0.5 rounded-full bg-blue-500 text-white animate-pulse">
+                <span className="text-[10px] font-black uppercase px-2 py-0.5 rounded-full bg-blue-500 text-white">
                   Spinning
                 </span>
               ) : null}
@@ -327,22 +343,17 @@ export const RemoteControl: React.FC<RemoteControlProps> = ({ onReturnToStage, o
 
           {isRouletteOpen && (
             <div className="p-3.5 space-y-3 animate-in fade-in duration-150">
-              {/* Primary Spin Button */}
+              {/* Primary Spin / Stop Button */}
               <div>
                 <button
                   type="button"
                   onClick={handleSpinClick}
-                  disabled={stageState.isSpinning}
-                  className={`w-full py-3.5 px-4 rounded-xl font-black text-sm tracking-wide uppercase transition-all flex items-center justify-center gap-2 cursor-pointer shadow-md active:scale-98 ${
-                    stageState.isSpinning
-                      ? 'bg-amber-400/60 text-[#061a3e] cursor-not-allowed'
-                      : 'bg-amber-400 hover:bg-amber-300 text-[#061a3e] hover:shadow-amber-400/20'
-                  }`}
+                  className="w-full py-3.5 px-4 rounded-xl font-black text-sm tracking-wide uppercase transition-all flex items-center justify-center gap-2 cursor-pointer shadow-md active:scale-98 bg-amber-400 hover:bg-amber-300 text-[#061a3e] hover:shadow-amber-400/20"
                 >
                   {stageState.isSpinning ? (
                     <>
-                      <Loader2 className="w-4 h-4 animate-spin text-[#061a3e]" />
-                      <span>Wheel Spinning...</span>
+                      <Square className="w-4 h-4 text-[#061a3e] fill-current" />
+                      <span>Stop Spin</span>
                     </>
                   ) : (
                     <>

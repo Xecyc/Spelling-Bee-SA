@@ -78,7 +78,7 @@ export function useStageSync(options?: UseStageSyncOptions) {
             onStageStateRef.current(payload);
           }
         } else if (
-          ['spin_wheel', 'start_timer', 'pause_timer', 'reset_timer', 'remove_word', 'close_modal'].includes(type)
+          ['spin_wheel', 'stop_spin', 'start_timer', 'pause_timer', 'reset_timer', 'remove_word', 'close_modal'].includes(type)
         ) {
           if (!isRemoteRoute && onRemoteActionRef.current) {
             onRemoteActionRef.current(type, payload);
@@ -179,6 +179,7 @@ export function useStageSync(options?: UseStageSyncOptions) {
     };
 
     const handleSpin = onRemoteCommand('spin_wheel');
+    const handleStopSpin = onRemoteCommand('stop_spin');
     const handleStartTimer = onRemoteCommand('start_timer');
     const handlePauseTimer = onRemoteCommand('pause_timer');
     const handleResetTimer = onRemoteCommand('reset_timer');
@@ -194,6 +195,7 @@ export function useStageSync(options?: UseStageSyncOptions) {
     socket.on('stage_state', onStageState);
 
     socket.on('spin_wheel', handleSpin);
+    socket.on('stop_spin', handleStopSpin);
     socket.on('start_timer', handleStartTimer);
     socket.on('pause_timer', handlePauseTimer);
     socket.on('reset_timer', handleResetTimer);
@@ -220,6 +222,7 @@ export function useStageSync(options?: UseStageSyncOptions) {
       socket.off('pong', onPong);
       socket.off('stage_state', onStageState);
       socket.off('spin_wheel', handleSpin);
+      socket.off('stop_spin', handleStopSpin);
       socket.off('start_timer', handleStartTimer);
       socket.off('pause_timer', handlePauseTimer);
       socket.off('reset_timer', handleResetTimer);
@@ -272,6 +275,7 @@ export function useStageSync(options?: UseStageSyncOptions) {
   };
 
   const spinWheel = () => broadcastAction('spin_wheel');
+  const stopSpin = () => broadcastAction('stop_spin');
   const startTimer = () => broadcastAction('start_timer');
   const pauseTimer = () => broadcastAction('pause_timer');
   const resetTimer = () => broadcastAction('reset_timer');
@@ -296,6 +300,7 @@ export function useStageSync(options?: UseStageSyncOptions) {
     pushWinners,
     clearBoard,
     spinWheel,
+    stopSpin,
     startTimer,
     pauseTimer,
     resetTimer,
