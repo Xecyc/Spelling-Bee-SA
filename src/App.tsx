@@ -277,7 +277,7 @@ export default function App() {
     setWinningSlice(null);
     setShowWinnerModal(false);
 
-    // 7.5s fail-safe watchdog timer guarantees the wheel never gets trapped spinning
+    // 8.0s fail-safe watchdog timer guarantees the wheel never gets trapped spinning
     spinWatchdogRef.current = setTimeout(() => {
       isSpinningRef.current = false;
       setIsWheelSpinning(false);
@@ -287,7 +287,7 @@ export default function App() {
         setWinningSlice(fallback);
         setShowWinnerModal(true);
       }
-    }, 7500);
+    }, 8000);
   }, [activeWheel]);
 
   const handleSpinEnd = useCallback((slice: WheelSlice) => {
@@ -346,17 +346,17 @@ export default function App() {
     (action: string, payload?: any) => {
       switch (action) {
         case 'spin_wheel':
-          // Ensure stage display is in Presentation mode and on Slide 1 (Wheel Slide)
+          // Always force the stage display to show the wheel: call setCurrentMode('presentation') and setCurrentSlide(1)
           setCurrentMode('presentation');
           setCurrentSlide(1);
+          // Close any open winner modal and reset previous winners: setShowWinnerModal(false) and setWinningSlice(null)
           setShowWinnerModal(false);
           setWinningSlice(null);
-          // Reset spinning lock to ensure remote spin cannot be blocked by an out-of-sync ref
+          // Force-clear the spin guard ref BEFORE starting the spin (isSpinningRef.current = false)
           isSpinningRef.current = false;
           setIsWheelSpinning(false);
-          setTimeout(() => {
-            handleSpinStart();
-          }, 50);
+          // Trigger handleSpinStart()
+          handleSpinStart();
           break;
         case 'set_slide':
           if (typeof payload === 'number') {

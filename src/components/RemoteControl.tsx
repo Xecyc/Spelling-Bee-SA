@@ -145,6 +145,7 @@ export const RemoteControl: React.FC<RemoteControlProps> = ({
 
   const [remoteSecondsRemaining, setRemoteSecondsRemaining] = useState<number>(40);
   const [isRemoteTimerRunning, setIsRemoteTimerRunning] = useState<boolean>(false);
+  const [spinCooldown, setSpinCooldown] = useState<boolean>(false);
 
   // Live remote countdown ticker
   useEffect(() => {
@@ -193,24 +194,29 @@ export const RemoteControl: React.FC<RemoteControlProps> = ({
     };
   }, []);
 
-  const lastSpinClickTimeRef = React.useRef<number>(0);
-  const spinStartTimeRef = React.useRef<number>(0);
+  const lastSpinTimeRef = React.useRef<number>(0);
 
   // Auto-reset spinning state watchdog on remote (never stays stuck on true)
   useEffect(() => {
     if (stageState.isSpinning) {
       const timer = setTimeout(() => {
         setStageState((prev) => ({ ...prev, isSpinning: false }));
-      }, 7500);
+      }, 8000);
       return () => clearTimeout(timer);
     }
   }, [stageState.isSpinning]);
 
-  // Action: Spin or Stop the stage wheel
+  // Action: STRICTLY Spin Wheel (never sends stop_spin, 2-second local debounce)
   const handleSpinClick = () => {
     const now = Date.now();
-    if (now - lastSpinClickTimeRef.current < 450) return;
-    lastSpinClickTimeRef.current = now;
+    // 2-second local debounce/cooldown solely to prevent accidental double-taps
+    if (now - lastSpinTimeRef.current < 2000) return;
+    lastSpinTimeRef.current = now;
+
+    setSpinCooldown(true);
+    setTimeout(() => {
+      setSpinCooldown(false);
+    }, 2000);
 
     // Attempt socket reconnection if currently disconnected
     const socket = getSocket();
@@ -218,31 +224,29 @@ export const RemoteControl: React.FC<RemoteControlProps> = ({
       socket.connect();
     }
 
-    // If wheel is already spinning, require at least 1200ms before allowing a stop
-    // (Prevents touch screen double-tap jitter on mobile phones from immediately killing the spin)
-    if (stageState.isSpinning) {
-      if (now - spinStartTimeRef.current > 1200) {
-        if (remoteSpinTimeoutRef.current) clearTimeout(remoteSpinTimeoutRef.current);
-        stopSpin();
-        setStageState((prev) => ({ ...prev, isSpinning: false }));
-      }
-      return;
-    }
-
-    spinStartTimeRef.current = now;
     setIsRemoteTimerRunning(false);
     setStageState((prev) => ({ ...prev, isSpinning: true }));
 
-    // 7.5s fail-safe watchdog timer on remote: guarantees button unlocks even if network drops
+    // 8.0s fail-safe watchdog timer on remote: guarantees button unlocks even if network drops
     if (remoteSpinTimeoutRef.current) clearTimeout(remoteSpinTimeoutRef.current);
     remoteSpinTimeoutRef.current = setTimeout(() => {
       setStageState((prev) => ({ ...prev, isSpinning: false }));
-    }, 7500);
+    }, 8000);
 
     spinWheel();
     if (onSpinWheel) {
       onSpinWheel();
     }
+  };
+
+  // Action: Separate Stop Spin / Emergency Stop
+  const handleStopSpinClick = () => {
+    if (remoteSpinTimeoutRef.current) {
+      clearTimeout(remoteSpinTimeoutRef.current);
+      remoteSpinTimeoutRef.current = null;
+    }
+    stopSpin();
+    setStageState((prev) => ({ ...prev, isSpinning: false }));
   };
 
   // Action: Start Countdown Timer
@@ -373,27 +377,34 @@ export const RemoteControl: React.FC<RemoteControlProps> = ({
           {isRouletteOpen && (
             <div className="p-3.5 space-y-3 animate-in fade-in duration-150">
               {/* Primary Spin / Stop Button */}
-              <div>
+              {/* Separate Spin and Stop Buttons */}
+              <div className="flex items-center gap-2">
+                {/* Primary Button: Strictly Spin Wheel */}
                 <button
                   type="button"
                   onClick={handleSpinClick}
-                  className={`w-full py-3.5 px-4 rounded-xl font-black text-sm tracking-wide uppercase transition-all flex items-center justify-center gap-2 cursor-pointer shadow-md active:scale-98 ${
-                    stageState.isSpinning
-                      ? 'bg-rose-600 hover:bg-rose-500 text-white shadow-rose-600/30'
+                  disabled={spinCooldown}
+                  className={`flex-1 py-3.5 px-3 sm:px-4 rounded-xl font-black text-sm tracking-wide uppercase transition-all flex items-center justify-center gap-2 cursor-pointer shadow-md active:scale-98 ${
+                    spinCooldown
+                      ? 'bg-amber-400/70 text-[#061a3e]/80 cursor-wait'
+                      : stageState.isSpinning
+                      ? 'bg-amber-400 text-[#061a3e] shadow-amber-400/30 ring-2 ring-amber-300'
                       : 'bg-amber-400 hover:bg-amber-300 text-[#061a3e] hover:shadow-amber-400/20'
                   }`}
                 >
-                  {stageState.isSpinning ? (
-                    <>
-                      <Square className="w-4 h-4 fill-current text-white" />
-                      <span>Stop Spin</span>
-                    </>
-                  ) : (
-                    <>
-                      <Disc className="w-4 h-4 text-[#061a3e]" />
-                      <span>Spin Wheel</span>
-                    </>
-                  )}
+                  <Disc className={`w-4 h-4 text-[#061a3e] ${stageState.isSpinning ? 'animate-spin' : ''}`} />
+                  <span>{stageState.isSpinning ? 'Spinning...' : 'Spin Wheel'}</span>
+                </button>
+
+                {/* Secondary Button: Explicit Stop Spin / Emergency Stop */}
+                <button
+                  type="button"
+                  onClick={handleStopSpinClick}
+                  className="py-3.5 px-3.5 rounded-xl bg-rose-600/20 hover:bg-rose-600 text-rose-300 hover:text-white border border-rose-500/40 hover:border-rose-500 font-bold text-xs uppercase tracking-wider flex items-center justify-center gap-1.5 transition-all cursor-pointer active:scale-95 shadow-sm whitespace-nowrap"
+                  title="Stop Spin / Emergency Stop"
+                >
+                  <Square className="w-3.5 h-3.5 fill-current text-rose-400 group-hover:text-white" />
+                  <span>Stop Spin</span>
                 </button>
               </div>
 

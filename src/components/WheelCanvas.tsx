@@ -34,6 +34,8 @@ export const WheelCanvas: React.FC<WheelCanvasProps> = ({
   const pointerDeflectionRef = useRef<number>(0);
   const pointerVelocityRef = useRef<number>(0);
   const lastSliceIdxRef = useRef<number>(-1);
+  const wallClockTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const hasResolvedRef = useRef<boolean>(false);
 
   const activeSlices = React.useMemo(() => {
     return slices.length > 0
@@ -303,6 +305,10 @@ export const WheelCanvas: React.FC<WheelCanvasProps> = ({
   // Physics animation loop
   useEffect(() => {
     if (!isSpinning) {
+      if (wallClockTimeoutRef.current) {
+        clearTimeout(wallClockTimeoutRef.current);
+        wallClockTimeoutRef.current = null;
+      }
       pointerDeflectionRef.current = 0;
       pointerVelocityRef.current = 0;
       // Idle slow spin
@@ -317,6 +323,9 @@ export const WheelCanvas: React.FC<WheelCanvasProps> = ({
       };
     }
 
+    // Reset resolution guard for new spin
+    hasResolvedRef.current = false;
+
     // Spin animation with quintic ease-out matching studio
     const fullSpins = 6 + Math.random() * 4;
     const randomOffset = Math.random() * Math.PI * 2;
@@ -330,7 +339,50 @@ export const WheelCanvas: React.FC<WheelCanvasProps> = ({
 
     let lastTickTime = 0;
 
+    // Pre-calculate winning slice based on deterministic target angle
+    const twoPi = Math.PI * 2;
+    const finalRel = (twoPi - ((targetAngle - pointerAngle) % twoPi)) % twoPi;
+    const currentSlices = computedSlicesRef.current;
+    let computedWinningSlice = currentSlices[0]?.slice;
+    for (let i = 0; i < currentSlices.length; i++) {
+      if (finalRel >= currentSlices[i].startAngle && finalRel < currentSlices[i].endAngle) {
+        computedWinningSlice = currentSlices[i].slice;
+        break;
+      }
+    }
+
+    // Single unified completion function with boolean guard
+    const finishSpin = () => {
+      if (hasResolvedRef.current) return;
+      hasResolvedRef.current = true;
+
+      if (animFrameIdRef.current) {
+        cancelAnimationFrame(animFrameIdRef.current);
+        animFrameIdRef.current = null;
+      }
+      if (wallClockTimeoutRef.current) {
+        clearTimeout(wallClockTimeoutRef.current);
+        wallClockTimeoutRef.current = null;
+      }
+
+      pointerDeflectionRef.current = 0;
+      wheelAngleRef.current = targetAngle % (Math.PI * 2);
+      drawWheelRef.current(wheelAngleRef.current);
+
+      if (computedWinningSlice) {
+        onSpinEndRef.current(computedWinningSlice);
+      }
+    };
+
+    // Deterministic wall-clock fallback timer: duration (6500ms) + 150ms buffer
+    // Guarantees spin finishes and resolves even if requestAnimationFrame is throttled in background tab
+    wallClockTimeoutRef.current = setTimeout(() => {
+      finishSpin();
+    }, duration + 150);
+
     const frame = (now: number) => {
+      if (hasResolvedRef.current) return;
+
       // Spring return physics for pointer flapper deflection
       if (
         Math.abs(pointerDeflectionRef.current) > 0.001 ||
@@ -354,10 +406,8 @@ export const WheelCanvas: React.FC<WheelCanvasProps> = ({
       drawWheelRef.current(angle);
 
       // Calculate slice under pointer
-      const twoPi = Math.PI * 2;
       const pointerRel = (twoPi - ((angle - pointerAngle) % twoPi)) % twoPi;
       let currentSliceIdx = 0;
-      const currentSlices = computedSlicesRef.current;
       for (let i = 0; i < currentSlices.length; i++) {
         if (pointerRel >= currentSlices[i].startAngle && pointerRel < currentSlices[i].endAngle) {
           currentSliceIdx = i;
@@ -378,20 +428,7 @@ export const WheelCanvas: React.FC<WheelCanvasProps> = ({
       if (progress < 1) {
         animFrameIdRef.current = requestAnimationFrame(frame);
       } else {
-        // Spin finished
-        pointerDeflectionRef.current = 0;
-        wheelAngleRef.current = targetAngle % (Math.PI * 2);
-        drawWheelRef.current(wheelAngleRef.current);
-
-        const finalRel = (twoPi - ((targetAngle - pointerAngle) % twoPi)) % twoPi;
-        let winningSlice = currentSlices[0]?.slice;
-        for (let i = 0; i < currentSlices.length; i++) {
-          if (finalRel >= currentSlices[i].startAngle && finalRel < currentSlices[i].endAngle) {
-            winningSlice = currentSlices[i].slice;
-            break;
-          }
-        }
-        onSpinEndRef.current(winningSlice);
+        finishSpin();
       }
     };
 
@@ -400,6 +437,11 @@ export const WheelCanvas: React.FC<WheelCanvasProps> = ({
     return () => {
       if (animFrameIdRef.current) {
         cancelAnimationFrame(animFrameIdRef.current);
+        animFrameIdRef.current = null;
+      }
+      if (wallClockTimeoutRef.current) {
+        clearTimeout(wallClockTimeoutRef.current);
+        wallClockTimeoutRef.current = null;
       }
     };
   }, [isSpinning, pointerAngle]);

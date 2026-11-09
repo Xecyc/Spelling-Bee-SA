@@ -65,7 +65,9 @@ let latestStageState: any = null;
 let serverSpinWatchdog: NodeJS.Timeout | null = null;
 
 function triggerServerSpin() {
-  if (latestStageState) {
+  if (!latestStageState) {
+    latestStageState = { isSpinning: true };
+  } else {
     latestStageState.isSpinning = true;
   }
   if (serverSpinWatchdog) clearTimeout(serverSpinWatchdog);
@@ -75,11 +77,15 @@ function triggerServerSpin() {
       io.emit('stage_state', latestStageState);
       dispatchRemoteMessage('stage_state', latestStageState);
     }
-  }, 7500);
+    serverSpinWatchdog = null;
+  }, 8000);
 }
 
 function stopServerSpin() {
-  if (serverSpinWatchdog) clearTimeout(serverSpinWatchdog);
+  if (serverSpinWatchdog) {
+    clearTimeout(serverSpinWatchdog);
+    serverSpinWatchdog = null;
+  }
   if (latestStageState) {
     latestStageState.isSpinning = false;
     io.emit('stage_state', latestStageState);
@@ -131,9 +137,21 @@ io.on('connection', (socket) => {
   // Stage state synchronization
   socket.on('sync_stage_state', (state: any) => {
     latestStageState = state;
-    if (state && !state.isSpinning && serverSpinWatchdog) {
-      clearTimeout(serverSpinWatchdog);
-      serverSpinWatchdog = null;
+    if (state?.isSpinning) {
+      if (serverSpinWatchdog) clearTimeout(serverSpinWatchdog);
+      serverSpinWatchdog = setTimeout(() => {
+        if (latestStageState) {
+          latestStageState.isSpinning = false;
+          io.emit('stage_state', latestStageState);
+          dispatchRemoteMessage('stage_state', latestStageState);
+        }
+        serverSpinWatchdog = null;
+      }, 8000);
+    } else {
+      if (serverSpinWatchdog) {
+        clearTimeout(serverSpinWatchdog);
+        serverSpinWatchdog = null;
+      }
     }
     socket.broadcast.emit('stage_state', state);
   });
@@ -285,6 +303,22 @@ app.post('/api/remote/stage-state', (req, res) => {
   if (state) {
     const isSame = JSON.stringify(state) === JSON.stringify(latestStageState);
     latestStageState = state;
+    if (state.isSpinning) {
+      if (serverSpinWatchdog) clearTimeout(serverSpinWatchdog);
+      serverSpinWatchdog = setTimeout(() => {
+        if (latestStageState) {
+          latestStageState.isSpinning = false;
+          io.emit('stage_state', latestStageState);
+          dispatchRemoteMessage('stage_state', latestStageState);
+        }
+        serverSpinWatchdog = null;
+      }, 8000);
+    } else {
+      if (serverSpinWatchdog) {
+        clearTimeout(serverSpinWatchdog);
+        serverSpinWatchdog = null;
+      }
+    }
     if (!isSame) {
       dispatchRemoteMessage('stage_state', state);
     }
