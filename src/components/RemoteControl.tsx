@@ -120,7 +120,20 @@ export const RemoteControl: React.FC<RemoteControlProps> = ({
   };
 
   const handleStageState = useCallback((newState: StageSyncState) => {
-    setStageState((prev) => ({ ...prev, ...newState }));
+    setStageState((prev) => {
+      // Only reset seconds if a new winning word arrived from stage
+      if (newState.winningWord && newState.winningWord !== prev.winningWord) {
+        setIsRemoteTimerRunning(false);
+        setRemoteSecondsRemaining(newState.timerDuration || prev.timerDuration || 40);
+      } else if (
+        typeof newState.timerDuration === 'number' &&
+        newState.timerDuration !== prev.timerDuration &&
+        !prev.winningWord
+      ) {
+        setRemoteSecondsRemaining(newState.timerDuration);
+      }
+      return { ...prev, ...newState };
+    });
   }, []);
 
   const {
@@ -140,21 +153,6 @@ export const RemoteControl: React.FC<RemoteControlProps> = ({
 
   const [remoteSecondsRemaining, setRemoteSecondsRemaining] = useState<number>(40);
   const [isRemoteTimerRunning, setIsRemoteTimerRunning] = useState<boolean>(false);
-  const lastWinningWordRef = React.useRef<string | null>(stageState.winningWord || null);
-  const lastTimerDurationRef = React.useRef<number>(stageState.timerDuration || 40);
-
-  // Sync remaining seconds ONLY when a new winning word appears or when wheel duration setting changes
-  useEffect(() => {
-    const wordChanged = stageState.winningWord !== lastWinningWordRef.current;
-    const durationChanged = (stageState.timerDuration || 40) !== lastTimerDurationRef.current;
-
-    if (wordChanged || durationChanged) {
-      lastWinningWordRef.current = stageState.winningWord || null;
-      lastTimerDurationRef.current = stageState.timerDuration || 40;
-      setIsRemoteTimerRunning(false);
-      setRemoteSecondsRemaining(stageState.timerDuration || 40);
-    }
-  }, [stageState.winningWord, stageState.timerDuration]);
 
   // Live remote countdown ticker
   useEffect(() => {
@@ -447,7 +445,7 @@ export const RemoteControl: React.FC<RemoteControlProps> = ({
 
                 {/* Action Buttons: Flat solid golden-yellow primary button, ghost secondary buttons */}
                 <div className="space-y-2 pt-1">
-                  {/* Primary Button ("Start 40s Timer" / "Pause Timer") */}
+                  {/* Primary Button ("Start 40s Timer" / "Resume Timer" / "Pause Timer") */}
                   <button
                     type="button"
                     onClick={isRemoteTimerRunning ? handlePauseTimerClick : handleStartTimerClick}
@@ -457,6 +455,11 @@ export const RemoteControl: React.FC<RemoteControlProps> = ({
                       <>
                         <Pause className="w-3.5 h-3.5 fill-current" />
                         <span>Pause Timer</span>
+                      </>
+                    ) : remoteSecondsRemaining < (stageState.timerDuration || 40) && remoteSecondsRemaining > 0 ? (
+                      <>
+                        <Play className="w-3.5 h-3.5 fill-current" />
+                        <span>Resume Timer ({remoteSecondsRemaining}s)</span>
                       </>
                     ) : (
                       <>

@@ -148,3 +148,56 @@ test('remote timer pause preserves remaining seconds and resumes without resetti
   assert.equal(remoteSeconds, 40, 'Timer should reset to 40 only when a new word is chosen');
   assert.equal(isRunning, false);
 });
+
+test('handleStageState in RemoteControl ignores partial, null, or repeated state updates while paused', () => {
+  let remoteSeconds = 40;
+  let isRunning = false;
+  let stageState = {
+    isSpinning: false,
+    showWinnerModal: false,
+    winningWord: null as string | null,
+    currentWheelName: '1st Grade',
+    timerDuration: 40,
+  };
+
+  function handleStageState(newState: Partial<typeof stageState>) {
+    const prev = stageState;
+    if (newState.winningWord && newState.winningWord !== prev.winningWord) {
+      isRunning = false;
+      remoteSeconds = newState.timerDuration || prev.timerDuration || 40;
+    } else if (
+      typeof newState.timerDuration === 'number' &&
+      newState.timerDuration !== prev.timerDuration &&
+      !prev.winningWord
+    ) {
+      remoteSeconds = newState.timerDuration;
+    }
+    stageState = { ...prev, ...newState };
+  }
+
+  // Timer started
+  isRunning = true;
+  remoteSeconds = 27; // counted down to 27
+
+  // Paused by user
+  isRunning = false;
+  assert.equal(remoteSeconds, 27);
+
+  // Partial updates arrive from polling, SSE, or localStorage
+  handleStageState({ isSpinning: false });
+  assert.equal(remoteSeconds, 27, 'Partial isSpinning update must not reset seconds');
+
+  handleStageState({ winningWord: null });
+  assert.equal(remoteSeconds, 27, 'Null winningWord update must not reset seconds');
+
+  handleStageState({ timerDuration: 40 });
+  assert.equal(remoteSeconds, 27, 'Same timerDuration must not reset seconds');
+
+  handleStageState({ currentWheelName: '1st Grade' });
+  assert.equal(remoteSeconds, 27, 'Wheel name update must not reset seconds');
+
+  // Only when a genuine new word is chosen does it reset
+  handleStageState({ winningWord: 'CHAMPION', timerDuration: 40 });
+  assert.equal(remoteSeconds, 40, 'New word must reset seconds to 40');
+  assert.equal(isRunning, false);
+});
