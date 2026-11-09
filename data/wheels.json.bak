@@ -10,104 +10,99 @@
     "timerDuration": 40,
     "slices": [
       {
-        "id": "slice-1794177863241-0-7x7b8",
+        "id": "slice-1794212135852-0-9c1a2",
         "text": "ANIMAL",
         "color": "#FACC15"
       },
       {
-        "id": "slice-1794177863241-1-bqndg",
+        "id": "slice-1794212135852-1-gwr50",
         "text": "WINDOW",
         "color": "#4ADE80"
       },
       {
-        "id": "slice-1794177863241-2-so15v",
+        "id": "slice-1794212135852-2-ufc4z",
         "text": "PENCIL",
         "color": "#60A5FA"
       },
       {
-        "id": "slice-1794177863241-3-2m7mo",
+        "id": "slice-1794212135852-3-l837c",
         "text": "ORANGE",
         "color": "#F472B6"
       },
       {
-        "id": "slice-1794177863241-4-fpbmc",
+        "id": "slice-1794212135852-4-6q2zj",
         "text": "YELLOW",
         "color": "#FB923C"
       },
       {
-        "id": "slice-1794177863241-5-fwhmo",
+        "id": "slice-1794212135852-5-v3gsi",
         "text": "FATHER",
         "color": "#A78BFA"
       },
       {
-        "id": "slice-1794177863241-6-0eswn",
+        "id": "slice-1794212135852-6-184gk",
         "text": "MOTHER",
         "color": "#2DD4BF"
       },
       {
-        "id": "slice-1794177863241-7-8tgnc",
+        "id": "slice-1794212135852-7-azc97",
         "text": "SISTER",
         "color": "#F87171"
       },
       {
-        "id": "slice-1794177863241-8-m6oby",
+        "id": "slice-1794212135852-8-2lzye",
         "text": "BROTHER",
         "color": "#FACC15"
       },
       {
-        "id": "slice-1794177863241-9-lilnn",
+        "id": "slice-1794212135852-9-byhrr",
         "text": "SUMMER",
         "color": "#4ADE80"
       },
       {
-        "id": "slice-1794177863241-10-bkwun",
+        "id": "slice-1794212135852-10-6tea6",
         "text": "WINTER",
         "color": "#60A5FA"
       },
       {
-        "id": "slice-1794177863241-11-qwzcj",
+        "id": "slice-1794212135852-11-es05t",
         "text": "FLOWER",
         "color": "#F472B6"
       },
       {
-        "id": "slice-1794177863241-12-o504o",
+        "id": "slice-1794212135852-12-ivjn1",
         "text": "DOCTOR",
         "color": "#FB923C"
       },
       {
-        "id": "slice-1794177863241-13-qwg3z",
+        "id": "slice-1794212135852-13-c9d3j",
         "text": "MARKET",
         "color": "#A78BFA"
       },
       {
-        "id": "slice-1794177863241-14-ygg56",
+        "id": "slice-1794212135852-14-irp0h",
         "text": "STREET",
         "color": "#2DD4BF"
       },
       {
-        "id": "slice-1794177863241-15-3yb5v",
+        "id": "slice-1794212135852-15-a9bnh",
         "text": "GARDEN",
         "color": "#F87171"
       },
       {
-        "id": "slice-1794177863241-16-8qb8a",
+        "id": "slice-1794212135852-16-kgb14",
         "text": "SUNDAY",
         "color": "#FACC15"
       },
       {
-        "id": "slice-1794177863241-17-bt686",
-        "text": "MONDAY",
+        "id": "slice-1794212135852-18-axtr1",
+        "text": "DINNER",
         "color": "#4ADE80"
       },
       {
-        "id": "slice-1794177863241-18-4q433",
-        "text": "DINNER",
-        "color": "#60A5FA"
-      },
-      {
-        "id": "slice-1794177863241-19-b58yb",
+        "id": "slice-1794212135852-19-htm07",
         "text": "MORNING",
-        "color": "#F472B6"
+        "color": "#60A5FA"
       }
     ]
   },
@@ -122,192 +117,192 @@
     "timerDuration": 20,
     "slices": [
       {
-        "id": "slice-1794177863241-0-s7kmk",
+        "id": "slice-1794212135852-0-cifkp",
         "text": "ANIMAL",
         "color": "#FACC15"
       },
       {
-        "id": "slice-1794177863241-1-hrqie",
+        "id": "slice-1794212135852-1-4hien",
         "text": "WINDOW",
         "color": "#4ADE80"
       },
       {
-        "id": "slice-1794177863241-2-9a8ft",
+        "id": "slice-1794212135852-2-83fck",
         "text": "PENCIL",
         "color": "#60A5FA"
       },
       {
-        "id": "slice-1794177863241-3-sauzu",
+        "id": "slice-1794212135852-3-tsy7r",
         "text": "ORANGE",
         "color": "#F472B6"
       },
       {
-        "id": "slice-1794177863241-4-apzl9",
+        "id": "slice-1794212135852-4-dkopf",
         "text": "YELLOW",
         "color": "#FB923C"
       },
       {
-        "id": "slice-1794177863241-5-r8mw3",
+        "id": "slice-1794212135852-5-bsmv5",
         "text": "FATHER",
         "color": "#A78BFA"
       },
       {
-        "id": "slice-1794177863241-6-o2f78",
+        "id": "slice-1794212135852-6-gzf8c",
         "text": "MOTHER",
         "color": "#2DD4BF"
       },
       {
-        "id": "slice-1794177863241-7-a99yp",
+        "id": "slice-1794212135852-7-tza6y",
         "text": "SISTER",
         "color": "#F87171"
       },
       {
-        "id": "slice-1794177863241-8-cxllu",
+        "id": "slice-1794212135852-8-c4ny5",
         "text": "BROTHER",
         "color": "#FACC15"
       },
       {
-        "id": "slice-1794177863241-9-cxj6i",
+        "id": "slice-1794212135852-9-wolda",
         "text": "SUMMER",
         "color": "#4ADE80"
       },
       {
-        "id": "slice-1794177863241-10-ghpxi",
+        "id": "slice-1794212135852-10-fl576",
         "text": "WINTER",
         "color": "#60A5FA"
       },
       {
-        "id": "slice-1794177863241-11-m8dan",
+        "id": "slice-1794212135852-11-7qgno",
         "text": "FLOWER",
         "color": "#F472B6"
       },
       {
-        "id": "slice-1794177863241-12-fbshj",
+        "id": "slice-1794212135852-12-fcbgh",
         "text": "DOCTOR",
         "color": "#FB923C"
       },
       {
-        "id": "slice-1794177863241-13-7vmhz",
+        "id": "slice-1794212135852-13-zrpfo",
         "text": "MARKET",
         "color": "#A78BFA"
       },
       {
-        "id": "slice-1794177863241-14-ogpik",
+        "id": "slice-1794212135852-14-tj4zk",
         "text": "STREET",
         "color": "#2DD4BF"
       },
       {
-        "id": "slice-1794177863241-15-rh9zw",
+        "id": "slice-1794212135852-15-r4h7l",
         "text": "GARDEN",
         "color": "#F87171"
       },
       {
-        "id": "slice-1794177863241-16-7j2xh",
+        "id": "slice-1794212135852-16-nqrvg",
         "text": "SUNDAY",
         "color": "#FACC15"
       },
       {
-        "id": "slice-1794177863241-17-lfngo",
+        "id": "slice-1794212135852-17-5c1vr",
         "text": "MONDAY",
         "color": "#4ADE80"
       },
       {
-        "id": "slice-1794177863241-18-mmzfa",
+        "id": "slice-1794212135852-18-ngs6y",
         "text": "DINNER",
         "color": "#60A5FA"
       },
       {
-        "id": "slice-1794177863241-19-tn710",
+        "id": "slice-1794212135852-19-ni6lk",
         "text": "MORNING",
         "color": "#F472B6"
       },
       {
-        "id": "slice-1794177863241-20-zxdb0",
+        "id": "slice-1794212135852-20-n0rkt",
         "text": "STAR",
         "color": "#FB923C"
       },
       {
-        "id": "slice-1794177863241-21-uearj",
+        "id": "slice-1794212135852-21-b75bs",
         "text": "MOON",
         "color": "#A78BFA"
       },
       {
-        "id": "slice-1794177863241-22-m6a34",
+        "id": "slice-1794212135852-22-l4f8j",
         "text": "SUN",
         "color": "#2DD4BF"
       },
       {
-        "id": "slice-1794177863241-23-m29ba",
+        "id": "slice-1794212135852-23-lliph",
         "text": "TREE",
         "color": "#F87171"
       },
       {
-        "id": "slice-1794177863241-24-7otfi",
+        "id": "slice-1794212135852-24-yk2n6",
         "text": "MOUSE",
         "color": "#FACC15"
       },
       {
-        "id": "slice-1794177863241-25-4j4e3",
+        "id": "slice-1794212135852-25-knq8k",
         "text": "CAT",
         "color": "#4ADE80"
       },
       {
-        "id": "slice-1794177863241-26-8mpc3",
+        "id": "slice-1794212135852-26-00s7r",
         "text": "BOY",
         "color": "#60A5FA"
       },
       {
-        "id": "slice-1794177863241-27-bnfiy",
+        "id": "slice-1794212135852-27-82q79",
         "text": "GIRL",
         "color": "#F472B6"
       },
       {
-        "id": "slice-1794177863241-28-pnzfx",
+        "id": "slice-1794212135852-28-a5zta",
         "text": "BOOK",
         "color": "#FB923C"
       },
       {
-        "id": "slice-1794177863241-29-f81l0",
+        "id": "slice-1794212135852-29-lj78n",
         "text": "MICE",
         "color": "#A78BFA"
       },
       {
-        "id": "slice-1794177863241-30-72kut",
+        "id": "slice-1794212135852-30-vhdb3",
         "text": "EYES",
         "color": "#2DD4BF"
       },
       {
-        "id": "slice-1794177863241-31-8xsll",
+        "id": "slice-1794212135852-31-w3hkb",
         "text": "SON",
         "color": "#F87171"
       },
       {
-        "id": "slice-1794177863241-32-j21ur",
+        "id": "slice-1794212135852-32-2rx7h",
         "text": "DAUGHTER",
         "color": "#FACC15"
       },
       {
-        "id": "slice-1794177863241-33-7ce2s",
+        "id": "slice-1794212135852-33-tftxn",
         "text": "AUNT",
         "color": "#4ADE80"
       },
       {
-        "id": "slice-1794177863241-34-yahcy",
+        "id": "slice-1794212135852-34-ucqxy",
         "text": "UNCLE",
         "color": "#60A5FA"
       },
       {
-        "id": "slice-1794177863241-35-dw24z",
+        "id": "slice-1794212135852-35-anwzg",
         "text": "PET",
         "color": "#F472B6"
       },
       {
-        "id": "slice-1794177863241-36-uf251",
+        "id": "slice-1794212135852-36-pkggi",
         "text": "GRANDFATHER",
         "color": "#FB923C"
       },
       {
-        "id": "slice-1794177863241-37-nrr5d",
+        "id": "slice-1794212135852-37-z2vhc",
         "text": "GRANDMOTHER",
         "color": "#A78BFA"
       }
@@ -324,182 +319,182 @@
     "timerDuration": 20,
     "slices": [
       {
-        "id": "slice-1794177863241-0-zwfoa",
+        "id": "slice-1794212135852-0-ynvaz",
         "text": "ANIMAL",
         "color": "#FACC15"
       },
       {
-        "id": "slice-1794177863241-1-u26ub",
+        "id": "slice-1794212135852-1-724j9",
         "text": "WINDOW",
         "color": "#4ADE80"
       },
       {
-        "id": "slice-1794177863241-2-cyyyv",
+        "id": "slice-1794212135852-2-2txms",
         "text": "PENCIL",
         "color": "#60A5FA"
       },
       {
-        "id": "slice-1794177863241-3-25dvl",
+        "id": "slice-1794212135852-3-q288a",
         "text": "ORANGE",
         "color": "#F472B6"
       },
       {
-        "id": "slice-1794177863241-4-48o9b",
+        "id": "slice-1794212135852-4-nnb91",
         "text": "YELLOW",
         "color": "#FB923C"
       },
       {
-        "id": "slice-1794177863241-5-elodv",
+        "id": "slice-1794212135852-5-ctwrf",
         "text": "FATHER",
         "color": "#A78BFA"
       },
       {
-        "id": "slice-1794177863241-6-idy64",
+        "id": "slice-1794212135852-6-r2b90",
         "text": "MOTHER",
         "color": "#2DD4BF"
       },
       {
-        "id": "slice-1794177863241-7-pfg2l",
+        "id": "slice-1794212135852-7-nm7wx",
         "text": "SISTER",
         "color": "#F87171"
       },
       {
-        "id": "slice-1794177863241-8-lmiqx",
+        "id": "slice-1794212135852-8-c4uvt",
         "text": "BROTHER",
         "color": "#FACC15"
       },
       {
-        "id": "slice-1794177863241-9-5fjpd",
+        "id": "slice-1794212135852-9-884z6",
         "text": "SUMMER",
         "color": "#4ADE80"
       },
       {
-        "id": "slice-1794177863241-10-3x6wj",
+        "id": "slice-1794212135852-10-4a9xc",
         "text": "WINTER",
         "color": "#60A5FA"
       },
       {
-        "id": "slice-1794177863241-11-oz10a",
+        "id": "slice-1794212135852-11-dlqga",
         "text": "FLOWER",
         "color": "#F472B6"
       },
       {
-        "id": "slice-1794177863241-12-6px99",
+        "id": "slice-1794212135852-12-v8xpw",
         "text": "DOCTOR",
         "color": "#FB923C"
       },
       {
-        "id": "slice-1794177863241-13-3bkz0",
+        "id": "slice-1794212135852-13-3qf3o",
         "text": "MARKET",
         "color": "#A78BFA"
       },
       {
-        "id": "slice-1794177863241-14-4dnuj",
+        "id": "slice-1794212135852-14-wev8e",
         "text": "STREET",
         "color": "#2DD4BF"
       },
       {
-        "id": "slice-1794177863241-15-3y6b3",
+        "id": "slice-1794212135852-15-tfzzb",
         "text": "GARDEN",
         "color": "#F87171"
       },
       {
-        "id": "slice-1794177863241-16-cqpua",
+        "id": "slice-1794212135852-16-rvto2",
         "text": "SUNDAY",
         "color": "#FACC15"
       },
       {
-        "id": "slice-1794177863241-17-l2t37",
+        "id": "slice-1794212135852-17-ce1rp",
         "text": "MONDAY",
         "color": "#4ADE80"
       },
       {
-        "id": "slice-1794177863241-18-39n2p",
+        "id": "slice-1794212135852-18-yxfwc",
         "text": "DINNER",
         "color": "#60A5FA"
       },
       {
-        "id": "slice-1794177863241-19-roi8c",
+        "id": "slice-1794212135852-19-260rr",
         "text": "MORNING",
         "color": "#F472B6"
       },
       {
-        "id": "slice-1794177863241-20-9286r",
+        "id": "slice-1794212135852-20-hax5a",
         "text": "WRITE",
         "color": "#FB923C"
       },
       {
-        "id": "slice-1794177863241-21-u8uk8",
+        "id": "slice-1794212135852-21-t293e",
         "text": "SING",
         "color": "#A78BFA"
       },
       {
-        "id": "slice-1794177863241-22-3lbh1",
+        "id": "slice-1794212135852-22-3s11h",
         "text": "CLAP",
         "color": "#2DD4BF"
       },
       {
-        "id": "slice-1794177863241-23-ik3c9",
+        "id": "slice-1794212135852-23-5ob8i",
         "text": "DRAW",
         "color": "#F87171"
       },
       {
-        "id": "slice-1794177863242-24-9ti2y",
+        "id": "slice-1794212135852-24-3tffd",
         "text": "PICTURE",
         "color": "#FACC15"
       },
       {
-        "id": "slice-1794177863242-25-90bgr",
+        "id": "slice-1794212135852-25-vb1tj",
         "text": "EAT",
         "color": "#4ADE80"
       },
       {
-        "id": "slice-1794177863242-26-cq88s",
+        "id": "slice-1794212135852-26-92oai",
         "text": "BREAKFAST",
         "color": "#60A5FA"
       },
       {
-        "id": "slice-1794177863242-27-nkfo3",
+        "id": "slice-1794212135852-27-vp063",
         "text": "SHOWER",
         "color": "#F472B6"
       },
       {
-        "id": "slice-1794177863242-28-o8bgz",
+        "id": "slice-1794212135852-28-tfynd",
         "text": "TAKE",
         "color": "#FB923C"
       },
       {
-        "id": "slice-1794177863242-29-o9p1a",
+        "id": "slice-1794212135852-29-yzezd",
         "text": "DAY",
         "color": "#A78BFA"
       },
       {
-        "id": "slice-1794177863242-30-hgzj1",
+        "id": "slice-1794212135852-30-7oz6p",
         "text": "GRADUATION",
         "color": "#2DD4BF"
       },
       {
-        "id": "slice-1794177863242-31-uu76e",
+        "id": "slice-1794212135852-31-xs37c",
         "text": "BIRTHDAY",
         "color": "#F87171"
       },
       {
-        "id": "slice-1794177863242-32-7mht8",
+        "id": "slice-1794212135852-32-wi6zb",
         "text": "CHRISTMAS",
         "color": "#FACC15"
       },
       {
-        "id": "slice-1794177863242-33-9rotl",
+        "id": "slice-1794212135852-33-qpn6m",
         "text": "GIFTS",
         "color": "#4ADE80"
       },
       {
-        "id": "slice-1794177863242-34-3tld8",
+        "id": "slice-1794212135852-34-aro38",
         "text": "MONTHS",
         "color": "#60A5FA"
       },
       {
-        "id": "slice-1794177863242-35-yp01z",
+        "id": "slice-1794212135852-35-mio80",
         "text": "DATE",
         "color": "#F472B6"
       }
@@ -516,212 +511,212 @@
     "timerDuration": 20,
     "slices": [
       {
-        "id": "slice-1794177863242-0-drkk1",
+        "id": "slice-1794212135852-0-916r3",
         "text": "ANIMAL",
         "color": "#FACC15"
       },
       {
-        "id": "slice-1794177863242-1-b3sqr",
+        "id": "slice-1794212135852-1-xw4v7",
         "text": "WINDOW",
         "color": "#4ADE80"
       },
       {
-        "id": "slice-1794177863242-2-5qg14",
+        "id": "slice-1794212135852-2-zxui4",
         "text": "PENCIL",
         "color": "#60A5FA"
       },
       {
-        "id": "slice-1794177863242-3-6hcyd",
+        "id": "slice-1794212135852-3-ikdw5",
         "text": "ORANGE",
         "color": "#F472B6"
       },
       {
-        "id": "slice-1794177863242-4-agbnz",
+        "id": "slice-1794212135852-4-7pppo",
         "text": "YELLOW",
         "color": "#FB923C"
       },
       {
-        "id": "slice-1794177863242-5-dub6q",
+        "id": "slice-1794212135852-5-io6oc",
         "text": "FATHER",
         "color": "#A78BFA"
       },
       {
-        "id": "slice-1794177863242-6-k8kep",
+        "id": "slice-1794212135852-6-ow8u3",
         "text": "MOTHER",
         "color": "#2DD4BF"
       },
       {
-        "id": "slice-1794177863242-7-v89iz",
+        "id": "slice-1794212135852-7-5t61j",
         "text": "SISTER",
         "color": "#F87171"
       },
       {
-        "id": "slice-1794177863242-8-eoovt",
+        "id": "slice-1794212135852-8-vw7i7",
         "text": "BROTHER",
         "color": "#FACC15"
       },
       {
-        "id": "slice-1794177863242-9-5is3v",
+        "id": "slice-1794212135852-9-hs0r3",
         "text": "SUMMER",
         "color": "#4ADE80"
       },
       {
-        "id": "slice-1794177863242-10-y5cx2",
+        "id": "slice-1794212135852-10-cvsax",
         "text": "WINTER",
         "color": "#60A5FA"
       },
       {
-        "id": "slice-1794177863242-11-vki6d",
+        "id": "slice-1794212135852-11-bxsbw",
         "text": "FLOWER",
         "color": "#F472B6"
       },
       {
-        "id": "slice-1794177863242-12-gy2wz",
+        "id": "slice-1794212135852-12-qm7sa",
         "text": "DOCTOR",
         "color": "#FB923C"
       },
       {
-        "id": "slice-1794177863242-13-5at3h",
+        "id": "slice-1794212135852-13-zzyea",
         "text": "MARKET",
         "color": "#A78BFA"
       },
       {
-        "id": "slice-1794177863242-14-luxx2",
+        "id": "slice-1794212135852-14-0avk3",
         "text": "STREET",
         "color": "#2DD4BF"
       },
       {
-        "id": "slice-1794177863242-15-unob1",
+        "id": "slice-1794212135852-15-6abj5",
         "text": "GARDEN",
         "color": "#F87171"
       },
       {
-        "id": "slice-1794177863242-16-7bzr3",
+        "id": "slice-1794212135852-16-6229b",
         "text": "SUNDAY",
         "color": "#FACC15"
       },
       {
-        "id": "slice-1794177863242-17-ndf3r",
+        "id": "slice-1794212135852-17-pz5zt",
         "text": "MONDAY",
         "color": "#4ADE80"
       },
       {
-        "id": "slice-1794177863242-18-mmim7",
+        "id": "slice-1794212135852-18-ozart",
         "text": "DINNER",
         "color": "#60A5FA"
       },
       {
-        "id": "slice-1794177863242-19-s6rxq",
+        "id": "slice-1794212135852-19-ocdac",
         "text": "MORNING",
         "color": "#F472B6"
       },
       {
-        "id": "slice-1794177863242-20-5dqmp",
+        "id": "slice-1794212135852-20-wf4rf",
         "text": "YOUR",
         "color": "#FB923C"
       },
       {
-        "id": "slice-1794177863242-21-l784r",
+        "id": "slice-1794212135852-21-uj0vd",
         "text": "ITS",
         "color": "#A78BFA"
       },
       {
-        "id": "slice-1794177863242-22-zk0xq",
+        "id": "slice-1794212135852-22-zm8nj",
         "text": "OUR",
         "color": "#2DD4BF"
       },
       {
-        "id": "slice-1794177863242-23-09em6",
+        "id": "slice-1794212135852-23-klue4",
         "text": "THEIR",
         "color": "#F87171"
       },
       {
-        "id": "slice-1794177863242-24-lo1k5",
+        "id": "slice-1794212135852-24-68hkh",
         "text": "MINE",
         "color": "#FACC15"
       },
       {
-        "id": "slice-1794177863242-25-xj42v",
+        "id": "slice-1794212135852-25-ua1rv",
         "text": "THOSE",
         "color": "#4ADE80"
       },
       {
-        "id": "slice-1794177863242-26-jxo1a",
+        "id": "slice-1794212135852-26-ebs73",
         "text": "THESE",
         "color": "#60A5FA"
       },
       {
-        "id": "slice-1794177863242-27-nt9n4",
+        "id": "slice-1794212135852-27-vx6tp",
         "text": "WHOSE",
         "color": "#F472B6"
       },
       {
-        "id": "slice-1794177863242-28-vjkxb",
+        "id": "slice-1794212135852-28-m4kwv",
         "text": "DUST",
         "color": "#FB923C"
       },
       {
-        "id": "slice-1794177863242-29-chbgx",
+        "id": "slice-1794212135852-29-8hoxq",
         "text": "FLOOR",
         "color": "#A78BFA"
       },
       {
-        "id": "slice-1794177863242-30-gu0od",
+        "id": "slice-1794212135852-30-26agt",
         "text": "MOP",
         "color": "#2DD4BF"
       },
       {
-        "id": "slice-1794177863242-31-dcnt5",
+        "id": "slice-1794212135852-31-e7whx",
         "text": "SWEEP",
         "color": "#F87171"
       },
       {
-        "id": "slice-1794177863242-32-6nkb8",
+        "id": "slice-1794212135852-32-dh5ly",
         "text": "WASH",
         "color": "#FACC15"
       },
       {
-        "id": "slice-1794177863242-33-myert",
+        "id": "slice-1794212135852-33-o1okq",
         "text": "DISHES",
         "color": "#4ADE80"
       },
       {
-        "id": "slice-1794177863242-34-ntam2",
+        "id": "slice-1794212135852-34-vnzcx",
         "text": "VACUUM",
         "color": "#60A5FA"
       },
       {
-        "id": "slice-1794177863242-35-00dgs",
+        "id": "slice-1794212135852-35-hpf86",
         "text": "IRON",
         "color": "#F472B6"
       },
       {
-        "id": "slice-1794177863242-36-n9gqk",
+        "id": "slice-1794212135852-36-qexv2",
         "text": "MAKE",
         "color": "#FB923C"
       },
       {
-        "id": "slice-1794177863242-37-p8g40",
+        "id": "slice-1794212135852-37-x2il3",
         "text": "BEDS",
         "color": "#A78BFA"
       },
       {
-        "id": "slice-1794177863242-38-zomv0",
+        "id": "slice-1794212135852-38-hectg",
         "text": "CLOTHES",
         "color": "#2DD4BF"
       },
       {
-        "id": "slice-1794177863242-39-qksfw",
+        "id": "slice-1794212135852-39-f5v6y",
         "text": "DUSTER",
         "color": "#F87171"
       },
       {
-        "id": "slice-1794177863242-40-500fx",
+        "id": "slice-1794212135852-40-s8sf3",
         "text": "BROOM",
         "color": "#FACC15"
       },
       {
-        "id": "slice-1794177863242-41-ovfnh",
+        "id": "slice-1794212135852-41-7cic7",
         "text": "WEEKLY",
         "color": "#4ADE80"
       }
@@ -738,152 +733,152 @@
     "timerDuration": 40,
     "slices": [
       {
-        "id": "slice-1794177863242-0-hqzt3",
+        "id": "slice-1794212135852-0-dfd3c",
         "text": "AFTERNOON",
         "color": "#FACC15"
       },
       {
-        "id": "slice-1794177863242-1-sfyfa",
+        "id": "slice-1794212135852-1-dpthe",
         "text": "BREAKFAST",
         "color": "#4ADE80"
       },
       {
-        "id": "slice-1794177863242-2-3pjgi",
+        "id": "slice-1794212135852-2-0cawg",
         "text": "BEAUTIFUL",
         "color": "#60A5FA"
       },
       {
-        "id": "slice-1794177863242-3-0y1w4",
+        "id": "slice-1794212135852-3-q0jmt",
         "text": "COMPUTER",
         "color": "#F472B6"
       },
       {
-        "id": "slice-1794177863242-4-74xna",
+        "id": "slice-1794212135852-4-wo3tr",
         "text": "HOSPITAL",
         "color": "#FB923C"
       },
       {
-        "id": "slice-1794177863242-5-x3diq",
+        "id": "slice-1794212135852-5-ymo0o",
         "text": "MOUNTAIN",
         "color": "#A78BFA"
       },
       {
-        "id": "slice-1794177863242-6-5mc6i",
+        "id": "slice-1794212135852-6-wjfik",
         "text": "SANDWICH",
         "color": "#2DD4BF"
       },
       {
-        "id": "slice-1794177863242-7-kz885",
+        "id": "slice-1794212135852-7-v3neu",
         "text": "ELEPHANT",
         "color": "#F87171"
       },
       {
-        "id": "slice-1794177863242-8-olou9",
+        "id": "slice-1794212135852-8-d4xbk",
         "text": "DINOSAUR",
         "color": "#FACC15"
       },
       {
-        "id": "slice-1794177863242-9-a0fvn",
+        "id": "slice-1794212135852-9-bj230",
         "text": "UMBRELLA",
         "color": "#4ADE80"
       },
       {
-        "id": "slice-1794177863242-10-gnny9",
+        "id": "slice-1794212135852-10-e33ik",
         "text": "VACATION",
         "color": "#60A5FA"
       },
       {
-        "id": "slice-1794177863242-11-7h1oj",
+        "id": "slice-1794212135852-11-ok5mn",
         "text": "LANGUAGE",
         "color": "#F472B6"
       },
       {
-        "id": "slice-1794177863242-12-nf2dv",
+        "id": "slice-1794212135852-12-6xyhj",
         "text": "MAGAZINE",
         "color": "#FB923C"
       },
       {
-        "id": "slice-1794177863242-13-qrli3",
+        "id": "slice-1794212135852-13-39qdj",
         "text": "QUESTION",
         "color": "#A78BFA"
       },
       {
-        "id": "slice-1794177863242-14-xnk0v",
+        "id": "slice-1794212135852-14-pby8v",
         "text": "NEIGHBOR",
         "color": "#2DD4BF"
       },
       {
-        "id": "slice-1794177863242-15-c6m8t",
+        "id": "slice-1794212135852-15-v3ir1",
         "text": "MEDICINE",
         "color": "#F87171"
       },
       {
-        "id": "slice-1794177863242-16-0ag0t",
+        "id": "slice-1794212135852-16-v92t0",
         "text": "TOMORROW",
         "color": "#FACC15"
       },
       {
-        "id": "slice-1794177863242-17-8kezk",
+        "id": "slice-1794212135852-17-x8sxs",
         "text": "YESTERDAY",
         "color": "#4ADE80"
       },
       {
-        "id": "slice-1794177863242-18-xi4m7",
+        "id": "slice-1794212135852-18-ve3u1",
         "text": "REMEMBER",
         "color": "#60A5FA"
       },
       {
-        "id": "slice-1794177863242-19-ymbfw",
+        "id": "slice-1794212135852-19-rir9v",
         "text": "SURPRISE",
         "color": "#F472B6"
       },
       {
-        "id": "slice-1794177863242-20-5560w",
+        "id": "slice-1794212135852-20-quh2x",
         "text": "TELEPHONE",
         "color": "#FB923C"
       },
       {
-        "id": "slice-1794177863242-21-b5q2g",
+        "id": "slice-1794212135852-21-90ig0",
         "text": "FURNITURE",
         "color": "#A78BFA"
       },
       {
-        "id": "slice-1794177863242-22-s2ou7",
+        "id": "slice-1794212135852-22-14it8",
         "text": "IMPORTANT",
         "color": "#2DD4BF"
       },
       {
-        "id": "slice-1794177863242-23-66sa8",
+        "id": "slice-1794212135852-23-36v9r",
         "text": "CHOCOLATE",
         "color": "#F87171"
       },
       {
-        "id": "slice-1794177863242-24-5d9y8",
+        "id": "slice-1794212135852-24-zeqdx",
         "text": "DIRECTION",
         "color": "#FACC15"
       },
       {
-        "id": "slice-1794177863242-25-0irtp",
+        "id": "slice-1794212135852-25-kb5mf",
         "text": "VEGETABLE",
         "color": "#4ADE80"
       },
       {
-        "id": "slice-1794177863242-26-cjypc",
+        "id": "slice-1794212135852-26-myy3e",
         "text": "DELICIOUS",
         "color": "#60A5FA"
       },
       {
-        "id": "slice-1794177863242-27-yhkjx",
+        "id": "slice-1794212135852-27-xkodc",
         "text": "RESTAURANT",
         "color": "#F472B6"
       },
       {
-        "id": "slice-1794177863242-28-3gz1g",
+        "id": "slice-1794212135852-28-i992p",
         "text": "STRAWBERRY",
         "color": "#FB923C"
       },
       {
-        "id": "slice-1794177863242-29-py05k",
+        "id": "slice-1794212135852-29-oaz89",
         "text": "UNIVERSITY",
         "color": "#A78BFA"
       }
@@ -900,262 +895,262 @@
     "timerDuration": 20,
     "slices": [
       {
-        "id": "slice-1794177863242-0-nv5qm",
+        "id": "slice-1794212135852-0-0rixu",
         "text": "AFTERNOON",
         "color": "#FACC15"
       },
       {
-        "id": "slice-1794177863242-1-htz5b",
+        "id": "slice-1794212135852-1-xf3d3",
         "text": "BREAKFAST",
         "color": "#4ADE80"
       },
       {
-        "id": "slice-1794177863242-2-z99zd",
+        "id": "slice-1794212135852-2-0zipd",
         "text": "BEAUTIFUL",
         "color": "#60A5FA"
       },
       {
-        "id": "slice-1794177863242-3-t1fhf",
+        "id": "slice-1794212135852-3-ik4sr",
         "text": "COMPUTER",
         "color": "#F472B6"
       },
       {
-        "id": "slice-1794177863242-4-lljk5",
+        "id": "slice-1794212135852-4-8qafe",
         "text": "HOSPITAL",
         "color": "#FB923C"
       },
       {
-        "id": "slice-1794177863242-5-cda2k",
+        "id": "slice-1794212135852-5-iv80p",
         "text": "MOUNTAIN",
         "color": "#A78BFA"
       },
       {
-        "id": "slice-1794177863242-6-itdh2",
+        "id": "slice-1794212135852-6-a58lo",
         "text": "SANDWICH",
         "color": "#2DD4BF"
       },
       {
-        "id": "slice-1794177863242-7-oj7lw",
+        "id": "slice-1794212135852-7-gaa0y",
         "text": "ELEPHANT",
         "color": "#F87171"
       },
       {
-        "id": "slice-1794177863242-8-4jqud",
+        "id": "slice-1794212135852-8-5ghkv",
         "text": "DINOSAUR",
         "color": "#FACC15"
       },
       {
-        "id": "slice-1794177863242-9-r4uez",
+        "id": "slice-1794212135852-9-32mge",
         "text": "UMBRELLA",
         "color": "#4ADE80"
       },
       {
-        "id": "slice-1794177863242-10-k6t4z",
+        "id": "slice-1794212135852-10-sl4h8",
         "text": "VACATION",
         "color": "#60A5FA"
       },
       {
-        "id": "slice-1794177863242-11-d4e38",
+        "id": "slice-1794212135852-11-ajwlo",
         "text": "LANGUAGE",
         "color": "#F472B6"
       },
       {
-        "id": "slice-1794177863242-12-lprct",
+        "id": "slice-1794212135852-12-9k204",
         "text": "MAGAZINE",
         "color": "#FB923C"
       },
       {
-        "id": "slice-1794177863242-13-u1uhh",
+        "id": "slice-1794212135852-13-q1gqy",
         "text": "QUESTION",
         "color": "#A78BFA"
       },
       {
-        "id": "slice-1794177863242-14-tfgtx",
+        "id": "slice-1794212135852-14-jt7qm",
         "text": "NEIGHBOR",
         "color": "#2DD4BF"
       },
       {
-        "id": "slice-1794177863242-15-dfb0s",
+        "id": "slice-1794212135852-15-knipm",
         "text": "MEDICINE",
         "color": "#F87171"
       },
       {
-        "id": "slice-1794177863242-16-phiz4",
+        "id": "slice-1794212135852-16-liy3l",
         "text": "TOMORROW",
         "color": "#FACC15"
       },
       {
-        "id": "slice-1794177863242-17-wwbc2",
+        "id": "slice-1794212135852-17-2m4re",
         "text": "YESTERDAY",
         "color": "#4ADE80"
       },
       {
-        "id": "slice-1794177863242-18-f9bfp",
+        "id": "slice-1794212135852-18-43mpk",
         "text": "REMEMBER",
         "color": "#60A5FA"
       },
       {
-        "id": "slice-1794177863242-19-2sro9",
+        "id": "slice-1794212135852-19-1s6ds",
         "text": "SURPRISE",
         "color": "#F472B6"
       },
       {
-        "id": "slice-1794177863242-20-y8x8k",
+        "id": "slice-1794212135852-20-tzrhy",
         "text": "TELEPHONE",
         "color": "#FB923C"
       },
       {
-        "id": "slice-1794177863242-21-p913d",
+        "id": "slice-1794212135852-21-r6h6o",
         "text": "FURNITURE",
         "color": "#A78BFA"
       },
       {
-        "id": "slice-1794177863242-22-7vlxe",
+        "id": "slice-1794212135852-22-qfnvs",
         "text": "IMPORTANT",
         "color": "#2DD4BF"
       },
       {
-        "id": "slice-1794177863242-23-l3wh7",
+        "id": "slice-1794212135852-23-x1p9w",
         "text": "CHOCOLATE",
         "color": "#F87171"
       },
       {
-        "id": "slice-1794177863242-24-a7sye",
+        "id": "slice-1794212135852-24-qmnyk",
         "text": "DIRECTION",
         "color": "#FACC15"
       },
       {
-        "id": "slice-1794177863242-25-1vzad",
+        "id": "slice-1794212135852-25-vxo5r",
         "text": "VEGETABLE",
         "color": "#4ADE80"
       },
       {
-        "id": "slice-1794177863242-26-wvj93",
+        "id": "slice-1794212135852-26-x5lfl",
         "text": "DELICIOUS",
         "color": "#60A5FA"
       },
       {
-        "id": "slice-1794177863242-27-7jtpy",
+        "id": "slice-1794212135852-27-hn7tu",
         "text": "RESTAURANT",
         "color": "#F472B6"
       },
       {
-        "id": "slice-1794177863242-28-icj5j",
+        "id": "slice-1794212135852-28-xtq9d",
         "text": "STRAWBERRY",
         "color": "#FB923C"
       },
       {
-        "id": "slice-1794177863242-29-7uh6x",
+        "id": "slice-1794212135852-29-qrfxc",
         "text": "UNIVERSITY",
         "color": "#A78BFA"
       },
       {
-        "id": "slice-1794177863242-30-vcshb",
+        "id": "slice-1794212135852-30-v965c",
         "text": "GOOD",
         "color": "#2DD4BF"
       },
       {
-        "id": "slice-1794177863242-31-kvoin",
+        "id": "slice-1794212135852-31-dw5n1",
         "text": "MORNING",
         "color": "#F87171"
       },
       {
-        "id": "slice-1794177863242-32-582o8",
+        "id": "slice-1794212135852-32-s6fzw",
         "text": "EVENING",
         "color": "#FACC15"
       },
       {
-        "id": "slice-1794177863242-33-5e2lw",
+        "id": "slice-1794212135852-33-6k8y0",
         "text": "LATER",
         "color": "#4ADE80"
       },
       {
-        "id": "slice-1794177863242-34-t555c",
+        "id": "slice-1794212135852-34-mp2jy",
         "text": "NIGHT",
         "color": "#60A5FA"
       },
       {
-        "id": "slice-1794177863242-35-h1rbs",
+        "id": "slice-1794212135852-35-tzkoc",
         "text": "NICE",
         "color": "#F472B6"
       },
       {
-        "id": "slice-1794177863242-36-u0upn",
+        "id": "slice-1794212135852-36-un47l",
         "text": "MEET",
         "color": "#FB923C"
       },
       {
-        "id": "slice-1794177863242-37-5tnya",
+        "id": "slice-1794212135852-37-h35bz",
         "text": "FIRST",
         "color": "#A78BFA"
       },
       {
-        "id": "slice-1794177863242-38-1hcs9",
+        "id": "slice-1794212135852-38-vaxqm",
         "text": "SECOND",
         "color": "#2DD4BF"
       },
       {
-        "id": "slice-1794177863242-39-rheg8",
+        "id": "slice-1794212135852-39-d0wp4",
         "text": "NAME",
         "color": "#F87171"
       },
       {
-        "id": "slice-1794177863242-40-tcphy",
+        "id": "slice-1794212135852-40-81unn",
         "text": "WINDOW",
         "color": "#FACC15"
       },
       {
-        "id": "slice-1794177863242-41-0l7pt",
+        "id": "slice-1794212135852-41-rbico",
         "text": "BACKPACK",
         "color": "#4ADE80"
       },
       {
-        "id": "slice-1794177863242-42-uh0e2",
+        "id": "slice-1794212135852-42-ld0l1",
         "text": "PAPER",
         "color": "#60A5FA"
       },
       {
-        "id": "slice-1794177863242-43-qeolp",
+        "id": "slice-1794212135852-43-mjoll",
         "text": "SHEET",
         "color": "#F472B6"
       },
       {
-        "id": "slice-1794177863242-44-l4zx4",
+        "id": "slice-1794212135852-44-ceu4f",
         "text": "PENCIL",
         "color": "#FB923C"
       },
       {
-        "id": "slice-1794177863242-45-bdfaw",
+        "id": "slice-1794212135852-45-gvm60",
         "text": "TEACHER",
         "color": "#A78BFA"
       },
       {
-        "id": "slice-1794177863242-46-el88f",
+        "id": "slice-1794212135852-46-yyome",
         "text": "CALENDAR",
         "color": "#2DD4BF"
       },
       {
-        "id": "slice-1794177863242-47-7zdbf",
+        "id": "slice-1794212135852-47-aiwc9",
         "text": "BOOK",
         "color": "#F87171"
       },
       {
-        "id": "slice-1794177863242-48-baev6",
+        "id": "slice-1794212135852-48-26trr",
         "text": "T-SHIRT",
         "color": "#FACC15"
       },
       {
-        "id": "slice-1794177863242-49-zsyzf",
+        "id": "slice-1794212135852-49-u2tvm",
         "text": "DESK",
         "color": "#4ADE80"
       },
       {
-        "id": "slice-1794177863242-50-3pb3d",
+        "id": "slice-1794212135852-50-fbe42",
         "text": "EARTH",
         "color": "#60A5FA"
       },
       {
-        "id": "slice-1794177863242-51-fs6qw",
+        "id": "slice-1794212135852-51-oqat7",
         "text": "GLOBE",
         "color": "#F472B6"
       }
@@ -1172,247 +1167,247 @@
     "timerDuration": 20,
     "slices": [
       {
-        "id": "slice-1794177863242-0-ytg3t",
+        "id": "slice-1794212135852-0-5l0na",
         "text": "AFTERNOON",
         "color": "#FACC15"
       },
       {
-        "id": "slice-1794177863242-1-qgeym",
+        "id": "slice-1794212135852-1-mhs0l",
         "text": "BREAKFAST",
         "color": "#4ADE80"
       },
       {
-        "id": "slice-1794177863242-2-7oyxk",
+        "id": "slice-1794212135852-2-dk1r1",
         "text": "BEAUTIFUL",
         "color": "#60A5FA"
       },
       {
-        "id": "slice-1794177863242-3-szh5m",
+        "id": "slice-1794212135852-3-fh2ds",
         "text": "COMPUTER",
         "color": "#F472B6"
       },
       {
-        "id": "slice-1794177863242-4-i2q30",
+        "id": "slice-1794212135852-4-bp0xf",
         "text": "HOSPITAL",
         "color": "#FB923C"
       },
       {
-        "id": "slice-1794177863242-5-yik7x",
+        "id": "slice-1794212135852-5-epkky",
         "text": "MOUNTAIN",
         "color": "#A78BFA"
       },
       {
-        "id": "slice-1794177863242-6-csdiz",
+        "id": "slice-1794212135852-6-4be5s",
         "text": "SANDWICH",
         "color": "#2DD4BF"
       },
       {
-        "id": "slice-1794177863242-7-3h87u",
+        "id": "slice-1794212135852-7-2ulfi",
         "text": "ELEPHANT",
         "color": "#F87171"
       },
       {
-        "id": "slice-1794177863242-8-ydy6f",
+        "id": "slice-1794212135852-8-69o6c",
         "text": "DINOSAUR",
         "color": "#FACC15"
       },
       {
-        "id": "slice-1794177863242-9-tl5es",
+        "id": "slice-1794212135852-9-vmyis",
         "text": "UMBRELLA",
         "color": "#4ADE80"
       },
       {
-        "id": "slice-1794177863242-10-4vief",
+        "id": "slice-1794212135852-10-1d4hq",
         "text": "VACATION",
         "color": "#60A5FA"
       },
       {
-        "id": "slice-1794177863242-11-iu5ak",
+        "id": "slice-1794212135852-11-eisij",
         "text": "LANGUAGE",
         "color": "#F472B6"
       },
       {
-        "id": "slice-1794177863242-12-udkfb",
+        "id": "slice-1794212135852-12-04k77",
         "text": "MAGAZINE",
         "color": "#FB923C"
       },
       {
-        "id": "slice-1794177863242-13-q4m71",
+        "id": "slice-1794212135852-13-v63ln",
         "text": "QUESTION",
         "color": "#A78BFA"
       },
       {
-        "id": "slice-1794177863242-14-r703a",
+        "id": "slice-1794212135852-14-p0xz3",
         "text": "NEIGHBOR",
         "color": "#2DD4BF"
       },
       {
-        "id": "slice-1794177863242-15-gobe4",
+        "id": "slice-1794212135852-15-oaxqo",
         "text": "MEDICINE",
         "color": "#F87171"
       },
       {
-        "id": "slice-1794177863242-16-fd1lr",
+        "id": "slice-1794212135852-16-ffz8q",
         "text": "TOMORROW",
         "color": "#FACC15"
       },
       {
-        "id": "slice-1794177863242-17-nkpzy",
+        "id": "slice-1794212135852-17-jzmwv",
         "text": "YESTERDAY",
         "color": "#4ADE80"
       },
       {
-        "id": "slice-1794177863242-18-3qmpu",
+        "id": "slice-1794212135852-18-w9gwy",
         "text": "REMEMBER",
         "color": "#60A5FA"
       },
       {
-        "id": "slice-1794177863242-19-6eag6",
+        "id": "slice-1794212135852-19-s41ii",
         "text": "SURPRISE",
         "color": "#F472B6"
       },
       {
-        "id": "slice-1794177863242-20-a972u",
+        "id": "slice-1794212135852-20-w7ch1",
         "text": "TELEPHONE",
         "color": "#FB923C"
       },
       {
-        "id": "slice-1794177863242-21-ulvu7",
+        "id": "slice-1794212135852-21-33mwh",
         "text": "FURNITURE",
         "color": "#A78BFA"
       },
       {
-        "id": "slice-1794177863242-22-8siyn",
+        "id": "slice-1794212135852-22-6czmr",
         "text": "IMPORTANT",
         "color": "#2DD4BF"
       },
       {
-        "id": "slice-1794177863242-23-44uaa",
+        "id": "slice-1794212135852-23-keitx",
         "text": "CHOCOLATE",
         "color": "#F87171"
       },
       {
-        "id": "slice-1794177863242-24-px1mj",
+        "id": "slice-1794212135852-24-h3i2g",
         "text": "DIRECTION",
         "color": "#FACC15"
       },
       {
-        "id": "slice-1794177863242-25-yp98w",
+        "id": "slice-1794212135852-25-l2ibv",
         "text": "VEGETABLE",
         "color": "#4ADE80"
       },
       {
-        "id": "slice-1794177863242-26-uh6rh",
+        "id": "slice-1794212135852-26-dze9s",
         "text": "DELICIOUS",
         "color": "#60A5FA"
       },
       {
-        "id": "slice-1794177863242-27-ypqo9",
+        "id": "slice-1794212135852-27-ll9q6",
         "text": "RESTAURANT",
         "color": "#F472B6"
       },
       {
-        "id": "slice-1794177863242-28-ilifr",
+        "id": "slice-1794212135852-28-8r8du",
         "text": "STRAWBERRY",
         "color": "#FB923C"
       },
       {
-        "id": "slice-1794177863242-29-6iqhs",
+        "id": "slice-1794212135852-29-2hssg",
         "text": "UNIVERSITY",
         "color": "#A78BFA"
       },
       {
-        "id": "slice-1794177863242-30-6ppax",
+        "id": "slice-1794212135852-30-6li3a",
         "text": "MORNING",
         "color": "#2DD4BF"
       },
       {
-        "id": "slice-1794177863242-31-d5kb5",
+        "id": "slice-1794212135852-31-1hi0w",
         "text": "EVENING",
         "color": "#F87171"
       },
       {
-        "id": "slice-1794177863242-32-1agu7",
+        "id": "slice-1794212135852-32-iju5g",
         "text": "NIGHT",
         "color": "#FACC15"
       },
       {
-        "id": "slice-1794177863242-33-1doc2",
+        "id": "slice-1794212135852-33-w8r81",
         "text": "NAME",
         "color": "#4ADE80"
       },
       {
-        "id": "slice-1794177863242-34-nii4o",
+        "id": "slice-1794212135852-34-ngwhs",
         "text": "DAY",
         "color": "#60A5FA"
       },
       {
-        "id": "slice-1794177863242-35-whwar",
+        "id": "slice-1794212135852-35-d9wmc",
         "text": "AGE",
         "color": "#F472B6"
       },
       {
-        "id": "slice-1794177863242-36-f3je9",
+        "id": "slice-1794212135852-36-eqqf6",
         "text": "BIRTHDAY",
         "color": "#FB923C"
       },
       {
-        "id": "slice-1794177863242-37-3wd1y",
+        "id": "slice-1794212135852-37-9y5tr",
         "text": "JANUARY",
         "color": "#A78BFA"
       },
       {
-        "id": "slice-1794177863242-38-zhf0g",
+        "id": "slice-1794212135852-38-y1aoi",
         "text": "FEBRUARY",
         "color": "#2DD4BF"
       },
       {
-        "id": "slice-1794177863242-39-t1ujm",
+        "id": "slice-1794212135852-39-va5xt",
         "text": "MARCH",
         "color": "#F87171"
       },
       {
-        "id": "slice-1794177863242-40-9lhf1",
+        "id": "slice-1794212135852-40-eplf8",
         "text": "APRIL",
         "color": "#FACC15"
       },
       {
-        "id": "slice-1794177863242-41-1hstq",
+        "id": "slice-1794212135852-41-27akd",
         "text": "MAY",
         "color": "#4ADE80"
       },
       {
-        "id": "slice-1794177863242-42-i9hwn",
+        "id": "slice-1794212135852-42-5fnc5",
         "text": "JUNE",
         "color": "#60A5FA"
       },
       {
-        "id": "slice-1794177863242-43-0d5y9",
+        "id": "slice-1794212135852-43-htd8l",
         "text": "JULY",
         "color": "#F472B6"
       },
       {
-        "id": "slice-1794177863242-44-oks76",
+        "id": "slice-1794212135852-44-hzx42",
         "text": "AUGUST",
         "color": "#FB923C"
       },
       {
-        "id": "slice-1794177863242-45-sfne2",
+        "id": "slice-1794212135852-45-jpgtq",
         "text": "SEPTEMBER",
         "color": "#A78BFA"
       },
       {
-        "id": "slice-1794177863242-46-ebr0u",
+        "id": "slice-1794212135852-46-0y2eh",
         "text": "OCTOBER",
         "color": "#2DD4BF"
       },
       {
-        "id": "slice-1794177863242-47-gthbl",
+        "id": "slice-1794212135852-47-054rj",
         "text": "NOVEMBER",
         "color": "#F87171"
       },
       {
-        "id": "slice-1794177863242-48-b9snd",
+        "id": "slice-1794212135852-48-lb254",
         "text": "DECEMBER",
         "color": "#4ADE80"
       }
@@ -1429,242 +1424,242 @@
     "timerDuration": 20,
     "slices": [
       {
-        "id": "slice-1794177863242-0-2jx7n",
+        "id": "slice-1794212135852-0-6upwp",
         "text": "AFTERNOON",
         "color": "#FACC15"
       },
       {
-        "id": "slice-1794177863242-1-vjo4x",
+        "id": "slice-1794212135852-1-6ts0w",
         "text": "BREAKFAST",
         "color": "#4ADE80"
       },
       {
-        "id": "slice-1794177863242-2-azprc",
+        "id": "slice-1794212135852-2-li93y",
         "text": "BEAUTIFUL",
         "color": "#60A5FA"
       },
       {
-        "id": "slice-1794177863242-3-u1n5e",
+        "id": "slice-1794212135852-3-05738",
         "text": "COMPUTER",
         "color": "#F472B6"
       },
       {
-        "id": "slice-1794177863242-4-7qe08",
+        "id": "slice-1794212135852-4-d14lc",
         "text": "HOSPITAL",
         "color": "#FB923C"
       },
       {
-        "id": "slice-1794177863242-5-3nynz",
+        "id": "slice-1794212135852-5-i6j70",
         "text": "MOUNTAIN",
         "color": "#A78BFA"
       },
       {
-        "id": "slice-1794177863242-6-bqlb6",
+        "id": "slice-1794212135852-6-3xmwt",
         "text": "SANDWICH",
         "color": "#2DD4BF"
       },
       {
-        "id": "slice-1794177863242-7-qev5w",
+        "id": "slice-1794212135852-7-av605",
         "text": "ELEPHANT",
         "color": "#F87171"
       },
       {
-        "id": "slice-1794177863242-8-j2tom",
+        "id": "slice-1794212135852-8-2q70y",
         "text": "DINOSAUR",
         "color": "#FACC15"
       },
       {
-        "id": "slice-1794177863242-9-wcdyu",
+        "id": "slice-1794212135852-9-pgrgw",
         "text": "UMBRELLA",
         "color": "#4ADE80"
       },
       {
-        "id": "slice-1794177863242-10-9onoo",
+        "id": "slice-1794212135852-10-z8013",
         "text": "VACATION",
         "color": "#60A5FA"
       },
       {
-        "id": "slice-1794177863242-11-7z0h0",
+        "id": "slice-1794212135852-11-458o2",
         "text": "LANGUAGE",
         "color": "#F472B6"
       },
       {
-        "id": "slice-1794177863242-12-rkjav",
+        "id": "slice-1794212135852-12-2kwwq",
         "text": "MAGAZINE",
         "color": "#FB923C"
       },
       {
-        "id": "slice-1794177863242-13-gope4",
+        "id": "slice-1794212135852-13-kw1bj",
         "text": "QUESTION",
         "color": "#A78BFA"
       },
       {
-        "id": "slice-1794177863242-14-esjkl",
+        "id": "slice-1794212135852-14-0zi49",
         "text": "NEIGHBOR",
         "color": "#2DD4BF"
       },
       {
-        "id": "slice-1794177863242-15-7rr2a",
+        "id": "slice-1794212135852-15-2t9su",
         "text": "MEDICINE",
         "color": "#F87171"
       },
       {
-        "id": "slice-1794177863242-16-zcv8l",
+        "id": "slice-1794212135852-16-79o14",
         "text": "TOMORROW",
         "color": "#FACC15"
       },
       {
-        "id": "slice-1794177863242-17-vhqic",
+        "id": "slice-1794212135852-17-s5qgp",
         "text": "YESTERDAY",
         "color": "#4ADE80"
       },
       {
-        "id": "slice-1794177863242-18-scu4y",
+        "id": "slice-1794212135852-18-t2nvv",
         "text": "REMEMBER",
         "color": "#60A5FA"
       },
       {
-        "id": "slice-1794177863242-19-lvjbd",
+        "id": "slice-1794212135852-19-if6z8",
         "text": "SURPRISE",
         "color": "#F472B6"
       },
       {
-        "id": "slice-1794177863242-20-7g2go",
+        "id": "slice-1794212135852-20-e045i",
         "text": "TELEPHONE",
         "color": "#FB923C"
       },
       {
-        "id": "slice-1794177863242-21-ibvr7",
+        "id": "slice-1794212135852-21-qy1gi",
         "text": "FURNITURE",
         "color": "#A78BFA"
       },
       {
-        "id": "slice-1794177863242-22-58dx7",
+        "id": "slice-1794212135852-22-5xvl1",
         "text": "IMPORTANT",
         "color": "#2DD4BF"
       },
       {
-        "id": "slice-1794177863242-23-w0tcz",
+        "id": "slice-1794212135852-23-7yo66",
         "text": "CHOCOLATE",
         "color": "#F87171"
       },
       {
-        "id": "slice-1794177863242-24-m6sxa",
+        "id": "slice-1794212135852-24-31tha",
         "text": "DIRECTION",
         "color": "#FACC15"
       },
       {
-        "id": "slice-1794177863242-25-1omlj",
+        "id": "slice-1794212135852-25-3t61g",
         "text": "VEGETABLE",
         "color": "#4ADE80"
       },
       {
-        "id": "slice-1794177863242-26-1pzih",
+        "id": "slice-1794212135852-26-dplbg",
         "text": "DELICIOUS",
         "color": "#60A5FA"
       },
       {
-        "id": "slice-1794177863242-27-cyoi6",
+        "id": "slice-1794212135852-27-3ifn3",
         "text": "RESTAURANT",
         "color": "#F472B6"
       },
       {
-        "id": "slice-1794177863242-28-tn0r2",
+        "id": "slice-1794212135852-28-y5hn4",
         "text": "STRAWBERRY",
         "color": "#FB923C"
       },
       {
-        "id": "slice-1794177863242-29-68jpw",
+        "id": "slice-1794212135852-29-hf3g8",
         "text": "UNIVERSITY",
         "color": "#A78BFA"
       },
       {
-        "id": "slice-1794177863242-30-9h8qr",
+        "id": "slice-1794212135852-30-s4s0f",
         "text": "ORDINARY",
         "color": "#2DD4BF"
       },
       {
-        "id": "slice-1794177863242-31-6zo5i",
+        "id": "slice-1794212135852-31-ashf4",
         "text": "HUNDRED",
         "color": "#F87171"
       },
       {
-        "id": "slice-1794177863242-32-p0up1",
+        "id": "slice-1794212135852-32-xfb6i",
         "text": "THOUSAND",
         "color": "#FACC15"
       },
       {
-        "id": "slice-1794177863242-33-qvnrr",
+        "id": "slice-1794212135852-33-xhuwt",
         "text": "MILLION",
         "color": "#4ADE80"
       },
       {
-        "id": "slice-1794177863242-34-b6xct",
+        "id": "slice-1794212135852-34-zjs83",
         "text": "PREPOSITION",
         "color": "#60A5FA"
       },
       {
-        "id": "slice-1794177863242-35-2381y",
+        "id": "slice-1794212135852-35-3bbrc",
         "text": "IDENTIFICATION",
         "color": "#F472B6"
       },
       {
-        "id": "slice-1794177863242-36-k5ige",
+        "id": "slice-1794212135852-36-329wu",
         "text": "BIOGRAPHY",
         "color": "#FB923C"
       },
       {
-        "id": "slice-1794177863242-37-j61ci",
+        "id": "slice-1794212135852-37-l2zrg",
         "text": "COLOR WHEEL",
         "color": "#A78BFA"
       },
       {
-        "id": "slice-1794177863242-38-fmzjf",
+        "id": "slice-1794212135852-38-x3frc",
         "text": "LEISURE",
         "color": "#2DD4BF"
       },
       {
-        "id": "slice-1794177863242-39-ixno5",
+        "id": "slice-1794212135852-39-vr8yh",
         "text": "INTERESTS",
         "color": "#F87171"
       },
       {
-        "id": "slice-1794177863242-40-kd4k0",
+        "id": "slice-1794212135852-40-zgmmc",
         "text": "CHESS",
         "color": "#FACC15"
       },
       {
-        "id": "slice-1794177863242-41-771jp",
+        "id": "slice-1794212135852-41-aweti",
         "text": "HOUSEWORK",
         "color": "#4ADE80"
       },
       {
-        "id": "slice-1794177863242-42-jqavp",
+        "id": "slice-1794212135852-42-e9ny1",
         "text": "IRONING",
         "color": "#60A5FA"
       },
       {
-        "id": "slice-1794177863242-43-rjjmu",
+        "id": "slice-1794212135852-43-e26ce",
         "text": "ROUTINE",
         "color": "#F472B6"
       },
       {
-        "id": "slice-1794177863242-44-1yad5",
+        "id": "slice-1794212135852-44-0ed66",
         "text": "FREE TIME",
         "color": "#FB923C"
       },
       {
-        "id": "slice-1794177863242-45-wkelt",
+        "id": "slice-1794212135852-45-2namt",
         "text": "FRACTION",
         "color": "#A78BFA"
       },
       {
-        "id": "slice-1794177863242-46-uuyht",
+        "id": "slice-1794212135852-46-d8z1b",
         "text": "DECIMAL",
         "color": "#2DD4BF"
       },
       {
-        "id": "slice-1794177863242-47-h6wjj",
+        "id": "slice-1794212135852-47-yo2yl",
         "text": "PERCENTAGE",
         "color": "#F87171"
       }
@@ -1681,202 +1676,202 @@
     "timerDuration": 40,
     "slices": [
       {
-        "id": "slice-1794177863242-0-4hhbv",
+        "id": "slice-1794212135852-0-648pe",
         "text": "FORBID",
         "color": "#FACC15"
       },
       {
-        "id": "slice-1794177863242-1-0j7th",
+        "id": "slice-1794212135852-1-0gm24",
         "text": "BROADCAST",
         "color": "#4ADE80"
       },
       {
-        "id": "slice-1794177863242-2-p7v19",
+        "id": "slice-1794212135852-2-ictb3",
         "text": "FORESEE",
         "color": "#60A5FA"
       },
       {
-        "id": "slice-1794177863242-3-o79nk",
+        "id": "slice-1794212135852-3-cdbjv",
         "text": "MISLEAD",
         "color": "#F472B6"
       },
       {
-        "id": "slice-1794177863242-4-1lb28",
+        "id": "slice-1794212135852-4-p1p8z",
         "text": "MISTAKE",
         "color": "#FB923C"
       },
       {
-        "id": "slice-1794177863242-5-8jcml",
+        "id": "slice-1794212135852-5-4p8pi",
         "text": "MISUNDERSTAND",
         "color": "#A78BFA"
       },
       {
-        "id": "slice-1794177863242-6-dliky",
+        "id": "slice-1794212135852-6-0vc86",
         "text": "OVERCOME",
         "color": "#2DD4BF"
       },
       {
-        "id": "slice-1794177863242-7-qsucz",
+        "id": "slice-1794212135852-7-5xlia",
         "text": "OVERDO",
         "color": "#F87171"
       },
       {
-        "id": "slice-1794177863242-8-7lx2f",
+        "id": "slice-1794212135852-8-yogpj",
         "text": "OVEREAT",
         "color": "#FACC15"
       },
       {
-        "id": "slice-1794177863242-9-qn2hg",
+        "id": "slice-1794212135852-9-h77zr",
         "text": "OVERHEAR",
         "color": "#4ADE80"
       },
       {
-        "id": "slice-1794177863242-10-vofhl",
+        "id": "slice-1794212135852-10-duv8b",
         "text": "OVERSLEEP",
         "color": "#60A5FA"
       },
       {
-        "id": "slice-1794177863242-11-1obm6",
+        "id": "slice-1794212135852-11-0eha8",
         "text": "OVERTHROW",
         "color": "#F472B6"
       },
       {
-        "id": "slice-1794177863242-12-z3udb",
+        "id": "slice-1794212135852-12-316i9",
         "text": "PROOFREAD",
         "color": "#FB923C"
       },
       {
-        "id": "slice-1794177863242-13-tvkhn",
+        "id": "slice-1794212135852-13-hrzeh",
         "text": "REBUILD",
         "color": "#A78BFA"
       },
       {
-        "id": "slice-1794177863242-14-hmloe",
+        "id": "slice-1794212135852-14-21pzo",
         "text": "REMAKE",
         "color": "#2DD4BF"
       },
       {
-        "id": "slice-1794177863242-15-c7yiv",
+        "id": "slice-1794212135852-15-isksj",
         "text": "RESELL",
         "color": "#F87171"
       },
       {
-        "id": "slice-1794177863242-16-90qwd",
+        "id": "slice-1794212135852-16-4e7qp",
         "text": "RETHINK",
         "color": "#FACC15"
       },
       {
-        "id": "slice-1794177863242-17-lu822",
+        "id": "slice-1794212135852-17-8mvf3",
         "text": "REWIND",
         "color": "#4ADE80"
       },
       {
-        "id": "slice-1794177863242-18-u3f4i",
+        "id": "slice-1794212135852-18-wcbjl",
         "text": "REWRITE",
         "color": "#60A5FA"
       },
       {
-        "id": "slice-1794177863242-19-cju0r",
+        "id": "slice-1794212135852-19-dpgt8",
         "text": "SHRINK",
         "color": "#F472B6"
       },
       {
-        "id": "slice-1794177863242-20-p2z2i",
+        "id": "slice-1794212135852-20-bgfj0",
         "text": "SPREAD",
         "color": "#FB923C"
       },
       {
-        "id": "slice-1794177863242-21-wg7tf",
+        "id": "slice-1794212135852-21-acnei",
         "text": "SPRING",
         "color": "#A78BFA"
       },
       {
-        "id": "slice-1794177863242-22-5nga0",
+        "id": "slice-1794212135852-22-shfze",
         "text": "STRIDE",
         "color": "#2DD4BF"
       },
       {
-        "id": "slice-1794177863242-23-8rulp",
+        "id": "slice-1794212135852-23-i42dt",
         "text": "STRING",
         "color": "#F87171"
       },
       {
-        "id": "slice-1794177863242-24-06mrh",
+        "id": "slice-1794212135852-24-9nx4h",
         "text": "STRIVE",
         "color": "#FACC15"
       },
       {
-        "id": "slice-1794177863242-25-pmxqd",
+        "id": "slice-1794212135852-25-d3f8b",
         "text": "THRIVE",
         "color": "#4ADE80"
       },
       {
-        "id": "slice-1794177863242-26-nzrly",
+        "id": "slice-1794212135852-26-pswen",
         "text": "UNDERGO",
         "color": "#60A5FA"
       },
       {
-        "id": "slice-1794177863242-27-3ec8u",
+        "id": "slice-1794212135852-27-qot6w",
         "text": "UNDERSTAND",
         "color": "#F472B6"
       },
       {
-        "id": "slice-1794177863242-28-6i4a6",
+        "id": "slice-1794212135852-28-9c1vh",
         "text": "UNDERTAKE",
         "color": "#FB923C"
       },
       {
-        "id": "slice-1794177863242-29-3mebk",
+        "id": "slice-1794212135852-29-orlan",
         "text": "WITHDRAW",
         "color": "#A78BFA"
       },
       {
-        "id": "slice-1794177863242-30-tyd3a",
+        "id": "slice-1794212135852-30-re61b",
         "text": "WITHHOLD",
         "color": "#2DD4BF"
       },
       {
-        "id": "slice-1794177863242-31-nro72",
+        "id": "slice-1794212135852-31-pm5x5",
         "text": "WITHSTAND",
         "color": "#F87171"
       },
       {
-        "id": "slice-1794177863242-32-ujmb8",
+        "id": "slice-1794212135852-32-1i6jb",
         "text": "UPHOLD",
         "color": "#FACC15"
       },
       {
-        "id": "slice-1794177863242-33-9lbl3",
+        "id": "slice-1794212135852-33-ejmwb",
         "text": "OVERPAY",
         "color": "#4ADE80"
       },
       {
-        "id": "slice-1794177863242-34-xsylr",
+        "id": "slice-1794212135852-34-tm4ta",
         "text": "MISSPELL",
         "color": "#60A5FA"
       },
       {
-        "id": "slice-1794177863242-35-y4lr8",
+        "id": "slice-1794212135852-35-y2vz0",
         "text": "PARTAKE",
         "color": "#F472B6"
       },
       {
-        "id": "slice-1794177863242-36-eq8ym",
+        "id": "slice-1794212135852-36-jre4z",
         "text": "OUTGROW",
         "color": "#FB923C"
       },
       {
-        "id": "slice-1794177863242-37-qtfob",
+        "id": "slice-1794212135852-37-w2ch1",
         "text": "OUTSELL",
         "color": "#A78BFA"
       },
       {
-        "id": "slice-1794177863242-38-oebm7",
+        "id": "slice-1794212135852-38-dyf4k",
         "text": "OUTSHINE",
         "color": "#2DD4BF"
       },
       {
-        "id": "slice-1794177863242-39-j7khz",
+        "id": "slice-1794212135852-39-rkepj",
         "text": "SUNBURN",
         "color": "#F87171"
       }
@@ -1893,367 +1888,367 @@
     "timerDuration": 20,
     "slices": [
       {
-        "id": "slice-1794177863242-0-92545",
+        "id": "slice-1794212135852-0-ajixk",
         "text": "FORBID",
         "color": "#FACC15"
       },
       {
-        "id": "slice-1794177863242-1-7d4bp",
+        "id": "slice-1794212135852-1-jybgt",
         "text": "BROADCAST",
         "color": "#4ADE80"
       },
       {
-        "id": "slice-1794177863242-2-e2vy9",
+        "id": "slice-1794212135852-2-96jov",
         "text": "FORESEE",
         "color": "#60A5FA"
       },
       {
-        "id": "slice-1794177863242-3-1xmkt",
+        "id": "slice-1794212135852-3-itjh9",
         "text": "MISLEAD",
         "color": "#F472B6"
       },
       {
-        "id": "slice-1794177863242-4-xy3hz",
+        "id": "slice-1794212135852-4-qhvd6",
         "text": "MISTAKE",
         "color": "#FB923C"
       },
       {
-        "id": "slice-1794177863242-5-3ms1e",
+        "id": "slice-1794212135852-5-r0s72",
         "text": "MISUNDERSTAND",
         "color": "#A78BFA"
       },
       {
-        "id": "slice-1794177863242-6-5y9qb",
+        "id": "slice-1794212135852-6-5saii",
         "text": "OVERCOME",
         "color": "#2DD4BF"
       },
       {
-        "id": "slice-1794177863242-7-rf7yc",
+        "id": "slice-1794212135852-7-80vz1",
         "text": "OVERDO",
         "color": "#F87171"
       },
       {
-        "id": "slice-1794177863242-8-h5xpu",
+        "id": "slice-1794212135852-8-9m0sv",
         "text": "OVEREAT",
         "color": "#FACC15"
       },
       {
-        "id": "slice-1794177863242-9-7qpyc",
+        "id": "slice-1794212135852-9-rlaf9",
         "text": "OVERHEAR",
         "color": "#4ADE80"
       },
       {
-        "id": "slice-1794177863242-10-brsfh",
+        "id": "slice-1794212135852-10-n4h11",
         "text": "OVERSLEEP",
         "color": "#60A5FA"
       },
       {
-        "id": "slice-1794177863242-11-b1uv5",
+        "id": "slice-1794212135852-11-g6cux",
         "text": "OVERTHROW",
         "color": "#F472B6"
       },
       {
-        "id": "slice-1794177863242-12-lxxay",
+        "id": "slice-1794212135852-12-tyowl",
         "text": "PROOFREAD",
         "color": "#FB923C"
       },
       {
-        "id": "slice-1794177863242-13-8ldik",
+        "id": "slice-1794212135852-13-ti0t5",
         "text": "REBUILD",
         "color": "#A78BFA"
       },
       {
-        "id": "slice-1794177863242-14-2ce57",
+        "id": "slice-1794212135852-14-8p2wz",
         "text": "REMAKE",
         "color": "#2DD4BF"
       },
       {
-        "id": "slice-1794177863242-15-2obwv",
+        "id": "slice-1794212135852-15-7h679",
         "text": "RESELL",
         "color": "#F87171"
       },
       {
-        "id": "slice-1794177863242-16-rc6b9",
+        "id": "slice-1794212135852-16-mfp6y",
         "text": "RETHINK",
         "color": "#FACC15"
       },
       {
-        "id": "slice-1794177863242-17-wyhnd",
+        "id": "slice-1794212135852-17-m3vec",
         "text": "REWIND",
         "color": "#4ADE80"
       },
       {
-        "id": "slice-1794177863242-18-xtvpx",
+        "id": "slice-1794212135852-18-u7k03",
         "text": "REWRITE",
         "color": "#60A5FA"
       },
       {
-        "id": "slice-1794177863242-19-runlt",
+        "id": "slice-1794212135852-19-89oe3",
         "text": "SHRINK",
         "color": "#F472B6"
       },
       {
-        "id": "slice-1794177863242-20-9c5oc",
+        "id": "slice-1794212135852-20-e884r",
         "text": "SPREAD",
         "color": "#FB923C"
       },
       {
-        "id": "slice-1794177863242-21-eilhq",
+        "id": "slice-1794212135852-21-827of",
         "text": "SPRING",
         "color": "#A78BFA"
       },
       {
-        "id": "slice-1794177863242-22-j46sh",
+        "id": "slice-1794212135852-22-9fun3",
         "text": "STRIDE",
         "color": "#2DD4BF"
       },
       {
-        "id": "slice-1794177863242-23-vhuja",
+        "id": "slice-1794212135852-23-e2ij5",
         "text": "STRING",
         "color": "#F87171"
       },
       {
-        "id": "slice-1794177863242-24-54y9y",
+        "id": "slice-1794212135852-24-ya8t6",
         "text": "STRIVE",
         "color": "#FACC15"
       },
       {
-        "id": "slice-1794177863242-25-vzkr4",
+        "id": "slice-1794212135852-25-gpmv9",
         "text": "THRIVE",
         "color": "#4ADE80"
       },
       {
-        "id": "slice-1794177863242-26-umgoa",
+        "id": "slice-1794212135852-26-phqfj",
         "text": "UNDERGO",
         "color": "#60A5FA"
       },
       {
-        "id": "slice-1794177863242-27-7xfhp",
+        "id": "slice-1794212135852-27-gdeyj",
         "text": "UNDERSTAND",
         "color": "#F472B6"
       },
       {
-        "id": "slice-1794177863242-28-cbxwx",
+        "id": "slice-1794212135852-28-4ohzy",
         "text": "UNDERTAKE",
         "color": "#FB923C"
       },
       {
-        "id": "slice-1794177863242-29-omwx9",
+        "id": "slice-1794212135852-29-s0bx2",
         "text": "WITHDRAW",
         "color": "#A78BFA"
       },
       {
-        "id": "slice-1794177863242-30-ccvlu",
+        "id": "slice-1794212135852-30-al772",
         "text": "WITHHOLD",
         "color": "#2DD4BF"
       },
       {
-        "id": "slice-1794177863242-31-jqm4t",
+        "id": "slice-1794212135852-31-nbg7c",
         "text": "WITHSTAND",
         "color": "#F87171"
       },
       {
-        "id": "slice-1794177863242-32-gqolc",
+        "id": "slice-1794212135852-32-swbxd",
         "text": "UPHOLD",
         "color": "#FACC15"
       },
       {
-        "id": "slice-1794177863242-33-h3msl",
+        "id": "slice-1794212135852-33-nfn1x",
         "text": "OVERPAY",
         "color": "#4ADE80"
       },
       {
-        "id": "slice-1794177863242-34-yxx6o",
+        "id": "slice-1794212135852-34-bfx1h",
         "text": "MISSPELL",
         "color": "#60A5FA"
       },
       {
-        "id": "slice-1794177863242-35-ujqvi",
+        "id": "slice-1794212135852-35-m3tpu",
         "text": "PARTAKE",
         "color": "#F472B6"
       },
       {
-        "id": "slice-1794177863242-36-l008a",
+        "id": "slice-1794212135852-36-8819b",
         "text": "OUTGROW",
         "color": "#FB923C"
       },
       {
-        "id": "slice-1794177863242-37-3bisb",
+        "id": "slice-1794212135852-37-huw1e",
         "text": "OUTSELL",
         "color": "#A78BFA"
       },
       {
-        "id": "slice-1794177863242-38-lx2tv",
+        "id": "slice-1794212135852-38-9mkfj",
         "text": "OUTSHINE",
         "color": "#2DD4BF"
       },
       {
-        "id": "slice-1794177863242-39-lk7lq",
+        "id": "slice-1794212135852-39-5t39h",
         "text": "SUNBURN",
         "color": "#F87171"
       },
       {
-        "id": "slice-1794177863242-40-rigkk",
+        "id": "slice-1794212135852-40-k97gn",
         "text": "BECOME",
         "color": "#FACC15"
       },
       {
-        "id": "slice-1794177863242-41-kwubs",
+        "id": "slice-1794212135852-41-lw40i",
         "text": "BEGIN",
         "color": "#4ADE80"
       },
       {
-        "id": "slice-1794177863242-42-nylr9",
+        "id": "slice-1794212135852-42-s3efg",
         "text": "BREAK",
         "color": "#60A5FA"
       },
       {
-        "id": "slice-1794177863242-43-tvt6q",
+        "id": "slice-1794212135852-43-nxl0k",
         "text": "BRING",
         "color": "#F472B6"
       },
       {
-        "id": "slice-1794177863242-44-v6194",
+        "id": "slice-1794212135852-44-8semo",
         "text": "BUILD",
         "color": "#FB923C"
       },
       {
-        "id": "slice-1794177863242-45-1b31v",
+        "id": "slice-1794212135852-45-q7pc6",
         "text": "CATCH",
         "color": "#A78BFA"
       },
       {
-        "id": "slice-1794177863242-46-2q2a5",
+        "id": "slice-1794212135852-46-anj8i",
         "text": "CHOOSE",
         "color": "#2DD4BF"
       },
       {
-        "id": "slice-1794177863242-47-mplpm",
+        "id": "slice-1794212135852-47-xem2p",
         "text": "DREAM",
         "color": "#F87171"
       },
       {
-        "id": "slice-1794177863242-48-jycvr",
+        "id": "slice-1794212135852-48-64td0",
         "text": "DRINK",
         "color": "#FACC15"
       },
       {
-        "id": "slice-1794177863242-49-fht7z",
+        "id": "slice-1794212135852-49-bme4f",
         "text": "DRIVE",
         "color": "#4ADE80"
       },
       {
-        "id": "slice-1794177863242-50-1m3m8",
+        "id": "slice-1794212135852-50-21ubr",
         "text": "FORGET",
         "color": "#60A5FA"
       },
       {
-        "id": "slice-1794177863242-51-q17o4",
+        "id": "slice-1794212135852-51-jy0nr",
         "text": "FORGIVE",
         "color": "#F472B6"
       },
       {
-        "id": "slice-1794177863242-52-6q7ds",
+        "id": "slice-1794212135852-52-eommg",
         "text": "FREEZE",
         "color": "#FB923C"
       },
       {
-        "id": "slice-1794177863242-53-ck4bi",
+        "id": "slice-1794212135852-53-15ile",
         "text": "HOLD",
         "color": "#A78BFA"
       },
       {
-        "id": "slice-1794177863242-54-35r91",
+        "id": "slice-1794212135852-54-ylok9",
         "text": "LEARN",
         "color": "#2DD4BF"
       },
       {
-        "id": "slice-1794177863242-55-ipezd",
+        "id": "slice-1794212135852-55-hqq79",
         "text": "LEAVE",
         "color": "#F87171"
       },
       {
-        "id": "slice-1794177863242-56-obmei",
+        "id": "slice-1794212135852-56-kfix9",
         "text": "LEND",
         "color": "#FACC15"
       },
       {
-        "id": "slice-1794177863242-57-bfasg",
+        "id": "slice-1794212135852-57-00hib",
         "text": "LYING",
         "color": "#4ADE80"
       },
       {
-        "id": "slice-1794177863242-58-ocovq",
+        "id": "slice-1794212135852-58-uhs3h",
         "text": "MAN",
         "color": "#60A5FA"
       },
       {
-        "id": "slice-1794177863242-59-1esev",
+        "id": "slice-1794212135852-59-uii65",
         "text": "OVERTAKE",
         "color": "#F472B6"
       },
       {
-        "id": "slice-1794177863242-60-2kzm2",
+        "id": "slice-1794212135852-60-p0h9r",
         "text": "PAY",
         "color": "#FB923C"
       },
       {
-        "id": "slice-1794177863242-61-5d4fs",
+        "id": "slice-1794212135852-61-4gl8w",
         "text": "READ",
         "color": "#A78BFA"
       },
       {
-        "id": "slice-1794177863242-62-sshu4",
+        "id": "slice-1794212135852-62-wasmf",
         "text": "RING",
         "color": "#2DD4BF"
       },
       {
-        "id": "slice-1794177863242-63-3d9fa",
+        "id": "slice-1794212135852-63-mfnmz",
         "text": "SHAKE",
         "color": "#F87171"
       },
       {
-        "id": "slice-1794177863242-64-zvigm",
+        "id": "slice-1794212135852-64-1utjm",
         "text": "SHINE",
         "color": "#FACC15"
       },
       {
-        "id": "slice-1794177863242-65-ra8s1",
+        "id": "slice-1794212135852-65-glvtc",
         "text": "SHOOT",
         "color": "#4ADE80"
       },
       {
-        "id": "slice-1794177863242-66-u76zy",
+        "id": "slice-1794212135852-66-o0bzk",
         "text": "SLEEP",
         "color": "#60A5FA"
       },
       {
-        "id": "slice-1794177863242-67-aqsjc",
+        "id": "slice-1794212135852-67-dfcrs",
         "text": "SPEAK",
         "color": "#F472B6"
       },
       {
-        "id": "slice-1794177863242-68-bahv3",
+        "id": "slice-1794212135852-68-0kb4i",
         "text": "SPEND",
         "color": "#FB923C"
       },
       {
-        "id": "slice-1794177863242-69-r4vt0",
+        "id": "slice-1794212135852-69-e0osf",
         "text": "WRITE",
         "color": "#A78BFA"
       },
       {
-        "id": "slice-1794177863242-70-b9sty",
+        "id": "slice-1794212135852-70-o0pc6",
         "text": "STRIKE",
         "color": "#2DD4BF"
       },
       {
-        "id": "slice-1794177863242-71-6wi3j",
+        "id": "slice-1794212135852-71-v57s8",
         "text": "SWEAR",
         "color": "#F87171"
       },
       {
-        "id": "slice-1794177863242-72-th98z",
+        "id": "slice-1794212135852-72-a79me",
         "text": "RUN",
         "color": "#4ADE80"
       }

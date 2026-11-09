@@ -1,5 +1,4 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
-import { io } from 'socket.io-client';
 import {
   WheelConfig,
   WheelSlice,
@@ -24,7 +23,7 @@ import { DocumentAnalyzerModal } from './components/DocumentAnalyzerModal';
 import { RemoteControl } from './components/RemoteControl';
 import { RemoteQRCodeModal } from './components/RemoteQRCodeModal';
 import { useContestStore } from './store';
-import { useStageSync, getSocket } from './hooks/useStageSync';
+import { useStageSync } from './hooks/useStageSync';
 
 const sanitizeWheel = (wheel: WheelConfig): WheelConfig => {
   const palette = (wheel.group === 'high_school' && wheel.place === 'championship')
@@ -375,7 +374,8 @@ export default function App() {
           }
           break;
         case 'stop_spin':
-          handleSpinStop();
+          // A stray Stop tap while idle must not pop a random word onto the stage.
+          if (isSpinningRef.current) handleSpinStop();
           break;
         case 'start_timer':
           setRemoteTimerSignal({ type: 'start', ts: Date.now() });
@@ -439,41 +439,6 @@ export default function App() {
       currentSlide,
       winnersData,
     });
-  }, [
-    isRemoteRoute,
-    isWheelSpinning,
-    showWinnerModal,
-    winningSlice?.text,
-    activeWheel.name,
-    activeWheel.timerDuration,
-    modalTimerState.timeLeft,
-    modalTimerState.isRunning,
-    currentSlide,
-    winnersData,
-    broadcastStageState,
-  ]);
-
-  // Reply immediately with current stage state when a remote requests it
-  useEffect(() => {
-    if (isRemoteRoute) return;
-    const socket = getSocket();
-    const handleRequest = () => {
-      broadcastStageState({
-        isSpinning: isWheelSpinning,
-        showWinnerModal,
-        winningWord: winningSlice?.text || null,
-        currentWheelName: activeWheel.name,
-        timerDuration: activeWheel.timerDuration ?? 40,
-        timeLeft: showWinnerModal ? modalTimerState.timeLeft : (activeWheel.timerDuration ?? 40),
-        isTimerRunning: showWinnerModal ? modalTimerState.isRunning : false,
-        currentSlide,
-        winnersData,
-      });
-    };
-    socket.on('request_stage_state', handleRequest);
-    return () => {
-      socket.off('request_stage_state', handleRequest);
-    };
   }, [
     isRemoteRoute,
     isWheelSpinning,

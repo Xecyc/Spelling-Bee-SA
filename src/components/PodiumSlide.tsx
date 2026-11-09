@@ -45,7 +45,7 @@ export interface PodiumSlideProps {
 
 export const PodiumSlide: React.FC<PodiumSlideProps> = ({
   winners,
-  backgroundUrl = `${import.meta.env.BASE_URL}assets/image_d24fda.jpg`,
+  backgroundUrl = `${import.meta.env.BASE_URL}assets/backgrounds/hs-podium.jpg`,
   isActive = false,
 }) => {
   const safeWinners = winners || { first: '', second: '', third: '' };

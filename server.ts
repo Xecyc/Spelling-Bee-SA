@@ -1,7 +1,5 @@
 import express from 'express';
 import http from 'http';
-import os from 'os';
-import { Server as SocketIOServer } from 'socket.io';
 import { createServer as createViteServer } from 'vite';
 import path from 'path';
 import fs from 'fs';
@@ -15,6 +13,7 @@ import {
 } from './src/utils/palette.ts';
 
 import { AtomicStore } from './server/storage/atomicStore.ts';
+import { attachRemoteServer } from './server/remoteServer.ts';
 
 function sanitizeServerWheel(wheel: any): any {
   if (!wheel || !Array.isArray(wheel.slices)) return wheel;
@@ -31,315 +30,20 @@ dotenv.config();
 
 const app = express();
 const httpServer = http.createServer(app);
-const port = 3000;
+const port = Number(process.env.PORT) || 3000;
+// `npm start` passes --prod so it works on Windows too (no NODE_ENV=production syntax needed).
+const isProduction = process.env.NODE_ENV === 'production' || process.argv.includes('--prod');
 
-// Attach Socket.io with open CORS for stage & local network mobile remote
-const io = new SocketIOServer(httpServer, {
-  path: '/socket.io',
-  cors: {
-    origin: '*',
-    methods: ['GET', 'POST'],
-  },
-  transports: ['polling', 'websocket'],
-  allowEIO3: true,
-  pingTimeout: 30000,
-  pingInterval: 10000,
-});
+// Phone remote <-> stage relay (Socket.IO + HTTP fallback). Must be mounted before the global JSON parser
+// so the remote API keeps its small body limit.
+attachRemoteServer(app, httpServer, { getPort: () => port });
 
-// Strictly typed payload for remote controlled winner podium
-interface WinnersPayload {
-  first: string;
-  second: string;
-  third: string;
-}
-
-let currentWinners: WinnersPayload | null = null;
-let isWinnersActive = false;
+app.use(express.json({ limit: '50mb' }));
 
 // Persistent wheels storage with atomic temp-file swap & corruption recovery
 const DATA_DIR = path.resolve(process.cwd(), 'data');
 const WHEELS_FILE = path.join(DATA_DIR, 'wheels.json');
 const wheelsStore = new AtomicStore<any[]>(WHEELS_FILE);
-
-let latestStageState: any = null;
-let serverSpinWatchdog: NodeJS.Timeout | null = null;
-
-function triggerServerSpin() {
-  if (!latestStageState) {
-    latestStageState = { isSpinning: true };
-  } else {
-    latestStageState.isSpinning = true;
-  }
-  if (serverSpinWatchdog) clearTimeout(serverSpinWatchdog);
-  serverSpinWatchdog = setTimeout(() => {
-    if (latestStageState) {
-      latestStageState.isSpinning = false;
-      io.emit('stage_state', latestStageState);
-      dispatchRemoteMessage('stage_state', latestStageState);
-    }
-    serverSpinWatchdog = null;
-  }, 7500);
-}
-
-function stopServerSpin() {
-  if (serverSpinWatchdog) {
-    clearTimeout(serverSpinWatchdog);
-    serverSpinWatchdog = null;
-  }
-  if (latestStageState) {
-    latestStageState.isSpinning = false;
-    io.emit('stage_state', latestStageState);
-    dispatchRemoteMessage('stage_state', latestStageState);
-  }
-}
-
-// Master incoming action processor ensuring Socket.IO, SSE, and HTTP stay 100% in sync
-function handleIncomingAction(type: string, payload?: any) {
-  if (type === 'push_winners' && payload) {
-    currentWinners = {
-      first: typeof payload.first === 'string' ? payload.first.trim() : '',
-      second: typeof payload.second === 'string' ? payload.second.trim() : '',
-      third: typeof payload.third === 'string' ? payload.third.trim() : '',
-    };
-    isWinnersActive = true;
-    io.emit('show_winners', currentWinners);
-  } else if (type === 'clear_board' || type === 'clear_winners') {
-    currentWinners = null;
-    isWinnersActive = false;
-    io.emit('hide_winners');
-  } else if (type === 'spin_wheel') {
-    triggerServerSpin();
-  } else if (type === 'stop_spin') {
-    stopServerSpin();
-  }
-  return dispatchRemoteMessage(type, payload);
-}
-
-io.on('connection', (socket) => {
-  // Heartbeat ping-pong for live latency calculation
-  socket.on('ping', (startTime: number) => {
-    socket.emit('pong', startTime);
-  });
-
-  // If podium is active, sync newly connected stage display or remote
-  if (isWinnersActive && currentWinners) {
-    socket.emit('show_winners', currentWinners);
-  }
-
-  // If stage state is active, sync newly connected remote immediately
-  if (latestStageState) {
-    socket.emit('stage_state', latestStageState);
-  }
-
-  // Allow remote to request immediate stage state snapshot
-  socket.on('request_stage_state', () => {
-    if (latestStageState) {
-      socket.emit('stage_state', latestStageState);
-    }
-  });
-
-  // Direct envelope receiver for remote actions: socket.emit('remote_action', { type, payload })
-  socket.on('remote_action', (data: { type: string; payload?: any }) => {
-    if (data && typeof data.type === 'string') {
-      handleIncomingAction(data.type, data.payload);
-    }
-  });
-
-  // Dedicated socket listeners for all individual events
-  socket.on('push_winners', (data: WinnersPayload) => {
-    handleIncomingAction('push_winners', data);
-  });
-
-  socket.on('clear_winners', () => {
-    handleIncomingAction('clear_winners');
-  });
-
-  socket.on('clear_board', () => {
-    handleIncomingAction('clear_board');
-  });
-
-  // Stage state synchronization
-  socket.on('sync_stage_state', (state: any) => {
-    latestStageState = state;
-    if (state?.isSpinning) {
-      if (serverSpinWatchdog) clearTimeout(serverSpinWatchdog);
-      serverSpinWatchdog = setTimeout(() => {
-        if (latestStageState) {
-          latestStageState.isSpinning = false;
-          io.emit('stage_state', latestStageState);
-          dispatchRemoteMessage('stage_state', latestStageState);
-        }
-        serverSpinWatchdog = null;
-      }, 7500);
-    } else {
-      if (serverSpinWatchdog) {
-        clearTimeout(serverSpinWatchdog);
-        serverSpinWatchdog = null;
-      }
-    }
-    socket.broadcast.emit('stage_state', state);
-  });
-
-  // Remote roulette & timer action relays
-  socket.on('spin_wheel', () => {
-    handleIncomingAction('spin_wheel');
-  });
-
-  socket.on('stop_spin', () => {
-    handleIncomingAction('stop_spin');
-  });
-
-  socket.on('start_timer', () => {
-    handleIncomingAction('start_timer');
-  });
-
-  socket.on('stop_timer', () => {
-    handleIncomingAction('stop_timer');
-  });
-
-  socket.on('pause_timer', () => {
-    handleIncomingAction('pause_timer');
-  });
-
-  socket.on('reset_timer', () => {
-    handleIncomingAction('reset_timer');
-  });
-
-  socket.on('remove_word', () => {
-    handleIncomingAction('remove_word');
-  });
-
-  socket.on('close_modal', () => {
-    handleIncomingAction('close_modal');
-  });
-
-  socket.on('set_slide', (slide: number) => {
-    handleIncomingAction('set_slide', slide);
-  });
-});
-
-app.use(express.json({ limit: '50mb' }));
-
-// ============================================================================
-// UNIVERSAL REMOTE CONTROL HTTP & SSE RELAY (Guarantees Cloud Run & mobile sync)
-// ============================================================================
-interface RemoteMessage {
-  id: number;
-  type: string;
-  payload?: any;
-  timestamp: number;
-}
-let messageHistory: RemoteMessage[] = [];
-let nextMsgId = 1;
-const sseClients: express.Response[] = [];
-
-// Broadcast remote event to all connected channels
-function dispatchRemoteMessage(type: string, payload?: any) {
-  const msg: RemoteMessage = { id: nextMsgId++, type, payload, timestamp: Date.now() };
-  messageHistory.push(msg);
-  if (messageHistory.length > 80) messageHistory.shift();
-
-  // 1. Relay to Socket.io clients
-  io.emit(type, payload);
-  io.emit('remote_action', msg);
-
-  // 2. Relay to Server-Sent Events (SSE) clients
-  const sseData = `data: ${JSON.stringify(msg)}\n\n`;
-  for (let i = sseClients.length - 1; i >= 0; i--) {
-    try {
-      sseClients[i].write(sseData);
-    } catch {
-      sseClients.splice(i, 1);
-    }
-  }
-  return msg;
-}
-
-// 1. HTTP POST: Dispatch any remote command (spin_wheel, set_slide, push_winners, etc.)
-app.post('/api/remote/action', (req, res) => {
-  const { type, payload } = req.body;
-  if (!type || typeof type !== 'string') {
-    return res.status(400).json({ error: 'Missing or invalid action type' });
-  }
-
-  const msg = handleIncomingAction(type, payload);
-  res.json({ ok: true, id: msg.id });
-});
-
-// 2. SSE Stream: Real-time event stream for stage and remote clients
-app.get('/api/remote/events', (req, res) => {
-  res.writeHead(200, {
-    'Content-Type': 'text/event-stream',
-    'Cache-Control': 'no-cache, no-transform',
-    Connection: 'keep-alive',
-    'Access-Control-Allow-Origin': '*',
-  });
-  res.write(': connected\n\n');
-  sseClients.push(res);
-
-  // Heartbeat ping every 15s to keep connection alive
-  const heartbeat = setInterval(() => {
-    try {
-      res.write(': ping\n\n');
-    } catch {
-      clearInterval(heartbeat);
-    }
-  }, 15000);
-
-  req.on('close', () => {
-    clearInterval(heartbeat);
-    const idx = sseClients.indexOf(res);
-    if (idx !== -1) sseClients.splice(idx, 1);
-  });
-});
-
-// 3. HTTP Poll fallback: In case SSE is buffered by proxies
-app.get('/api/remote/poll', (req, res) => {
-  const since = parseInt(req.query.since as string) || 0;
-  const newMessages = messageHistory.filter((m) => m.id > since);
-  res.json({
-    messages: newMessages,
-    latestId: messageHistory[messageHistory.length - 1]?.id || 0,
-    latestStageState,
-    currentWinners,
-  });
-});
-
-// 4. Stage State sync endpoint
-app.post('/api/remote/stage-state', (req, res) => {
-  const { state } = req.body;
-  if (state) {
-    const isSame = JSON.stringify(state) === JSON.stringify(latestStageState);
-    latestStageState = state;
-    if (state.isSpinning) {
-      if (serverSpinWatchdog) clearTimeout(serverSpinWatchdog);
-      serverSpinWatchdog = setTimeout(() => {
-        if (latestStageState) {
-          latestStageState.isSpinning = false;
-          io.emit('stage_state', latestStageState);
-          dispatchRemoteMessage('stage_state', latestStageState);
-        }
-        serverSpinWatchdog = null;
-      }, 7500);
-    } else {
-      if (serverSpinWatchdog) {
-        clearTimeout(serverSpinWatchdog);
-        serverSpinWatchdog = null;
-      }
-    }
-    if (!isSame) {
-      dispatchRemoteMessage('stage_state', state);
-    }
-  }
-  res.json({ ok: true });
-});
-
-app.get('/api/remote/stage-state', (req, res) => {
-  res.json({
-    state: latestStageState,
-    winners: currentWinners,
-  });
-});
 
 // Helper to read wheels safely (sanitized with odd-boundary protection)
 function getSavedWheels() {
@@ -523,27 +227,10 @@ ${text.slice(0, 50000)}
   }
 });
 
-// API: Discover host LAN IP for the Stage Remote QR code
-app.get('/api/network-ip', (req, res) => {
-  const interfaces = os.networkInterfaces();
-  const addresses: string[] = [];
-  for (const name of Object.keys(interfaces)) {
-    for (const iface of interfaces[name] || []) {
-      if (iface.family === 'IPv4' && !iface.internal) {
-        addresses.push(iface.address);
-      }
-    }
-  }
-  res.json({
-    localIp: addresses[0] || 'localhost',
-    allIps: addresses,
-    port,
-  });
-});
 
 // Vite middleware in development
 async function startServer() {
-  if (process.env.NODE_ENV !== 'production') {
+  if (!isProduction) {
     const vite = await createViteServer({
       server: { middlewareMode: true },
       appType: 'spa',
@@ -569,7 +256,7 @@ async function startServer() {
   }
 
   httpServer.listen(port, '0.0.0.0', () => {
-    console.log(`Server with Socket.io listening on http://0.0.0.0:${port}`);
+    console.log(`Stage server listening on http://0.0.0.0:${port} (${isProduction ? 'production' : 'development'})`);
   });
 }
 
