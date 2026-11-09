@@ -62,6 +62,30 @@ const WHEELS_FILE = path.join(DATA_DIR, 'wheels.json');
 const wheelsStore = new AtomicStore<any[]>(WHEELS_FILE);
 
 let latestStageState: any = null;
+let serverSpinWatchdog: NodeJS.Timeout | null = null;
+
+function triggerServerSpin() {
+  if (latestStageState) {
+    latestStageState.isSpinning = true;
+  }
+  if (serverSpinWatchdog) clearTimeout(serverSpinWatchdog);
+  serverSpinWatchdog = setTimeout(() => {
+    if (latestStageState) {
+      latestStageState.isSpinning = false;
+      io.emit('stage_state', latestStageState);
+      dispatchRemoteMessage('stage_state', latestStageState);
+    }
+  }, 7500);
+}
+
+function stopServerSpin() {
+  if (serverSpinWatchdog) clearTimeout(serverSpinWatchdog);
+  if (latestStageState) {
+    latestStageState.isSpinning = false;
+    io.emit('stage_state', latestStageState);
+    dispatchRemoteMessage('stage_state', latestStageState);
+  }
+}
 
 io.on('connection', (socket) => {
   // Heartbeat ping-pong for live latency calculation
@@ -107,15 +131,21 @@ io.on('connection', (socket) => {
   // Stage state synchronization
   socket.on('sync_stage_state', (state: any) => {
     latestStageState = state;
+    if (state && !state.isSpinning && serverSpinWatchdog) {
+      clearTimeout(serverSpinWatchdog);
+      serverSpinWatchdog = null;
+    }
     socket.broadcast.emit('stage_state', state);
   });
 
   // Remote roulette & timer action relays
   socket.on('spin_wheel', () => {
+    triggerServerSpin();
     io.emit('spin_wheel');
   });
 
   socket.on('stop_spin', () => {
+    stopServerSpin();
     io.emit('stop_spin');
   });
 
@@ -200,6 +230,10 @@ app.post('/api/remote/action', (req, res) => {
     currentWinners = null;
     isWinnersActive = false;
     io.emit('hide_winners');
+  } else if (type === 'spin_wheel') {
+    triggerServerSpin();
+  } else if (type === 'stop_spin') {
+    stopServerSpin();
   }
 
   const msg = dispatchRemoteMessage(type, payload);

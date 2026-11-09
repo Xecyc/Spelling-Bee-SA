@@ -109,15 +109,7 @@ export const RemoteControl: React.FC<RemoteControlProps> = ({
   const [isRouletteOpen, setIsRouletteOpen] = useState(true);
   const [isPodiumOpen, setIsPodiumOpen] = useState(false);
 
-  const [lastAction, setLastAction] = useState<string | null>(null);
   const [stageReturnUrl, setStageReturnUrl] = useState<string>('/');
-
-  const showToast = (msg: string) => {
-    setLastAction(msg);
-    setTimeout(() => {
-      setLastAction((prev) => (prev === msg ? null : prev));
-    }, 2800);
-  };
 
   const handleStageState = useCallback((newState: StageSyncState) => {
     setStageState((prev) => {
@@ -202,6 +194,17 @@ export const RemoteControl: React.FC<RemoteControlProps> = ({
   }, []);
 
   const lastSpinClickTimeRef = React.useRef<number>(0);
+  const spinStartTimeRef = React.useRef<number>(0);
+
+  // Auto-reset spinning state watchdog on remote (never stays stuck on true)
+  useEffect(() => {
+    if (stageState.isSpinning) {
+      const timer = setTimeout(() => {
+        setStageState((prev) => ({ ...prev, isSpinning: false }));
+      }, 7500);
+      return () => clearTimeout(timer);
+    }
+  }, [stageState.isSpinning]);
 
   // Action: Spin or Stop the stage wheel
   const handleSpinClick = () => {
@@ -215,14 +218,18 @@ export const RemoteControl: React.FC<RemoteControlProps> = ({
       socket.connect();
     }
 
+    // If wheel is already spinning, require at least 1200ms before allowing a stop
+    // (Prevents touch screen double-tap jitter on mobile phones from immediately killing the spin)
     if (stageState.isSpinning) {
-      if (remoteSpinTimeoutRef.current) clearTimeout(remoteSpinTimeoutRef.current);
-      stopSpin();
-      setStageState((prev) => ({ ...prev, isSpinning: false }));
-      showToast('Stopping wheel...');
+      if (now - spinStartTimeRef.current > 1200) {
+        if (remoteSpinTimeoutRef.current) clearTimeout(remoteSpinTimeoutRef.current);
+        stopSpin();
+        setStageState((prev) => ({ ...prev, isSpinning: false }));
+      }
       return;
     }
 
+    spinStartTimeRef.current = now;
     setIsRemoteTimerRunning(false);
     setStageState((prev) => ({ ...prev, isSpinning: true }));
 
@@ -236,7 +243,6 @@ export const RemoteControl: React.FC<RemoteControlProps> = ({
     if (onSpinWheel) {
       onSpinWheel();
     }
-    showToast('Wheel spun on stage!');
   };
 
   // Action: Start Countdown Timer
@@ -246,14 +252,12 @@ export const RemoteControl: React.FC<RemoteControlProps> = ({
     }
     setIsRemoteTimerRunning(true);
     startTimer();
-    showToast('Timer started on stage');
   };
 
   // Action: Pause Countdown Timer
   const handlePauseTimerClick = () => {
     setIsRemoteTimerRunning(false);
     pauseTimer();
-    showToast('Timer paused on stage');
   };
 
   // Action: Reset Countdown Timer
@@ -261,7 +265,6 @@ export const RemoteControl: React.FC<RemoteControlProps> = ({
     setIsRemoteTimerRunning(false);
     setRemoteSecondsRemaining(stageState.timerDuration || 40);
     resetTimer();
-    showToast('Timer reset on stage');
   };
 
   // Action: Remove current winning word from wheel
@@ -269,7 +272,6 @@ export const RemoteControl: React.FC<RemoteControlProps> = ({
     setIsRemoteTimerRunning(false);
     setRemoteSecondsRemaining(stageState.timerDuration || 40);
     removeWord();
-    showToast('Word removed from wheel');
   };
 
   // Action: Close winner announcement modal
@@ -277,14 +279,12 @@ export const RemoteControl: React.FC<RemoteControlProps> = ({
     setIsRemoteTimerRunning(false);
     setRemoteSecondsRemaining(stageState.timerDuration || 40);
     closeModal();
-    showToast('Closed modal on stage');
   };
 
   // Action: Clear podium board
   const handleClearBoard = () => {
     setWinners({ first: '', second: '', third: '' });
     clearBoard();
-    showToast('Podium board cleared on stage');
   };
 
   // Action: Push winners to auditorium screen
@@ -300,7 +300,6 @@ export const RemoteControl: React.FC<RemoteControlProps> = ({
     if (onPushWinners) {
       onPushWinners(payload);
     }
-    showToast('Winners pushed to stage podium!');
   };
 
   const handleReturnClick = (e: React.MouseEvent) => {
@@ -335,13 +334,7 @@ export const RemoteControl: React.FC<RemoteControlProps> = ({
           )}
         </div>
 
-        {/* Status Toast */}
-        {lastAction && (
-          <div className="p-2.5 rounded-xl bg-emerald-500/15 border border-emerald-500/30 text-emerald-300 text-xs font-semibold flex items-center gap-2 animate-in fade-in duration-150">
-            <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
-            <span className="truncate">{lastAction}</span>
-          </div>
-        )}
+
 
         {/* ========================================================================= */}
         {/* DROPDOWN 1: ROULETTE & TIMER CONTROLS                                    */}
@@ -384,11 +377,15 @@ export const RemoteControl: React.FC<RemoteControlProps> = ({
                 <button
                   type="button"
                   onClick={handleSpinClick}
-                  className="w-full py-3.5 px-4 rounded-xl font-black text-sm tracking-wide uppercase transition-all flex items-center justify-center gap-2 cursor-pointer shadow-md active:scale-98 bg-amber-400 hover:bg-amber-300 text-[#061a3e] hover:shadow-amber-400/20 touch-manipulation"
+                  className={`w-full py-3.5 px-4 rounded-xl font-black text-sm tracking-wide uppercase transition-all flex items-center justify-center gap-2 cursor-pointer shadow-md active:scale-98 ${
+                    stageState.isSpinning
+                      ? 'bg-rose-600 hover:bg-rose-500 text-white shadow-rose-600/30'
+                      : 'bg-amber-400 hover:bg-amber-300 text-[#061a3e] hover:shadow-amber-400/20'
+                  }`}
                 >
                   {stageState.isSpinning ? (
                     <>
-                      <Square className="w-4 h-4 text-[#061a3e] fill-current" />
+                      <Square className="w-4 h-4 fill-current text-white" />
                       <span>Stop Spin</span>
                     </>
                   ) : (

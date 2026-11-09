@@ -271,13 +271,12 @@ export default function App() {
 
   // Spin lifecycle
   const handleSpinStart = useCallback(() => {
-    if (isSpinningRef.current) return;
+    clearSpinWatchdog();
     isSpinningRef.current = true;
     setIsWheelSpinning(true);
     setWinningSlice(null);
     setShowWinnerModal(false);
 
-    clearSpinWatchdog();
     // 7.5s fail-safe watchdog timer guarantees the wheel never gets trapped spinning
     spinWatchdogRef.current = setTimeout(() => {
       isSpinningRef.current = false;
@@ -352,7 +351,12 @@ export default function App() {
           setCurrentSlide(1);
           setShowWinnerModal(false);
           setWinningSlice(null);
-          handleSpinStart();
+          // Reset spinning lock to ensure remote spin cannot be blocked by an out-of-sync ref
+          isSpinningRef.current = false;
+          setIsWheelSpinning(false);
+          setTimeout(() => {
+            handleSpinStart();
+          }, 50);
           break;
         case 'set_slide':
           if (typeof payload === 'number') {

@@ -368,12 +368,7 @@ export function useStageSync(options?: UseStageSyncOptions) {
     if (stateJson === lastBroadcastStateJsonRef.current) {
       return;
     }
-
-    // 2. Throttle: enforce minimum 80ms interval between network state updates
     const now = Date.now();
-    if (now - lastBroadcastTimeRef.current < 80) {
-      return;
-    }
     lastBroadcastTimeRef.current = now;
     lastBroadcastStateJsonRef.current = stateJson;
 

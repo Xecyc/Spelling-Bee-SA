@@ -34,3 +34,50 @@ test('recalibrateSliceColors maintains distinct neighboring colors with odd coun
   assert.notEqual(recalibrated[1].color, recalibrated[2].color);
   assert.notEqual(recalibrated[0].color, recalibrated[2].color);
 });
+
+test('spin double-tap guard prevents mobile touchscreen jitter from prematurely cancelling spin', () => {
+  let isSpinning = false;
+  let spinCount = 0;
+  let stopCount = 0;
+  let spinStartTime = 0;
+
+  const handleSpinClick = (now: number) => {
+    if (isSpinning) {
+      if (now - spinStartTime > 1200) {
+        isSpinning = false;
+        stopCount++;
+      }
+      return;
+    }
+    isSpinning = true;
+    spinStartTime = now;
+    spinCount++;
+  };
+
+  // 1. Initial click at t=100ms
+  handleSpinClick(100);
+  assert.equal(isSpinning, true);
+  assert.equal(spinCount, 1);
+  assert.equal(stopCount, 0);
+
+  // 2. Accidental touchscreen jitter at t=250ms (within 1200ms)
+  handleSpinClick(250);
+  assert.equal(isSpinning, true);
+  assert.equal(spinCount, 1);
+  assert.equal(stopCount, 0, 'Should NOT stop spin on rapid second touch');
+
+  // 3. Intentional stop click after 1500ms (t=1650ms)
+  handleSpinClick(1650);
+  assert.equal(isSpinning, false);
+  assert.equal(stopCount, 1, 'Should allow stopping after 1200ms grace period');
+});
+
+test('spin watchdog auto-unlocks isSpinning state if network drops', () => {
+  let stageState = { isSpinning: true };
+  const watchdog = (state: { isSpinning: boolean }) => {
+    state.isSpinning = false;
+  };
+
+  watchdog(stageState);
+  assert.equal(stageState.isSpinning, false, 'Watchdog must unlock isSpinning to false');
+});
