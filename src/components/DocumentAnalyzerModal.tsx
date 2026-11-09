@@ -19,6 +19,7 @@ import {
   CHAMPIONSHIP_PALETTE,
   getBalancedSliceColor,
 } from '../utils/palette.ts';
+import { getSessionTimerDuration } from '../utils/timerSession';
 
 interface DocumentAnalyzerModalProps {
   isOpen: boolean;
@@ -129,7 +130,7 @@ export const DocumentAnalyzerModal: React.FC<DocumentAnalyzerModalProps> = ({
 
     const finalizeCurrent = () => {
       if (currentWords.length > 0) {
-        const timerDuration = currentPlace === '1st' ? 40 : 20;
+        const timerDuration = getSessionTimerDuration();
         candidates.push({
           name: currentWheelName,
           group: currentGroup,
@@ -352,7 +353,7 @@ export const DocumentAnalyzerModal: React.FC<DocumentAnalyzerModalProps> = ({
           group: w.group === 'high_school' ? 'high_school' : 'elementary',
           grade: w.grade || '1st',
           place: w.place === '2nd_3rd' ? '2nd_3rd' : '1st',
-          timerDuration: Number(w.timerDuration) || (w.place === '2nd_3rd' ? 20 : 40),
+          timerDuration: Number(w.timerDuration) || getSessionTimerDuration(),
           words: Array.isArray(w.words)
             ? w.words
                 .map((s: string) => extractPrimaryBaseWord(String(s)))

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Trash2, CheckCircle2, Play, Pause } from 'lucide-react';
 import { StopwatchTimer } from './StopwatchTimer';
+import { getSessionTimerDuration } from '../utils/timerSession';
 
 export interface TimerActionSignal {
   type: 'start' | 'pause' | 'reset';
@@ -23,19 +24,20 @@ export const WinnerModal: React.FC<WinnerModalProps> = ({
   isOpen,
   word,
   sliceColor = '#FBBF24',
-  timerDuration = 40,
+  timerDuration,
   onClose,
   onRemoveWord,
   onStartTimer,
   timerActionSignal,
   onTimerTick,
 }) => {
+  const initialDuration = timerDuration !== undefined ? timerDuration : getSessionTimerDuration();
   const [modalTimerTrigger, setModalTimerTrigger] = useState(0);
   // Bumped on a remote "reset" so the stopwatch is re-created at its full time (it keeps its own seconds).
   const [timerResetCount, setTimerResetCount] = useState(0);
   const [isTimerRunning, setIsTimerRunning] = useState(false);
   const [hasStarted, setHasStarted] = useState(false);
-  const [currentSecondsRemaining, setCurrentSecondsRemaining] = useState<number>(timerDuration);
+  const [currentSecondsRemaining, setCurrentSecondsRemaining] = useState<number>(initialDuration);
   const lastHandledSignalTsRef = React.useRef<number>(0);
   const onStartTimerRef = React.useRef(onStartTimer);
   const onTimerTickRef = React.useRef(onTimerTick);
@@ -53,6 +55,11 @@ export const WinnerModal: React.FC<WinnerModalProps> = ({
   const handleRunningChange = (running: boolean) => {
     setIsTimerRunning(running);
     onTimerTickRef.current?.(currentSecondsRemaining, running);
+  };
+
+  const handleDurationChange = (newSecs: number) => {
+    setCurrentSecondsRemaining(newSecs);
+    onTimerTickRef.current?.(newSecs, isTimerRunning);
   };
 
   // Sync external remote timer action signals (strictly one-shot execution per timestamp)
@@ -74,25 +81,27 @@ export const WinnerModal: React.FC<WinnerModalProps> = ({
       setIsTimerRunning(false);
       onTimerTickRef.current?.(currentSecondsRemaining, false);
     } else if (timerActionSignal.type === 'reset') {
+      const resetDuration = getSessionTimerDuration();
       setTimerResetCount((prev) => prev + 1);
       setIsTimerRunning(false);
       setHasStarted(false);
-      setCurrentSecondsRemaining(timerDuration);
-      onTimerTickRef.current?.(timerDuration, false);
+      setCurrentSecondsRemaining(resetDuration);
+      onTimerTickRef.current?.(resetDuration, false);
     }
-  }, [timerActionSignal, hasStarted, currentSecondsRemaining, timerDuration]);
+  }, [timerActionSignal, hasStarted, currentSecondsRemaining]);
 
   useEffect(() => {
     if (isOpen && word) {
-      // Reset modal timer state when opened with a word
+      // Reset modal timer state when opened with a word, using session timer
+      const duration = getSessionTimerDuration();
       setModalTimerTrigger(0);
       setTimerResetCount(0);
       setIsTimerRunning(false);
       setHasStarted(false);
-      setCurrentSecondsRemaining(timerDuration);
-      onTimerTickRef.current?.(timerDuration, false);
+      setCurrentSecondsRemaining(duration);
+      onTimerTickRef.current?.(duration, false);
     }
-  }, [isOpen, word, timerDuration]);
+  }, [isOpen, word]);
 
   if (!isOpen || !word) return null;
 
@@ -139,12 +148,13 @@ export const WinnerModal: React.FC<WinnerModalProps> = ({
         {/* Integrated Countdown Timer on the Window */}
         <div className="my-5 flex items-center justify-center h-14 sm:h-16 w-full max-w-[280px] sm:max-w-[320px]">
           <StopwatchTimer
-            key={`timer-${word}-${timerDuration}-${timerResetCount}`}
-            initialSeconds={timerDuration}
+            key={`timer-${word}-${timerResetCount}`}
+            initialSeconds={currentSecondsRemaining}
             autoStartTrigger={modalTimerTrigger}
             isRunning={isTimerRunning}
             onRunningChange={handleRunningChange}
             onTick={handleTimerTick}
+            onDurationChange={handleDurationChange}
           />
         </div>
 

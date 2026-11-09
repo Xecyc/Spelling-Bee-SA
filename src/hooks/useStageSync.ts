@@ -72,6 +72,7 @@ export function useStageSync(options?: UseStageSyncOptions) {
     startTimer: useCallback(() => send('start_timer'), [send]),
     pauseTimer: useCallback(() => send('pause_timer'), [send]),
     resetTimer: useCallback(() => send('reset_timer'), [send]),
+    setTimerDuration: useCallback((seconds: number) => send('set_timer_duration', seconds), [send]),
     removeWord: useCallback(() => send('remove_word'), [send]),
     closeModal: useCallback(() => send('close_modal'), [send]),
     setSlide: useCallback((slide: number) => send('set_slide', slide), [send]),

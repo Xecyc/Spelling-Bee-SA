@@ -50,6 +50,7 @@ import {
   CHAMPIONSHIP_PALETTE,
   recalibrateSliceColors,
 } from '../utils/palette.ts';
+import { getSessionTimerDuration, setSessionTimerDuration } from '../utils/timerSession';
 
 /***************************************************************************
  * 1. CURATED COLOR PALETTES & PRESETS
@@ -401,7 +402,7 @@ export const WheelCreatorStudio: React.FC<WheelCreatorStudioProps> = ({
 
   // Settings for current wheel with fallbacks
   const spinDuration = currentWheel.spinDuration ?? 8;
-  const timerDuration = currentWheel.timerDuration ?? 40;
+  const timerDuration = currentWheel.timerDuration ?? getSessionTimerDuration();
   const tickSoundProfile = currentWheel.tickSound ?? soundSettings.tickSound ?? 'classic';
   const winSoundProfile = currentWheel.winSound ?? 'none'; // Default 'none' to respect previous user request, customizable
   const volume = Math.round(soundSettings.volume * 100);
@@ -427,9 +428,11 @@ export const WheelCreatorStudio: React.FC<WheelCreatorStudioProps> = ({
     setTimerDurationInput(clean);
     const parsed = parseInt(clean, 10);
     if (!isNaN(parsed) && parsed > 0) {
+      const clamped = Math.min(600, parsed);
+      setSessionTimerDuration(clamped);
       onUpdateWheel({
         ...currentWheel,
-        timerDuration: Math.min(600, parsed),
+        timerDuration: clamped,
       });
     }
   };
@@ -438,10 +441,12 @@ export const WheelCreatorStudio: React.FC<WheelCreatorStudioProps> = ({
     const parsed = parseInt(timerDurationInput, 10);
     if (isNaN(parsed) || parsed <= 0) {
       setTimerDurationInput('40');
+      setSessionTimerDuration(40);
       onUpdateWheel({ ...currentWheel, timerDuration: 40 });
     } else {
       const clamped = Math.max(1, Math.min(600, parsed));
       setTimerDurationInput(String(clamped));
+      setSessionTimerDuration(clamped);
       onUpdateWheel({ ...currentWheel, timerDuration: clamped });
     }
   };

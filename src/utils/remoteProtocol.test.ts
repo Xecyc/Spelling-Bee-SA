@@ -45,6 +45,14 @@ test('set_slide only accepts integer slides 0..3', () => {
   assert.equal(validatePayload('set_slide', '2').ok, false);
 });
 
+test('set_timer_duration accepts integer seconds between 5 and 600', () => {
+  assert.equal(validatePayload('set_timer_duration', 20).ok, true);
+  assert.equal(validatePayload('set_timer_duration', 40).ok, true);
+  assert.equal(validatePayload('set_timer_duration', 4).ok, false);
+  assert.equal(validatePayload('set_timer_duration', 601).ok, false);
+  assert.equal(validatePayload('set_timer_duration', '20').ok, false);
+});
+
 test('deduper accepts an id once and forgets only the oldest ids', () => {
   const firstTime = createDeduper(3);
   assert.equal(firstTime('a'), true);

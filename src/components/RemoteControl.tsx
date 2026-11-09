@@ -19,6 +19,12 @@ import {
 import { useStageSync, StageSyncState } from '../hooks/useStageSync';
 import { useContestStore } from '../store';
 import type { DeliveryResult } from '../utils/remoteProtocol';
+import {
+  getSessionTimerDuration,
+  setSessionTimerDuration,
+  resetSessionTimerDuration,
+  DEFAULT_TIMER_SECONDS,
+} from '../utils/timerSession';
 
 interface WinnersState {
   first: string;
@@ -104,7 +110,7 @@ export const RemoteControl: React.FC<RemoteControlProps> = ({
     showWinnerModal: false,
     winningWord: null,
     currentWheelName: '',
-    timerDuration: 40,
+    timerDuration: getSessionTimerDuration(),
   });
 
   const remoteSpinTimeoutRef = React.useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -124,10 +130,13 @@ export const RemoteControl: React.FC<RemoteControlProps> = ({
       if (typeof newState.isTimerRunning === 'boolean') {
         setIsRemoteTimerRunning(newState.isTimerRunning);
       }
+      if (typeof newState.timerDuration === 'number') {
+        setSessionTimerDuration(newState.timerDuration);
+      }
       // Only reset seconds if a new winning word arrived from stage
       if (newState.winningWord && newState.winningWord !== prev.winningWord) {
         setIsRemoteTimerRunning(false);
-        setRemoteSecondsRemaining(newState.timerDuration || prev.timerDuration || 40);
+        setRemoteSecondsRemaining(newState.timerDuration || prev.timerDuration || getSessionTimerDuration());
       } else if (
         typeof newState.timerDuration === 'number' &&
         newState.timerDuration !== prev.timerDuration &&
@@ -156,6 +165,7 @@ export const RemoteControl: React.FC<RemoteControlProps> = ({
     startTimer,
     pauseTimer,
     resetTimer,
+    setTimerDuration,
     removeWord,
     closeModal,
     requestStageState,
@@ -163,9 +173,21 @@ export const RemoteControl: React.FC<RemoteControlProps> = ({
     onStageState: handleStageState,
   });
 
-  const [remoteSecondsRemaining, setRemoteSecondsRemaining] = useState<number>(40);
+  const [remoteSecondsRemaining, setRemoteSecondsRemaining] = useState<number>(getSessionTimerDuration());
   const [isRemoteTimerRunning, setIsRemoteTimerRunning] = useState<boolean>(false);
   const [spinCooldown, setSpinCooldown] = useState<boolean>(false);
+
+  // Editable timer state for remote
+  const [isEditingTimer, setIsEditingTimer] = useState(false);
+  const [editTimerValue, setEditTimerValue] = useState(String(getSessionTimerDuration()));
+  const timerInputRef = useRef<HTMLInputElement | null>(null);
+
+  useEffect(() => {
+    if (isEditingTimer) {
+      timerInputRef.current?.focus();
+      timerInputRef.current?.select();
+    }
+  }, [isEditingTimer]);
 
   // Every tap reports back: delivered / delivered-but-nobody-is-listening / not delivered.
   const [notice, setNotice] = useState<{ kind: 'ok' | 'warn' | 'error'; text: string } | null>(null);
@@ -194,6 +216,28 @@ export const RemoteControl: React.FC<RemoteControlProps> = ({
     },
     [showNotice]
   );
+
+  const commitTimerEdit = useCallback(() => {
+    setIsEditingTimer(false);
+    const clean = editTimerValue.trim().replace(/\D/g, '');
+    const parsed = parseInt(clean, 10);
+    if (!isNaN(parsed) && parsed >= 5 && parsed <= 600) {
+      setRemoteSecondsRemaining(parsed);
+      setSessionTimerDuration(parsed);
+      setStageState((prev) => ({ ...prev, timerDuration: parsed }));
+      setEditTimerValue(String(parsed));
+      void dispatch(`Set timer to ${parsed}s`, () => setTimerDuration(parsed));
+    } else {
+      setEditTimerValue(String(remoteSecondsRemaining > 0 ? remoteSecondsRemaining : stageState.timerDuration || getSessionTimerDuration()));
+    }
+  }, [dispatch, editTimerValue, remoteSecondsRemaining, setTimerDuration, stageState.timerDuration]);
+
+  const handleTimerNumberClick = () => {
+    if (!isRemoteTimerRunning) {
+      setEditTimerValue(String(remoteSecondsRemaining > 0 ? remoteSecondsRemaining : stageState.timerDuration || getSessionTimerDuration()));
+      setIsEditingTimer(true);
+    }
+  };
 
   // Live remote countdown ticker
   useEffect(() => {
@@ -284,8 +328,11 @@ export const RemoteControl: React.FC<RemoteControlProps> = ({
 
   // Action: Start Countdown Timer
   const handleStartTimerClick = () => {
+    if (isEditingTimer) {
+      commitTimerEdit();
+    }
     if (remoteSecondsRemaining <= 0) {
-      setRemoteSecondsRemaining(stageState.timerDuration || 40);
+      setRemoteSecondsRemaining(stageState.timerDuration || getSessionTimerDuration());
     }
     setIsRemoteTimerRunning(true);
     void dispatch('Start timer', startTimer).then((ok) => {
@@ -302,21 +349,25 @@ export const RemoteControl: React.FC<RemoteControlProps> = ({
   // Action: Reset Countdown Timer
   const handleResetTimerClick = () => {
     setIsRemoteTimerRunning(false);
-    setRemoteSecondsRemaining(stageState.timerDuration || 40);
+    const saved = getSessionTimerDuration();
+    setRemoteSecondsRemaining(saved);
+    setStageState((prev) => ({ ...prev, timerDuration: saved }));
+    setEditTimerValue(String(saved));
+    setIsEditingTimer(false);
     void dispatch('Reset timer', resetTimer);
   };
 
   // Action: Remove current winning word from wheel
   const handleRemoveWordClick = () => {
     setIsRemoteTimerRunning(false);
-    setRemoteSecondsRemaining(stageState.timerDuration || 40);
+    setRemoteSecondsRemaining(stageState.timerDuration || getSessionTimerDuration());
     void dispatch('Remove word', removeWord);
   };
 
   // Action: Close winner announcement modal
   const handleCloseModalClick = () => {
     setIsRemoteTimerRunning(false);
-    setRemoteSecondsRemaining(stageState.timerDuration || 40);
+    setRemoteSecondsRemaining(stageState.timerDuration || getSessionTimerDuration());
     void dispatch('Close', closeModal);
   };
 
@@ -493,9 +544,36 @@ export const RemoteControl: React.FC<RemoteControlProps> = ({
                 {/* Integrated Countdown Timer Display with playback/reset buttons */}
                 <div className="flex items-center justify-center">
                   <div className="py-1.5 px-4 rounded-full border border-blue-400/30 inline-flex items-center justify-center gap-3 bg-transparent text-white shadow-xs">
-                    <span className="font-mono font-bold text-base sm:text-lg tracking-wider text-white">
-                      00:{String(remoteSecondsRemaining).padStart(2, '0')}
-                    </span>
+                    {isEditingTimer ? (
+                      <input
+                        ref={timerInputRef}
+                        type="text"
+                        inputMode="numeric"
+                        pattern="[0-9]*"
+                        value={editTimerValue}
+                        onChange={(e) => setEditTimerValue(e.target.value)}
+                        onBlur={commitTimerEdit}
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter') commitTimerEdit();
+                          else if (e.key === 'Escape') {
+                            setIsEditingTimer(false);
+                            setEditTimerValue(String(remoteSecondsRemaining > 0 ? remoteSecondsRemaining : stageState.timerDuration || getSessionTimerDuration()));
+                          }
+                        }}
+                        className="w-12 sm:w-14 text-center font-mono font-bold text-base sm:text-lg tracking-wider text-white bg-transparent border-b border-amber-400 outline-none tabular-nums"
+                        maxLength={3}
+                      />
+                    ) : (
+                      <span
+                        onClick={handleTimerNumberClick}
+                        className={`font-mono font-bold text-base sm:text-lg tracking-wider text-white select-none tabular-nums transition-colors ${
+                          !isRemoteTimerRunning ? 'cursor-pointer hover:text-amber-300' : ''
+                        }`}
+                        title={!isRemoteTimerRunning ? 'Click to type custom seconds' : undefined}
+                      >
+                        00:{String(remoteSecondsRemaining).padStart(2, '0')}
+                      </span>
+                    )}
                     <div className="flex items-center gap-1.5 pl-2 border-l border-white/20">
                       <button
                         type="button"
@@ -523,7 +601,7 @@ export const RemoteControl: React.FC<RemoteControlProps> = ({
 
                 {/* Action Buttons: Flat solid golden-yellow primary button, ghost secondary buttons */}
                 <div className="space-y-2 pt-1">
-                  {/* Primary Button ("Start 40s Timer" / "Resume Timer" / "Pause Timer") */}
+                  {/* Primary Button ("Start timer" / "Pause Timer") */}
                   <button
                     type="button"
                     onClick={isRemoteTimerRunning ? handlePauseTimerClick : handleStartTimerClick}
@@ -534,15 +612,10 @@ export const RemoteControl: React.FC<RemoteControlProps> = ({
                         <Pause className="w-3.5 h-3.5 fill-current" />
                         <span>Pause Timer</span>
                       </>
-                    ) : remoteSecondsRemaining < (stageState.timerDuration || 40) && remoteSecondsRemaining > 0 ? (
-                      <>
-                        <Play className="w-3.5 h-3.5 fill-current" />
-                        <span>Resume Timer ({remoteSecondsRemaining}s)</span>
-                      </>
                     ) : (
                       <>
                         <Play className="w-3.5 h-3.5 fill-current" />
-                        <span>Start {stageState.timerDuration || 40}s Timer</span>
+                        <span>Start timer</span>
                       </>
                     )}
                   </button>

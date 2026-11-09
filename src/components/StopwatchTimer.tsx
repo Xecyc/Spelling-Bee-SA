@@ -1,6 +1,12 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Play, Pause, RotateCcw, Timer } from 'lucide-react';
 import { audioManager } from '../utils/audio';
+import {
+  DEFAULT_TIMER_SECONDS,
+  getSessionTimerDuration,
+  setSessionTimerDuration,
+  resetSessionTimerDuration,
+} from '../utils/timerSession';
 
 interface StopwatchTimerProps {
   initialSeconds?: number;
@@ -9,31 +15,43 @@ interface StopwatchTimerProps {
   onRunningChange?: (running: boolean) => void;
   onTimeEnd?: () => void;
   onTick?: (secondsRemaining: number) => void;
+  onDurationChange?: (newSeconds: number) => void;
 }
 
 export const StopwatchTimer: React.FC<StopwatchTimerProps> = ({
-  initialSeconds = 40,
+  initialSeconds,
   autoStartTrigger,
   isRunning: controlledIsRunning,
   onRunningChange,
   onTimeEnd,
   onTick,
+  onDurationChange,
 }) => {
-  const [totalSeconds, setTotalSeconds] = useState(initialSeconds);
-  const [secondsRemaining, setSecondsRemaining] = useState(initialSeconds);
+  const sessionInitial = getSessionTimerDuration();
+  const effectiveInitial = initialSeconds !== undefined ? initialSeconds : sessionInitial;
+
+  const [totalSeconds, setTotalSeconds] = useState(effectiveInitial);
+  const [secondsRemaining, setSecondsRemaining] = useState(effectiveInitial);
   const [internalIsRunning, setInternalIsRunning] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
+  const [editValue, setEditValue] = useState(String(effectiveInitial));
+
   const intervalRef = useRef<number | null>(null);
   const lastTriggerRef = useRef(autoStartTrigger || 0);
+  const inputRef = useRef<HTMLInputElement | null>(null);
 
   const isRunning = typeof controlledIsRunning === 'boolean' ? controlledIsRunning : internalIsRunning;
 
   const onRunningChangeRef = useRef(onRunningChange);
   const onTimeEndRef = useRef(onTimeEnd);
   const onTickRef = useRef(onTick);
+  const onDurationChangeRef = useRef(onDurationChange);
+
   useEffect(() => {
     onRunningChangeRef.current = onRunningChange;
     onTimeEndRef.current = onTimeEnd;
     onTickRef.current = onTick;
+    onDurationChangeRef.current = onDurationChange;
   });
 
   useEffect(() => {
@@ -54,10 +72,21 @@ export const StopwatchTimer: React.FC<StopwatchTimerProps> = ({
 
   // Sync when initialSeconds changes - always ensure stopped state
   useEffect(() => {
-    setTotalSeconds(initialSeconds);
-    setSecondsRemaining(initialSeconds);
-    setRunningState(false);
+    if (initialSeconds !== undefined) {
+      setTotalSeconds(initialSeconds);
+      setSecondsRemaining(initialSeconds);
+      setEditValue(String(initialSeconds));
+      setRunningState(false);
+    }
   }, [initialSeconds]);
+
+  // Auto-focus and select text when editing begins
+  useEffect(() => {
+    if (isEditing) {
+      inputRef.current?.focus();
+      inputRef.current?.select();
+    }
+  }, [isEditing]);
 
   // Handle auto-start trigger only when explicitly incremented by user action
   useEffect(() => {
@@ -109,6 +138,9 @@ export const StopwatchTimer: React.FC<StopwatchTimerProps> = ({
   }, [isRunning]);
 
   const toggleRunning = () => {
+    if (isEditing) {
+      commitEdit();
+    }
     if (secondsRemaining === 0) {
       setSecondsRemaining(totalSeconds);
       setRunningState(true);
@@ -117,9 +149,40 @@ export const StopwatchTimer: React.FC<StopwatchTimerProps> = ({
     }
   };
 
+  // Reset restores countdown to the previously saved duration
   const handleReset = () => {
     setRunningState(false);
-    setSecondsRemaining(totalSeconds);
+    const saved = getSessionTimerDuration();
+    setTotalSeconds(saved);
+    setSecondsRemaining(saved);
+    setEditValue(String(saved));
+    setIsEditing(false);
+    onTickRef.current?.(saved);
+  };
+
+  const commitEdit = () => {
+    setIsEditing(false);
+    const clean = editValue.trim().replace(/\D/g, '');
+    const parsed = parseInt(clean, 10);
+    if (!isNaN(parsed) && parsed >= 5 && parsed <= 600) {
+      setTotalSeconds(parsed);
+      setSecondsRemaining(parsed);
+      setSessionTimerDuration(parsed);
+      setEditValue(String(parsed));
+      onDurationChangeRef.current?.(parsed);
+      onTickRef.current?.(parsed);
+    } else {
+      setEditValue(String(totalSeconds));
+    }
+  };
+
+  const handleEditKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      commitEdit();
+    } else if (e.key === 'Escape') {
+      setIsEditing(false);
+      setEditValue(String(totalSeconds));
+    }
   };
 
   const formatTime = (secs: number) => {
@@ -157,19 +220,43 @@ export const StopwatchTimer: React.FC<StopwatchTimerProps> = ({
           <Timer className="w-[55%] h-[55%] stroke-[2.2]" />
         </div>
 
-        {/* Big Digital Numbers */}
+        {/* Big Digital Numbers with Inline Typing */}
         <div className="flex-1 flex items-center justify-center px-1">
-          <span
-            className={`font-mono font-black tracking-wider select-none tabular-nums text-xl sm:text-2xl md:text-3xl lg:text-4xl leading-none ${
-              isExpired
-                ? 'text-rose-400'
-                : isWarning
-                ? 'text-amber-300'
-                : 'text-white'
-            }`}
-          >
-            {formatTime(secondsRemaining)}
-          </span>
+          {isEditing ? (
+            <input
+              ref={inputRef}
+              type="text"
+              inputMode="numeric"
+              pattern="[0-9]*"
+              value={editValue}
+              onChange={(e) => setEditValue(e.target.value)}
+              onBlur={commitEdit}
+              onKeyDown={handleEditKeyDown}
+              className="w-16 sm:w-20 md:w-24 text-center font-mono font-black tracking-wider text-xl sm:text-2xl md:text-3xl lg:text-4xl leading-none bg-transparent text-white border-b-2 border-amber-400 outline-none tabular-nums"
+              maxLength={3}
+            />
+          ) : (
+            <span
+              onClick={() => {
+                if (!isRunning) {
+                  setEditValue(String(secondsRemaining > 0 ? secondsRemaining : totalSeconds));
+                  setIsEditing(true);
+                }
+              }}
+              className={`font-mono font-black tracking-wider select-none tabular-nums text-xl sm:text-2xl md:text-3xl lg:text-4xl leading-none transition-colors ${
+                !isRunning ? 'cursor-pointer hover:text-amber-300' : ''
+              } ${
+                isExpired
+                  ? 'text-rose-400'
+                  : isWarning
+                  ? 'text-amber-300'
+                  : 'text-white'
+              }`}
+              title={!isRunning ? 'Click to type custom seconds' : undefined}
+            >
+              {formatTime(secondsRemaining)}
+            </span>
+          )}
         </div>
 
         {/* Controls Container: Two stacked circular solid white buttons */}

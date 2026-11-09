@@ -17,6 +17,7 @@ export const COMMAND_TYPES = [
   'start_timer',
   'pause_timer',
   'reset_timer',
+  'set_timer_duration',
   'remove_word',
   'close_modal',
   'push_winners',
@@ -38,6 +39,7 @@ export const COMMAND_LABELS: Record<CommandType, string> = {
   start_timer: 'Start timer',
   pause_timer: 'Stop timer',
   reset_timer: 'Reset timer',
+  set_timer_duration: 'Set timer duration',
   remove_word: 'Remove word',
   close_modal: 'Close',
   push_winners: 'Push to stage',
@@ -106,6 +108,12 @@ export function validatePayload(type: CommandType, payload: unknown): PayloadRes
       return { ok: true, payload };
     }
     return { ok: false, error: 'set_slide needs an integer slide number from 0 to 3' };
+  }
+  if (type === 'set_timer_duration') {
+    if (typeof payload === 'number' && Number.isInteger(payload) && payload >= 5 && payload <= 600) {
+      return { ok: true, payload };
+    }
+    return { ok: false, error: 'set_timer_duration needs an integer between 5 and 600' };
   }
   return { ok: true, payload: undefined };
 }

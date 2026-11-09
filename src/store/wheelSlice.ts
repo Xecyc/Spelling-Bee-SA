@@ -1,6 +1,7 @@
 import { StateCreator } from 'zustand';
 import { WheelConfig, WheelSlice, WheelRole } from '../types/presentation';
 import { INITIAL_WHEELS } from '../utils/defaultData';
+import { getSessionTimerDuration } from '../utils/timerSession';
 
 export interface WheelStateSlice {
   wheels: WheelConfig[];
@@ -47,7 +48,7 @@ export const createWheelSlice: StateCreator<WheelStateSlice> = (set) => ({
 
   createWheel: (role, name) =>
     set((state) => {
-      const defaultTimer = role === '1st' ? 40 : 20;
+      const defaultTimer = getSessionTimerDuration();
       const newWheel: WheelConfig = {
         id: `wheel-${Date.now()}`,
         name,

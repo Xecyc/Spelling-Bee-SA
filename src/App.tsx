@@ -24,6 +24,12 @@ import { RemoteControl } from './components/RemoteControl';
 import { RemoteQRCodeModal } from './components/RemoteQRCodeModal';
 import { useContestStore } from './store';
 import { useStageSync } from './hooks/useStageSync';
+import {
+  getSessionTimerDuration,
+  setSessionTimerDuration,
+  resetSessionTimerDuration,
+  DEFAULT_TIMER_SECONDS,
+} from './utils/timerSession';
 
 const sanitizeWheel = (wheel: WheelConfig): WheelConfig => {
   const palette = (wheel.group === 'high_school' && wheel.place === 'championship')
@@ -227,7 +233,7 @@ export default function App() {
 
   // Create a new wheel
   const handleCreateWheel = (role: WheelRole, name: string) => {
-    const defaultTimer = role === '1st' ? 40 : 20;
+    const defaultTimer = getSessionTimerDuration();
     const newWheel: WheelConfig = {
       id: `wheel-${Date.now()}`,
       name,
@@ -262,8 +268,7 @@ export default function App() {
     setIsWheelSpinning(false);
     setWinningSlice(null);
     setShowWinnerModal(false);
-    const target = wheels.find((w) => w.id === wheelId);
-    setModalTimerState({ timeLeft: target?.timerDuration ?? 40, isRunning: false });
+    setModalTimerState({ timeLeft: getSessionTimerDuration(), isRunning: false });
   };
 
   const isSpinningRef = useRef(false);
@@ -384,8 +389,24 @@ export default function App() {
         case 'pause_timer':
           setRemoteTimerSignal({ type: 'pause', ts: Date.now() });
           break;
-        case 'reset_timer':
+        case 'reset_timer': {
+          const savedDuration = getSessionTimerDuration();
+          setModalTimerState((prev) => ({
+            ...prev,
+            timeLeft: savedDuration,
+            isRunning: false,
+          }));
           setRemoteTimerSignal({ type: 'reset', ts: Date.now() });
+          break;
+        }
+        case 'set_timer_duration':
+          if (typeof payload === 'number' && payload >= 5 && payload <= 600) {
+            setSessionTimerDuration(payload);
+            setModalTimerState((prev) => ({
+              ...prev,
+              timeLeft: prev.isRunning ? prev.timeLeft : payload,
+            }));
+          }
           break;
         case 'remove_word':
           handleRemoveWinningWord();
@@ -433,8 +454,8 @@ export default function App() {
       showWinnerModal,
       winningWord: winningSlice?.text || null,
       currentWheelName: activeWheel.name,
-      timerDuration: activeWheel.timerDuration ?? 40,
-      timeLeft: showWinnerModal ? modalTimerState.timeLeft : (activeWheel.timerDuration ?? 40),
+      timerDuration: getSessionTimerDuration(),
+      timeLeft: showWinnerModal ? modalTimerState.timeLeft : getSessionTimerDuration(),
       isTimerRunning: showWinnerModal ? modalTimerState.isRunning : false,
       currentSlide,
       winnersData,
@@ -679,11 +700,11 @@ export default function App() {
       {/* Winner Celebration Modal */}
       {showWinnerModal && winningSlice && (
         <WinnerModal
-          key={`winner-${activeWheel.id}-${winningSlice.id}-${activeWheel.timerDuration ?? 40}`}
+          key={`winner-${activeWheel.id}-${winningSlice.id}`}
           isOpen={showWinnerModal}
           word={winningSlice.text}
           sliceColor={winningSlice.color}
-          timerDuration={activeWheel.timerDuration ?? 40}
+          timerDuration={getSessionTimerDuration()}
           timerActionSignal={remoteTimerSignal}
           onTimerTick={(timeLeft, isRunning) => {
             setModalTimerState({ timeLeft, isRunning });
@@ -692,7 +713,7 @@ export default function App() {
             setShowWinnerModal(false);
             setWinningSlice(null);
             setModalTimerState({
-              timeLeft: activeWheel.timerDuration ?? 40,
+              timeLeft: getSessionTimerDuration(),
               isRunning: false,
             });
           }}

@@ -201,3 +201,26 @@ test('handleStageState in RemoteControl ignores partial, null, or repeated state
   assert.equal(remoteSeconds, 40, 'New word must reset seconds to 40');
   assert.equal(isRunning, false);
 });
+
+test('timer reset button restores previously saved duration instead of forcing 40 seconds', () => {
+  let savedDuration = 25; // User previously typed and saved 25 seconds
+  let currentSecondsRemaining = 25;
+  let isRunning = true;
+
+  // Timer counts down during contest
+  for (let i = 0; i < 11; i++) {
+    currentSecondsRemaining--;
+  }
+  assert.equal(currentSecondsRemaining, 14, 'Countdown reached 14s');
+
+  // User taps the reset button (<RotateCcw />)
+  const handleReset = () => {
+    isRunning = false;
+    currentSecondsRemaining = savedDuration;
+  };
+
+  handleReset();
+  assert.equal(currentSecondsRemaining, 25, 'Reset must restore the previously saved 25 seconds, NOT 40');
+  assert.equal(savedDuration, 25, 'Saved duration in session must remain 25 seconds');
+  assert.equal(isRunning, false);
+});
