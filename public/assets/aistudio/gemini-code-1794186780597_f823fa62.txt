@@ -1,0 +1,57 @@
+Implement and wire up the end-to-end "Stage Remote" feature so a mobile phone opened at `/?view=remote` (or `/remote`) reliably controls the main Auditorium Stage Display running on another device (laptop/TV at `/`) in real time.
+
+Look at the existing UI in `src/components/RemoteControl.tsx`, the sync layer in `src/hooks/useStageSync.ts`, the backend relay in `server.ts`, and the stage controller in `src/App.tsx` (plus `PresentationDeck.tsx`, `WheelCanvas.tsx`, and `WinnerModal.tsx`). Re-implement and connect every button and state sync end-to-end so nothing is disconnected or ignored.
+
+### 1. Real-Time Bidirectional Sync (`server.ts` & `src/hooks/useStageSync.ts`)
+Build a rock-solid command and state relay between the Phone Remote and the Stage Display:
+- **Remote -> Stage Commands:** When the phone triggers an action, send it immediately via WebSocket (`socket.emit('remote_action', { type, payload })`) AND fallback HTTP POST (`/api/remote/action`). The server must broadcast `remote_action` to all connected Stage Display clients via Socket.IO, SSE (`/api/remote/events`), and store it in a command queue for short-polling (`/api/remote/poll`) so no command is ever dropped.
+- **Stage -> Remote State Sync:** Whenever anything changes on the Stage Display (active wheel/category name, `isSpinning`, chosen word / `winningSlice`, `showWinnerModal`, timer `timeLeft`, `isTimerRunning`, current slide, or podium winners), the Stage Display must broadcast `sync_stage_state` to the server, which caches `latestStageState` and pushes it to all connected Remote phones.
+- **Auto-Expiring Spin Lock on Server:** In `server.ts`, if `latestStageState.isSpinning` is set to `true`, automatically reset it to `false` after 7.5 seconds if the stage hasn't updated it, preventing stuck spinning states.
+
+### 2. Roulette & Timer Controls (Phone Remote -> Stage Display)
+Wire up every button shown in the "ROULETTE & TIMER CONTROLS" card in `RemoteControl.tsx` to execute on the Stage Display (`App.tsx` / `WheelCanvas.tsx` / `WinnerModal.tsx`):
+
+1. **SPIN WHEEL (`spin_wheel`):**
+   - Separate button from "STOP SPIN" (never combine them into a single toggle button).
+   - When pressed on the phone:
+     - On the Stage Display (`App.tsx`), immediately switch to Presentation mode (`setCurrentMode('presentation')`) and **force switch to the Wheel Slide (`setCurrentSlide(1)`)** so the wheel is visible on the TV.
+     - Close any open winner modal (`setShowWinnerModal(false)`), clear the previous winning slice, reset any stuck `isSpinningRef.current = false` guard, and trigger the wheel spin (`handleSpinStart()`).
+     - **Background-Safe Spin Resolution:** Do NOT rely solely on `requestAnimationFrame` to finish a spin (in case the laptop tab is throttled). Pre-select the winning slice or use a deterministic `setTimeout` alongside the canvas animation so that after `spinDuration` seconds, the wheel always finishes, sets `winningSlice`, opens `WinnerModal`, and syncs the chosen word (e.g., "WINTER") and initial timer state back to the phone remote.
+
+2. **STOP SPIN (`stop_spin`):**
+   - Dedicated secondary button next to "SPIN WHEEL".
+   - When pressed on the phone: immediately cancel the ongoing spin animation on `WheelCanvas.tsx`, set `isWheelSpinning = false` on the stage, and sync `isSpinning: false` back to the phone without opening the winner modal (or stop immediately on the current slice).
+
+3. **Word Chosen & Timer Controls (`start_timer`, `stop_timer`, `reset_timer`):**
+   - Once a word is chosen on stage and the `WinnerModal` opens, the phone remote displays the chosen word (`WORD CHOSEN ON STAGE`) and the live countdown timer (`00:37`).
+   - **Start / Resume / Pause Timer (`start_timer` / `stop_timer` or `toggle_timer`):** Pressing the Play/Pause icon or the main yellow "Start Timer / Resume Timer / Pause Timer" button on the phone must start, pause, or resume the countdown timer inside the Stage Display's `WinnerModal` (and play any timer audio/ticks on stage). Sync `timeLeft` and `isTimerRunning` back to the phone every second.
+   - **Reset Timer (`reset_timer`):** Pressing the Reset icon on the phone must stop and reset the stage countdown timer back to its full configured duration (e.g., 37s or 60s) on both the Stage Display and the phone remote.
+
+4. **Remove Word (`remove_word`):**
+   - When pressed on the phone: remove or disable the currently chosen `winningSlice` from the active wheel's slice list on the Stage Display, close the `WinnerModal` on stage, stop/reset the timer, and update the wheel canvas so that word cannot be landed on again.
+
+5. **Close (`close_modal`):**
+   - When pressed on the phone: close the `WinnerModal` on the Stage Display (`setShowWinnerModal(false)`), stop/reset the active timer, and keep the word on the wheel without removing it.
+
+### 3. Podium Menu Controls (`push_winners` & `clear_winners`)
+Wire up the "PODIUM MENU" card in `RemoteControl.tsx` so the phone controls the winners podium on the Stage Display:
+
+1. **1st, 2nd, and 3rd Place Inputs:**
+   - Local controlled inputs on the phone for `1ST PLACE`, `2ND PLACE`, and `3RD PLACE` student names.
+2. **Push to Stage (`push_winners`):**
+   - Payload: `{ first: string, second: string, third: string }`.
+   - When pressed on the phone:
+     - Send the three names to the Stage Display.
+     - On the Stage Display (`App.tsx` / `PresentationDeck.tsx`), update the podium winner state with the 1st, 2nd, and 3rd place names.
+     - Immediately switch the Stage Display to Presentation mode (`setCurrentMode('presentation')`), close any open modals, and **automatically switch the active view to the Podium Slide (`setCurrentSlide(2)`)**.
+     - Trigger/restart the podium entrance and celebration animation (confetti/trophies/staggered reveal) from the beginning every time `push_winners` is received.
+3. **Clear Board (`clear_winners`):**
+   - Clears the 1st, 2nd, and 3rd place input fields on the phone remote AND sends `clear_winners` to the Stage Display to empty the podium names on the TV.
+
+### 4. Verification Checklist
+Before finishing, verify across `server.ts`, `useStageSync.ts`, `RemoteControl.tsx`, `App.tsx`, `PresentationDeck.tsx`, `WheelCanvas.tsx`, and `WinnerModal.tsx` that:
+- Every single action type (`spin_wheel`, `stop_spin`, `start_timer`, `stop_timer`, `reset_timer`, `remove_word`, `close_modal`, `push_winners`, `clear_winners`) is explicitly handled in the `switch (action.type)` block inside `src/App.tsx`.
+- Every action dispatcher is exported from `useStageSync.ts` and bound to its corresponding button's `onClick` in `RemoteControl.tsx` (using standard `onClick` without broken double-firing touch handlers).
+- Pressing "SPIN WHEEL" always switches the TV to the Roulette slide and spins the wheel.
+- Pressing "Push to Stage" always switches the TV to the Podium slide and triggers the podium reveal animation.
+```[cite: 5]

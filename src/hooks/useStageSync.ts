@@ -27,7 +27,10 @@ export interface StageSyncState {
   winningWord?: string | null;
   currentWheelName?: string;
   timerDuration?: number;
-  timerRunning?: boolean;
+  timeLeft?: number;
+  isTimerRunning?: boolean;
+  currentSlide?: number;
+  winnersData?: WinnersData | null;
 }
 
 interface UseStageSyncOptions {
@@ -79,7 +82,20 @@ export function useStageSync(options?: UseStageSyncOptions) {
             onStageStateRef.current(payload);
           }
         } else if (
-          ['spin_wheel', 'stop_spin', 'start_timer', 'pause_timer', 'reset_timer', 'remove_word', 'close_modal', 'set_slide'].includes(type)
+          [
+            'spin_wheel',
+            'stop_spin',
+            'start_timer',
+            'stop_timer',
+            'pause_timer',
+            'reset_timer',
+            'remove_word',
+            'close_modal',
+            'push_winners',
+            'clear_winners',
+            'clear_board',
+            'set_slide',
+          ].includes(type)
         ) {
           if (!isRemoteRoute && onRemoteActionRef.current) {
             onRemoteActionRef.current(type, payload);
@@ -182,11 +198,24 @@ export function useStageSync(options?: UseStageSyncOptions) {
     const handleSpin = onRemoteCommand('spin_wheel');
     const handleStopSpin = onRemoteCommand('stop_spin');
     const handleStartTimer = onRemoteCommand('start_timer');
+    const handleStopTimer = onRemoteCommand('stop_timer');
     const handlePauseTimer = onRemoteCommand('pause_timer');
     const handleResetTimer = onRemoteCommand('reset_timer');
     const handleRemoveWord = onRemoteCommand('remove_word');
     const handleCloseModal = onRemoteCommand('close_modal');
+    const handlePushWinnersCmd = onRemoteCommand('push_winners');
+    const handleClearWinnersCmd = onRemoteCommand('clear_winners');
+    const handleClearBoardCmd = onRemoteCommand('clear_board');
     const handleSetSlide = onRemoteCommand('set_slide');
+    const handleRemoteActionMsg = (data: any) => {
+      if (data && !isRemoteRoute && onRemoteActionRef.current) {
+        const type = data.type || data.action;
+        const payload = data.payload !== undefined ? data.payload : data.data;
+        if (type) {
+          onRemoteActionRef.current(type, payload);
+        }
+      }
+    };
 
     socket.on('connect', onConnect);
     socket.on('disconnect', onDisconnect);
@@ -195,14 +224,19 @@ export function useStageSync(options?: UseStageSyncOptions) {
     socket.on('hide_winners', onHideWinners);
     socket.on('pong', onPong);
     socket.on('stage_state', onStageState);
+    socket.on('remote_action', handleRemoteActionMsg);
 
     socket.on('spin_wheel', handleSpin);
     socket.on('stop_spin', handleStopSpin);
     socket.on('start_timer', handleStartTimer);
+    socket.on('stop_timer', handleStopTimer);
     socket.on('pause_timer', handlePauseTimer);
     socket.on('reset_timer', handleResetTimer);
     socket.on('remove_word', handleRemoveWord);
     socket.on('close_modal', handleCloseModal);
+    socket.on('push_winners', handlePushWinnersCmd);
+    socket.on('clear_winners', handleClearWinnersCmd);
+    socket.on('clear_board', handleClearBoardCmd);
     socket.on('set_slide', handleSetSlide);
 
     if (socket.connected) {
@@ -227,7 +261,7 @@ export function useStageSync(options?: UseStageSyncOptions) {
           setCurrentMode('presentation');
           setCurrentSlide(2);
         }
-      } else if (type === 'clear_board' || type === 'hide_winners') {
+      } else if (type === 'clear_board' || type === 'clear_winners' || type === 'hide_winners') {
         if (!isRemoteRoute) {
           setWinnersData(null);
           setCurrentSlide(1);
@@ -237,7 +271,20 @@ export function useStageSync(options?: UseStageSyncOptions) {
           onStageStateRef.current(payload);
         }
       } else if (
-        ['spin_wheel', 'stop_spin', 'start_timer', 'pause_timer', 'reset_timer', 'remove_word', 'close_modal', 'set_slide'].includes(type)
+        [
+          'spin_wheel',
+          'stop_spin',
+          'start_timer',
+          'stop_timer',
+          'pause_timer',
+          'reset_timer',
+          'remove_word',
+          'close_modal',
+          'push_winners',
+          'clear_winners',
+          'clear_board',
+          'set_slide',
+        ].includes(type)
       ) {
         if (!isRemoteRoute && onRemoteActionRef.current) {
           onRemoteActionRef.current(type, payload);
@@ -285,13 +332,18 @@ export function useStageSync(options?: UseStageSyncOptions) {
       socket.off('hide_winners', onHideWinners);
       socket.off('pong', onPong);
       socket.off('stage_state', onStageState);
+      socket.off('remote_action', handleRemoteActionMsg);
       socket.off('spin_wheel', handleSpin);
       socket.off('stop_spin', handleStopSpin);
       socket.off('start_timer', handleStartTimer);
+      socket.off('stop_timer', handleStopTimer);
       socket.off('pause_timer', handlePauseTimer);
       socket.off('reset_timer', handleResetTimer);
       socket.off('remove_word', handleRemoveWord);
       socket.off('close_modal', handleCloseModal);
+      socket.off('push_winners', handlePushWinnersCmd);
+      socket.off('clear_winners', handleClearWinnersCmd);
+      socket.off('clear_board', handleClearBoardCmd);
       socket.off('set_slide', handleSetSlide);
 
       clearInterval(pingTimer);
@@ -309,6 +361,7 @@ export function useStageSync(options?: UseStageSyncOptions) {
   const lastBroadcastTimeRef = useRef<number>(0);
 
   const broadcastAction = useCallback((type: string, payload?: any) => {
+    socket.emit('remote_action', { type, payload });
     socket.emit(type, payload);
     if (channelRef.current) {
       channelRef.current.postMessage({ type, payload });
@@ -327,36 +380,39 @@ export function useStageSync(options?: UseStageSyncOptions) {
     } catch {}
   }, [socket]);
 
-  const pushWinners = useCallback((payload: WinnersData) => {
-    socket.emit('push_winners', payload);
-    if (channelRef.current) {
-      channelRef.current.postMessage({ type: 'show_winners', payload });
-    }
-    try {
-      localStorage.setItem(
-        'salto_angel_remote_winners',
-        JSON.stringify({ type: 'show_winners', payload, ts: Date.now() })
-      );
-    } catch {}
-  }, [socket]);
+  const pushWinners = useCallback(
+    (payload: WinnersData) => {
+      broadcastAction('push_winners', payload);
+      try {
+        localStorage.setItem(
+          'salto_angel_remote_winners',
+          JSON.stringify({ type: 'show_winners', payload, ts: Date.now() })
+        );
+      } catch {}
+    },
+    [broadcastAction]
+  );
 
-  const clearBoard = useCallback(() => {
-    socket.emit('clear_board');
-    if (channelRef.current) {
-      channelRef.current.postMessage({ type: 'clear_board' });
-    }
+  const clearWinners = useCallback(() => {
+    broadcastAction('clear_winners');
+    broadcastAction('clear_board');
     try {
       localStorage.setItem(
         'salto_angel_remote_winners',
         JSON.stringify({ type: 'clear_board', ts: Date.now() })
       );
     } catch {}
-  }, [socket]);
+  }, [broadcastAction]);
+  const clearBoard = clearWinners;
 
   const spinWheel = useCallback(() => broadcastAction('spin_wheel'), [broadcastAction]);
   const stopSpin = useCallback(() => broadcastAction('stop_spin'), [broadcastAction]);
   const startTimer = useCallback(() => broadcastAction('start_timer'), [broadcastAction]);
-  const pauseTimer = useCallback(() => broadcastAction('pause_timer'), [broadcastAction]);
+  const stopTimer = useCallback(() => {
+    broadcastAction('stop_timer');
+    broadcastAction('pause_timer');
+  }, [broadcastAction]);
+  const pauseTimer = stopTimer;
   const resetTimer = useCallback(() => broadcastAction('reset_timer'), [broadcastAction]);
   const removeWord = useCallback(() => broadcastAction('remove_word'), [broadcastAction]);
   const closeModal = useCallback(() => broadcastAction('close_modal'), [broadcastAction]);
@@ -409,10 +465,12 @@ export function useStageSync(options?: UseStageSyncOptions) {
 
   return {
     pushWinners,
+    clearWinners,
     clearBoard,
     spinWheel,
     stopSpin,
     startTimer,
+    stopTimer,
     pauseTimer,
     resetTimer,
     removeWord,

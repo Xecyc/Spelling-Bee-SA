@@ -16,6 +16,7 @@ interface PresentationDeckProps {
   onSpinEnd: (slice: WheelSlice) => void;
   onStopSpin?: () => void;
   winnersData?: WinnersData | null;
+  podiumAnimationKey?: number | string;
 }
 
 export const PresentationDeck: React.FC<PresentationDeckProps> = ({
@@ -27,6 +28,7 @@ export const PresentationDeck: React.FC<PresentationDeckProps> = ({
   onSpinEnd,
   onStopSpin,
   winnersData,
+  podiumAnimationKey,
 }) => {
   // Touch swipe support for mobile devices
   const [touchStartX, setTouchStartX] = useState<number | null>(null);
@@ -230,6 +232,7 @@ export const PresentationDeck: React.FC<PresentationDeckProps> = ({
           }`}
         >
           <PodiumSlide
+            key={podiumAnimationKey || 'podium-slide'}
             isActive={currentSlide === 2 || currentSlide === 3}
             winners={winnersData || { first: '', second: '', third: '' }}
             backgroundUrl={

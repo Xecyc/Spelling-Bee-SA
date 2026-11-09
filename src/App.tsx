@@ -138,6 +138,14 @@ export default function App() {
   const [showWinnerModal, setShowWinnerModal] = useState(false);
   const [remoteTimerSignal, setRemoteTimerSignal] = useState<TimerActionSignal | null>(null);
   const [showDocumentAnalyzer, setShowDocumentAnalyzer] = useState(false);
+  const [modalTimerState, setModalTimerState] = useState<{
+    timeLeft: number;
+    isRunning: boolean;
+  }>({
+    timeLeft: 40,
+    isRunning: false,
+  });
+  const [podiumAnimationKey, setPodiumAnimationKey] = useState<number>(Date.now());
 
   // Load shared wheels from server on mount (syncs across multiple PCs)
   useEffect(() => {
@@ -255,6 +263,8 @@ export default function App() {
     setIsWheelSpinning(false);
     setWinningSlice(null);
     setShowWinnerModal(false);
+    const target = wheels.find((w) => w.id === wheelId);
+    setModalTimerState({ timeLeft: target?.timerDuration ?? 40, isRunning: false });
   };
 
   const isSpinningRef = useRef(false);
@@ -370,6 +380,7 @@ export default function App() {
         case 'start_timer':
           setRemoteTimerSignal({ type: 'start', ts: Date.now() });
           break;
+        case 'stop_timer':
         case 'pause_timer':
           setRemoteTimerSignal({ type: 'pause', ts: Date.now() });
           break;
@@ -383,9 +394,32 @@ export default function App() {
           setShowWinnerModal(false);
           setWinningSlice(null);
           break;
+        case 'push_winners':
+          if (payload) {
+            setWinnersData({
+              first: payload.first || '',
+              second: payload.second || '',
+              third: payload.third || '',
+            });
+          }
+          setCurrentMode('presentation');
+          setCurrentSlide(2);
+          setShowWinnerModal(false);
+          setWinningSlice(null);
+          setPodiumAnimationKey(Date.now());
+          break;
+        case 'clear_winners':
+        case 'clear_board':
+          setWinnersData({
+            first: '',
+            second: '',
+            third: '',
+          });
+          setPodiumAnimationKey(Date.now());
+          break;
       }
     },
-    [handleSpinStart, handleSpinStop, handleRemoveWinningWord, setCurrentMode, setCurrentSlide]
+    [handleSpinStart, handleSpinStop, handleRemoveWinningWord, setCurrentMode, setCurrentSlide, setWinnersData]
   );
 
   // Centralized Stage & Remote sync hook
@@ -400,6 +434,10 @@ export default function App() {
       winningWord: winningSlice?.text || null,
       currentWheelName: activeWheel.name,
       timerDuration: activeWheel.timerDuration ?? 40,
+      timeLeft: showWinnerModal ? modalTimerState.timeLeft : (activeWheel.timerDuration ?? 40),
+      isTimerRunning: showWinnerModal ? modalTimerState.isRunning : false,
+      currentSlide,
+      winnersData,
     });
   }, [
     isRemoteRoute,
@@ -408,6 +446,10 @@ export default function App() {
     winningSlice?.text,
     activeWheel.name,
     activeWheel.timerDuration,
+    modalTimerState.timeLeft,
+    modalTimerState.isRunning,
+    currentSlide,
+    winnersData,
     broadcastStageState,
   ]);
 
@@ -422,6 +464,10 @@ export default function App() {
         winningWord: winningSlice?.text || null,
         currentWheelName: activeWheel.name,
         timerDuration: activeWheel.timerDuration ?? 40,
+        timeLeft: showWinnerModal ? modalTimerState.timeLeft : (activeWheel.timerDuration ?? 40),
+        isTimerRunning: showWinnerModal ? modalTimerState.isRunning : false,
+        currentSlide,
+        winnersData,
       });
     };
     socket.on('request_stage_state', handleRequest);
@@ -435,6 +481,10 @@ export default function App() {
     winningSlice?.text,
     activeWheel.name,
     activeWheel.timerDuration,
+    modalTimerState.timeLeft,
+    modalTimerState.isRunning,
+    currentSlide,
+    winnersData,
     broadcastStageState,
   ]);
 
@@ -612,6 +662,7 @@ export default function App() {
             onSpinEnd={handleSpinEnd}
             onStopSpin={handleSpinStop}
             winnersData={winnersData}
+            podiumAnimationKey={podiumAnimationKey}
           />
 
           {/* Bottom Genially Navigation Bar */}
@@ -669,9 +720,16 @@ export default function App() {
           sliceColor={winningSlice.color}
           timerDuration={activeWheel.timerDuration ?? 40}
           timerActionSignal={remoteTimerSignal}
+          onTimerTick={(timeLeft, isRunning) => {
+            setModalTimerState({ timeLeft, isRunning });
+          }}
           onClose={() => {
             setShowWinnerModal(false);
             setWinningSlice(null);
+            setModalTimerState({
+              timeLeft: activeWheel.timerDuration ?? 40,
+              isRunning: false,
+            });
           }}
           onRemoveWord={handleRemoveWinningWord}
           onStartTimer={handleStartModalTimer}

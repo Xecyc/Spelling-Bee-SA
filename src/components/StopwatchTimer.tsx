@@ -8,6 +8,7 @@ interface StopwatchTimerProps {
   isRunning?: boolean;
   onRunningChange?: (running: boolean) => void;
   onTimeEnd?: () => void;
+  onTick?: (secondsRemaining: number) => void;
 }
 
 export const StopwatchTimer: React.FC<StopwatchTimerProps> = ({
@@ -16,6 +17,7 @@ export const StopwatchTimer: React.FC<StopwatchTimerProps> = ({
   isRunning: controlledIsRunning,
   onRunningChange,
   onTimeEnd,
+  onTick,
 }) => {
   const [totalSeconds, setTotalSeconds] = useState(initialSeconds);
   const [secondsRemaining, setSecondsRemaining] = useState(initialSeconds);
@@ -27,10 +29,16 @@ export const StopwatchTimer: React.FC<StopwatchTimerProps> = ({
 
   const onRunningChangeRef = useRef(onRunningChange);
   const onTimeEndRef = useRef(onTimeEnd);
+  const onTickRef = useRef(onTick);
   useEffect(() => {
     onRunningChangeRef.current = onRunningChange;
     onTimeEndRef.current = onTimeEnd;
+    onTickRef.current = onTick;
   });
+
+  useEffect(() => {
+    onTickRef.current?.(secondsRemaining);
+  }, [secondsRemaining]);
 
   const setRunningState = (val: boolean) => {
     setInternalIsRunning(val);

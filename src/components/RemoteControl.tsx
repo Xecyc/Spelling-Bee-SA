@@ -113,6 +113,13 @@ export const RemoteControl: React.FC<RemoteControlProps> = ({
 
   const handleStageState = useCallback((newState: StageSyncState) => {
     setStageState((prev) => {
+      // Sync live timer state from stage display if provided
+      if (typeof newState.timeLeft === 'number') {
+        setRemoteSecondsRemaining(newState.timeLeft);
+      }
+      if (typeof newState.isTimerRunning === 'boolean') {
+        setIsRemoteTimerRunning(newState.isTimerRunning);
+      }
       // Only reset seconds if a new winning word arrived from stage
       if (newState.winningWord && newState.winningWord !== prev.winningWord) {
         setIsRemoteTimerRunning(false);
@@ -120,20 +127,31 @@ export const RemoteControl: React.FC<RemoteControlProps> = ({
       } else if (
         typeof newState.timerDuration === 'number' &&
         newState.timerDuration !== prev.timerDuration &&
-        !prev.winningWord
+        !prev.winningWord &&
+        typeof newState.timeLeft !== 'number'
       ) {
         setRemoteSecondsRemaining(newState.timerDuration);
       }
       return { ...prev, ...newState };
     });
+
+    if (newState.winnersData) {
+      setWinners({
+        first: newState.winnersData.first || '',
+        second: newState.winnersData.second || '',
+        third: newState.winnersData.third || '',
+      });
+    }
   }, []);
 
   const {
     pushWinners,
+    clearWinners,
     clearBoard,
     spinWheel,
     stopSpin,
     startTimer,
+    stopTimer,
     pauseTimer,
     resetTimer,
     removeWord,
@@ -288,7 +306,7 @@ export const RemoteControl: React.FC<RemoteControlProps> = ({
   // Action: Clear podium board
   const handleClearBoard = () => {
     setWinners({ first: '', second: '', third: '' });
-    clearBoard();
+    clearWinners();
   };
 
   // Action: Push winners to auditorium screen

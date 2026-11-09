@@ -78,7 +78,7 @@ function triggerServerSpin() {
       dispatchRemoteMessage('stage_state', latestStageState);
     }
     serverSpinWatchdog = null;
-  }, 8000);
+  }, 7500);
 }
 
 function stopServerSpin() {
@@ -91,6 +91,28 @@ function stopServerSpin() {
     io.emit('stage_state', latestStageState);
     dispatchRemoteMessage('stage_state', latestStageState);
   }
+}
+
+// Master incoming action processor ensuring Socket.IO, SSE, and HTTP stay 100% in sync
+function handleIncomingAction(type: string, payload?: any) {
+  if (type === 'push_winners' && payload) {
+    currentWinners = {
+      first: typeof payload.first === 'string' ? payload.first.trim() : '',
+      second: typeof payload.second === 'string' ? payload.second.trim() : '',
+      third: typeof payload.third === 'string' ? payload.third.trim() : '',
+    };
+    isWinnersActive = true;
+    io.emit('show_winners', currentWinners);
+  } else if (type === 'clear_board' || type === 'clear_winners') {
+    currentWinners = null;
+    isWinnersActive = false;
+    io.emit('hide_winners');
+  } else if (type === 'spin_wheel') {
+    triggerServerSpin();
+  } else if (type === 'stop_spin') {
+    stopServerSpin();
+  }
+  return dispatchRemoteMessage(type, payload);
 }
 
 io.on('connection', (socket) => {
@@ -116,22 +138,24 @@ io.on('connection', (socket) => {
     }
   });
 
-  // Listen for push_winners event from mobile remote
-  socket.on('push_winners', (data: WinnersPayload) => {
-    currentWinners = {
-      first: typeof data?.first === 'string' ? data.first.trim() : '',
-      second: typeof data?.second === 'string' ? data.second.trim() : '',
-      third: typeof data?.third === 'string' ? data.third.trim() : '',
-    };
-    isWinnersActive = true;
-    io.emit('show_winners', currentWinners);
+  // Direct envelope receiver for remote actions: socket.emit('remote_action', { type, payload })
+  socket.on('remote_action', (data: { type: string; payload?: any }) => {
+    if (data && typeof data.type === 'string') {
+      handleIncomingAction(data.type, data.payload);
+    }
   });
 
-  // Listen for clear_board event from mobile remote
+  // Dedicated socket listeners for all individual events
+  socket.on('push_winners', (data: WinnersPayload) => {
+    handleIncomingAction('push_winners', data);
+  });
+
+  socket.on('clear_winners', () => {
+    handleIncomingAction('clear_winners');
+  });
+
   socket.on('clear_board', () => {
-    currentWinners = null;
-    isWinnersActive = false;
-    io.emit('hide_winners');
+    handleIncomingAction('clear_board');
   });
 
   // Stage state synchronization
@@ -146,7 +170,7 @@ io.on('connection', (socket) => {
           dispatchRemoteMessage('stage_state', latestStageState);
         }
         serverSpinWatchdog = null;
-      }, 8000);
+      }, 7500);
     } else {
       if (serverSpinWatchdog) {
         clearTimeout(serverSpinWatchdog);
@@ -158,37 +182,39 @@ io.on('connection', (socket) => {
 
   // Remote roulette & timer action relays
   socket.on('spin_wheel', () => {
-    triggerServerSpin();
-    io.emit('spin_wheel');
+    handleIncomingAction('spin_wheel');
   });
 
   socket.on('stop_spin', () => {
-    stopServerSpin();
-    io.emit('stop_spin');
+    handleIncomingAction('stop_spin');
   });
 
   socket.on('start_timer', () => {
-    io.emit('start_timer');
+    handleIncomingAction('start_timer');
+  });
+
+  socket.on('stop_timer', () => {
+    handleIncomingAction('stop_timer');
   });
 
   socket.on('pause_timer', () => {
-    io.emit('pause_timer');
+    handleIncomingAction('pause_timer');
   });
 
   socket.on('reset_timer', () => {
-    io.emit('reset_timer');
+    handleIncomingAction('reset_timer');
   });
 
   socket.on('remove_word', () => {
-    io.emit('remove_word');
+    handleIncomingAction('remove_word');
   });
 
   socket.on('close_modal', () => {
-    io.emit('close_modal');
+    handleIncomingAction('close_modal');
   });
 
   socket.on('set_slide', (slide: number) => {
-    io.emit('set_slide', slide);
+    handleIncomingAction('set_slide', slide);
   });
 });
 
@@ -236,25 +262,7 @@ app.post('/api/remote/action', (req, res) => {
     return res.status(400).json({ error: 'Missing or invalid action type' });
   }
 
-  if (type === 'push_winners' && payload) {
-    currentWinners = {
-      first: typeof payload.first === 'string' ? payload.first.trim() : '',
-      second: typeof payload.second === 'string' ? payload.second.trim() : '',
-      third: typeof payload.third === 'string' ? payload.third.trim() : '',
-    };
-    isWinnersActive = true;
-    io.emit('show_winners', currentWinners);
-  } else if (type === 'clear_board') {
-    currentWinners = null;
-    isWinnersActive = false;
-    io.emit('hide_winners');
-  } else if (type === 'spin_wheel') {
-    triggerServerSpin();
-  } else if (type === 'stop_spin') {
-    stopServerSpin();
-  }
-
-  const msg = dispatchRemoteMessage(type, payload);
+  const msg = handleIncomingAction(type, payload);
   res.json({ ok: true, id: msg.id });
 });
 
@@ -312,7 +320,7 @@ app.post('/api/remote/stage-state', (req, res) => {
           dispatchRemoteMessage('stage_state', latestStageState);
         }
         serverSpinWatchdog = null;
-      }, 8000);
+      }, 7500);
     } else {
       if (serverSpinWatchdog) {
         clearTimeout(serverSpinWatchdog);
