@@ -93,3 +93,58 @@ test('timer countdown decrements cleanly and clamps at 0', () => {
   tick(); // extra tick when stopped
   assert.equal(seconds, 0);
 });
+
+test('remote timer pause preserves remaining seconds and resumes without resetting', () => {
+  let remoteSeconds = 40;
+  let isRunning = false;
+  let lastWinningWord: string | null = 'ELEPHANT';
+  let lastDuration = 40;
+
+  // Simulate remote sync logic
+  function syncRemoteState(stageWord: string | null, stageDuration: number) {
+    const wordChanged = stageWord !== lastWinningWord;
+    const durationChanged = stageDuration !== lastDuration;
+    if (wordChanged || durationChanged) {
+      lastWinningWord = stageWord;
+      lastDuration = stageDuration;
+      isRunning = false;
+      remoteSeconds = stageDuration;
+    }
+  }
+
+  // 1. Start timer
+  isRunning = true;
+
+  // Simulate countdown ticking 15 seconds down to 25
+  for (let i = 0; i < 15; i++) {
+    remoteSeconds--;
+  }
+  assert.equal(remoteSeconds, 25, 'Timer should have 25 seconds remaining after 15 ticks');
+
+  // 2. User presses PAUSE
+  isRunning = false;
+
+  // Sync is called when paused (e.g. state echoes or re-renders)
+  syncRemoteState('ELEPHANT', 40);
+
+  // CRITICAL CHECK: remaining seconds MUST NOT reset to 40
+  assert.equal(remoteSeconds, 25, 'Timer must retain exactly 25 seconds when paused!');
+  assert.equal(isRunning, false, 'Timer must be stopped');
+
+  // 3. User presses START again to resume
+  if (remoteSeconds <= 0) {
+    remoteSeconds = 40;
+  }
+  isRunning = true;
+
+  // Count down 5 more seconds
+  for (let i = 0; i < 5; i++) {
+    remoteSeconds--;
+  }
+  assert.equal(remoteSeconds, 20, 'Timer must resume from 25s down to 20s');
+
+  // 4. When stage selects a NEW word, it resets
+  syncRemoteState('GIRAFFE', 40);
+  assert.equal(remoteSeconds, 40, 'Timer should reset to 40 only when a new word is chosen');
+  assert.equal(isRunning, false);
+});

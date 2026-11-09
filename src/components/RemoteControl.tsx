@@ -140,13 +140,21 @@ export const RemoteControl: React.FC<RemoteControlProps> = ({
 
   const [remoteSecondsRemaining, setRemoteSecondsRemaining] = useState<number>(40);
   const [isRemoteTimerRunning, setIsRemoteTimerRunning] = useState<boolean>(false);
+  const lastWinningWordRef = React.useRef<string | null>(stageState.winningWord || null);
+  const lastTimerDurationRef = React.useRef<number>(stageState.timerDuration || 40);
 
-  // Sync remaining seconds when stage updates duration or word, but only if timer is not actively running
+  // Sync remaining seconds ONLY when a new winning word appears or when wheel duration setting changes
   useEffect(() => {
-    if (!isRemoteTimerRunning && stageState.timerDuration) {
-      setRemoteSecondsRemaining(stageState.timerDuration);
+    const wordChanged = stageState.winningWord !== lastWinningWordRef.current;
+    const durationChanged = (stageState.timerDuration || 40) !== lastTimerDurationRef.current;
+
+    if (wordChanged || durationChanged) {
+      lastWinningWordRef.current = stageState.winningWord || null;
+      lastTimerDurationRef.current = stageState.timerDuration || 40;
+      setIsRemoteTimerRunning(false);
+      setRemoteSecondsRemaining(stageState.timerDuration || 40);
     }
-  }, [stageState.timerDuration, stageState.winningWord, isRemoteTimerRunning]);
+  }, [stageState.winningWord, stageState.timerDuration]);
 
   // Live remote countdown ticker
   useEffect(() => {
@@ -235,6 +243,9 @@ export const RemoteControl: React.FC<RemoteControlProps> = ({
 
   // Action: Start Countdown Timer
   const handleStartTimerClick = () => {
+    if (remoteSecondsRemaining <= 0) {
+      setRemoteSecondsRemaining(stageState.timerDuration || 40);
+    }
     setIsRemoteTimerRunning(true);
     startTimer();
     showToast('Timer started on stage');
