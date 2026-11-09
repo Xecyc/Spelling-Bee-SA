@@ -139,8 +139,8 @@ export const PresentationDeck: React.FC<PresentationDeckProps> = ({
           <img
             src={
               activeWheel.group === 'high_school'
-                ? `${import.meta.env.BASE_URL}assets/aistudio/480b2e32-4249-44c9-83bd-7e91fc5cbdba_0097f3f2.jpg`
-                : `${import.meta.env.BASE_URL}assets/aistudio/image_b5f00fc8.png`
+                ? `${import.meta.env.BASE_URL}assets/backgrounds/hs-welcome.jpg`
+                : `${import.meta.env.BASE_URL}assets/backgrounds/elementary-welcome.png`
             }
             alt={
               activeWheel.group === 'high_school'
@@ -162,8 +162,8 @@ export const PresentationDeck: React.FC<PresentationDeckProps> = ({
           <img
             src={
               activeWheel.group === 'high_school'
-                ? `${import.meta.env.BASE_URL}assets/aistudio/600be532-29f8-42b3-b71b-aff6b649f0e8_0b8ecf00.jpg`
-                : `${import.meta.env.BASE_URL}assets/aistudio/Gemini_Generated_Image_wxqydhwxqydhwxqy__1__ed331ba7.jpg`
+                ? `${import.meta.env.BASE_URL}assets/backgrounds/hs-wheel.jpg`
+                : `${import.meta.env.BASE_URL}assets/backgrounds/elementary-wheel.jpg`
             }
             alt={
               activeWheel.group === 'high_school'
@@ -237,8 +237,8 @@ export const PresentationDeck: React.FC<PresentationDeckProps> = ({
             winners={winnersData || { first: '', second: '', third: '' }}
             backgroundUrl={
               activeWheel.group === 'high_school'
-                ? `${import.meta.env.BASE_URL}assets/image_d24fda.jpg`
-                : `${import.meta.env.BASE_URL}assets/aistudio/image_93e345e1.png`
+                ? `${import.meta.env.BASE_URL}assets/backgrounds/hs-podium.jpg`
+                : `${import.meta.env.BASE_URL}assets/backgrounds/elementary-podium.png`
             }
           />
         </div>

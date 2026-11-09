@@ -31,6 +31,8 @@ export const WinnerModal: React.FC<WinnerModalProps> = ({
   onTimerTick,
 }) => {
   const [modalTimerTrigger, setModalTimerTrigger] = useState(0);
+  // Bumped on a remote "reset" so the stopwatch is re-created at its full time (it keeps its own seconds).
+  const [timerResetCount, setTimerResetCount] = useState(0);
   const [isTimerRunning, setIsTimerRunning] = useState(false);
   const [hasStarted, setHasStarted] = useState(false);
   const [currentSecondsRemaining, setCurrentSecondsRemaining] = useState<number>(timerDuration);
@@ -72,7 +74,7 @@ export const WinnerModal: React.FC<WinnerModalProps> = ({
       setIsTimerRunning(false);
       onTimerTickRef.current?.(currentSecondsRemaining, false);
     } else if (timerActionSignal.type === 'reset') {
-      setModalTimerTrigger((prev) => prev + 1);
+      setTimerResetCount((prev) => prev + 1);
       setIsTimerRunning(false);
       setHasStarted(false);
       setCurrentSecondsRemaining(timerDuration);
@@ -84,6 +86,7 @@ export const WinnerModal: React.FC<WinnerModalProps> = ({
     if (isOpen && word) {
       // Reset modal timer state when opened with a word
       setModalTimerTrigger(0);
+      setTimerResetCount(0);
       setIsTimerRunning(false);
       setHasStarted(false);
       setCurrentSecondsRemaining(timerDuration);
@@ -136,7 +139,7 @@ export const WinnerModal: React.FC<WinnerModalProps> = ({
         {/* Integrated Countdown Timer on the Window */}
         <div className="my-5 flex items-center justify-center h-14 sm:h-16 w-full max-w-[280px] sm:max-w-[320px]">
           <StopwatchTimer
-            key={`timer-${word}-${timerDuration}`}
+            key={`timer-${word}-${timerDuration}-${timerResetCount}`}
             initialSeconds={timerDuration}
             autoStartTrigger={modalTimerTrigger}
             isRunning={isTimerRunning}

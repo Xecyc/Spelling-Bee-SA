@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import {
   Disc,
   Trophy,
@@ -14,9 +14,11 @@ import {
   Sparkles,
   Loader2,
   Square,
+  AlertTriangle,
 } from 'lucide-react';
-import { useStageSync, StageSyncState, getSocket } from '../hooks/useStageSync';
+import { useStageSync, StageSyncState } from '../hooks/useStageSync';
 import { useContestStore } from '../store';
+import type { DeliveryResult } from '../utils/remoteProtocol';
 
 interface WinnersState {
   first: string;
@@ -88,6 +90,8 @@ export const RemoteControl: React.FC<RemoteControlProps> = ({
   onSpinWheel,
 }) => {
   const isConnected = useContestStore((s) => s.isConnected);
+  const latency = useContestStore((s) => s.latency);
+  const stagesOnline = useContestStore((s) => s.stagesOnline);
 
   const [winners, setWinners] = useState<WinnersState>({
     first: '',
@@ -146,12 +150,10 @@ export const RemoteControl: React.FC<RemoteControlProps> = ({
 
   const {
     pushWinners,
-    clearWinners,
     clearBoard,
     spinWheel,
     stopSpin,
     startTimer,
-    stopTimer,
     pauseTimer,
     resetTimer,
     removeWord,
@@ -164,6 +166,34 @@ export const RemoteControl: React.FC<RemoteControlProps> = ({
   const [remoteSecondsRemaining, setRemoteSecondsRemaining] = useState<number>(40);
   const [isRemoteTimerRunning, setIsRemoteTimerRunning] = useState<boolean>(false);
   const [spinCooldown, setSpinCooldown] = useState<boolean>(false);
+
+  // Every tap reports back: delivered / delivered-but-nobody-is-listening / not delivered.
+  const [notice, setNotice] = useState<{ kind: 'ok' | 'warn' | 'error'; text: string } | null>(null);
+  const noticeTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const showNotice = useCallback((kind: 'ok' | 'warn' | 'error', text: string) => {
+    setNotice({ kind, text });
+    if (noticeTimerRef.current) clearTimeout(noticeTimerRef.current);
+    noticeTimerRef.current = setTimeout(() => setNotice(null), kind === 'ok' ? 1800 : 5000);
+  }, []);
+
+  /** Sends one command and tells the operator what happened. Resolves true if the server accepted it. */
+  const dispatch = useCallback(
+    async (label: string, action: () => Promise<DeliveryResult>): Promise<boolean> => {
+      const result = await action();
+      if (!result.ok) {
+        showNotice('error', `${label} was NOT sent. ${result.error ?? 'Unknown error'}. Check the Wi-Fi and try again.`);
+        return false;
+      }
+      if (result.stages === 0) {
+        showNotice('warn', `${label} sent, but no stage screen is open. Open the stage page on the PC.`);
+        return true;
+      }
+      showNotice('ok', `${label} sent`);
+      return true;
+    },
+    [showNotice]
+  );
 
   // Live remote countdown ticker
   useEffect(() => {
@@ -194,24 +224,6 @@ export const RemoteControl: React.FC<RemoteControlProps> = ({
     return () => document.removeEventListener('visibilitychange', handleVisibility);
   }, []);
 
-  useEffect(() => {
-    const socket = getSocket();
-    const handleShowWinners = (data: WinnersState) => {
-      if (data) {
-        setWinners({
-          first: data.first || '',
-          second: data.second || '',
-          third: data.third || '',
-        });
-      }
-    };
-
-    socket.on('show_winners', handleShowWinners);
-    return () => {
-      socket.off('show_winners', handleShowWinners);
-    };
-  }, []);
-
   const lastSpinTimeRef = React.useRef<number>(0);
 
   // Auto-reset spinning state watchdog on remote (never stays stuck on true)
@@ -225,7 +237,7 @@ export const RemoteControl: React.FC<RemoteControlProps> = ({
   }, [stageState.isSpinning]);
 
   // Action: STRICTLY Spin Wheel (never sends stop_spin, 2-second local debounce)
-  const handleSpinClick = () => {
+  const handleSpinClick = async () => {
     const now = Date.now();
     // 2-second local debounce/cooldown solely to prevent accidental double-taps
     if (now - lastSpinTimeRef.current < 2000) return;
@@ -236,12 +248,6 @@ export const RemoteControl: React.FC<RemoteControlProps> = ({
       setSpinCooldown(false);
     }, 2000);
 
-    // Attempt socket reconnection if currently disconnected
-    const socket = getSocket();
-    if (!socket.connected) {
-      socket.connect();
-    }
-
     setIsRemoteTimerRunning(false);
     setStageState((prev) => ({ ...prev, isSpinning: true }));
 
@@ -251,7 +257,16 @@ export const RemoteControl: React.FC<RemoteControlProps> = ({
       setStageState((prev) => ({ ...prev, isSpinning: false }));
     }, 8000);
 
-    spinWheel();
+    const delivered = await dispatch('Spin wheel', spinWheel);
+    if (!delivered) {
+      // Nothing is spinning on stage, so do not pretend it is: unlock the button right away.
+      if (remoteSpinTimeoutRef.current) clearTimeout(remoteSpinTimeoutRef.current);
+      remoteSpinTimeoutRef.current = null;
+      lastSpinTimeRef.current = 0;
+      setSpinCooldown(false);
+      setStageState((prev) => ({ ...prev, isSpinning: false }));
+      return;
+    }
     if (onSpinWheel) {
       onSpinWheel();
     }
@@ -263,7 +278,7 @@ export const RemoteControl: React.FC<RemoteControlProps> = ({
       clearTimeout(remoteSpinTimeoutRef.current);
       remoteSpinTimeoutRef.current = null;
     }
-    stopSpin();
+    void dispatch('Stop spin', stopSpin);
     setStageState((prev) => ({ ...prev, isSpinning: false }));
   };
 
@@ -273,40 +288,42 @@ export const RemoteControl: React.FC<RemoteControlProps> = ({
       setRemoteSecondsRemaining(stageState.timerDuration || 40);
     }
     setIsRemoteTimerRunning(true);
-    startTimer();
+    void dispatch('Start timer', startTimer).then((ok) => {
+      if (!ok) setIsRemoteTimerRunning(false);
+    });
   };
 
   // Action: Pause Countdown Timer
   const handlePauseTimerClick = () => {
     setIsRemoteTimerRunning(false);
-    pauseTimer();
+    void dispatch('Stop timer', pauseTimer);
   };
 
   // Action: Reset Countdown Timer
   const handleResetTimerClick = () => {
     setIsRemoteTimerRunning(false);
     setRemoteSecondsRemaining(stageState.timerDuration || 40);
-    resetTimer();
+    void dispatch('Reset timer', resetTimer);
   };
 
   // Action: Remove current winning word from wheel
   const handleRemoveWordClick = () => {
     setIsRemoteTimerRunning(false);
     setRemoteSecondsRemaining(stageState.timerDuration || 40);
-    removeWord();
+    void dispatch('Remove word', removeWord);
   };
 
   // Action: Close winner announcement modal
   const handleCloseModalClick = () => {
     setIsRemoteTimerRunning(false);
     setRemoteSecondsRemaining(stageState.timerDuration || 40);
-    closeModal();
+    void dispatch('Close', closeModal);
   };
 
   // Action: Clear podium board
   const handleClearBoard = () => {
     setWinners({ first: '', second: '', third: '' });
-    clearWinners();
+    void dispatch('Clear board', clearBoard);
   };
 
   // Action: Push winners to auditorium screen
@@ -318,10 +335,14 @@ export const RemoteControl: React.FC<RemoteControlProps> = ({
       third: winners.third.trim(),
     };
 
-    pushWinners(payload);
-    if (onPushWinners) {
-      onPushWinners(payload);
+    if (!payload.first && !payload.second && !payload.third) {
+      showNotice('warn', 'Type at least one name before pushing to the stage.');
+      return;
     }
+
+    void dispatch('Push to stage', () => pushWinners(payload)).then((ok) => {
+      if (ok && onPushWinners) onPushWinners(payload);
+    });
   };
 
   const handleReturnClick = (e: React.MouseEvent) => {
@@ -346,9 +367,40 @@ export const RemoteControl: React.FC<RemoteControlProps> = ({
   return (
     <div className="bg-[#121418] text-white min-h-screen p-3.5 sm:p-5 max-w-sm sm:max-w-md mx-auto flex flex-col justify-between font-sans select-none">
       <div className="space-y-3">
+        {!isConnected && (
+          <div className="flex items-start gap-2 rounded-xl border border-rose-500/40 bg-rose-500/10 p-3 text-xs text-rose-200">
+            <AlertTriangle className="w-4 h-4 mt-0.5 shrink-0 text-rose-400" />
+            <span>
+              Can&apos;t reach the stage server. Make sure this phone is on the <b>same Wi-Fi</b> as the PC and
+              that the app is running there (<code>npm run dev</code>).
+            </span>
+          </div>
+        )}
+        {isConnected && stagesOnline === 0 && (
+          <div className="flex items-start gap-2 rounded-xl border border-amber-400/40 bg-amber-400/10 p-3 text-xs text-amber-100">
+            <AlertTriangle className="w-4 h-4 mt-0.5 shrink-0 text-amber-300" />
+            <span>No stage screen is open. On the PC, open the stage page and keep it in the foreground.</span>
+          </div>
+        )}
         {/* Header: Strictly 'Stage Remote' only (school name and online/offline pill removed) */}
         <div className="flex items-center justify-between pb-3 mb-1 border-b border-gray-800">
-          <h1 className="text-lg sm:text-xl font-bold tracking-tight text-white">Stage Remote</h1>
+          <div className="flex items-center gap-2">
+            <h1 className="text-lg sm:text-xl font-bold tracking-tight text-white">Stage Remote</h1>
+            <span
+              role="img"
+              aria-label={isConnected ? (stagesOnline === 0 ? 'Server reachable, no stage open' : 'Connected') : 'Offline'}
+              title={
+                isConnected
+                  ? stagesOnline === 0
+                    ? 'Server reachable, but no stage screen is open'
+                    : `Connected${latency ? ` (${latency} ms)` : ''}`
+                  : 'Cannot reach the stage server'
+              }
+              className={`w-2.5 h-2.5 rounded-full ${
+                !isConnected ? 'bg-rose-500' : stagesOnline === 0 ? 'bg-amber-400' : 'bg-emerald-400 animate-pulse'
+              }`}
+            />
+          </div>
           {stageState.currentWheelName && (
             <span className="text-[11px] font-bold text-amber-400 bg-amber-400/10 px-2 py-0.5 rounded-md truncate max-w-[160px]">
               {stageState.currentWheelName}
@@ -620,6 +672,22 @@ export const RemoteControl: React.FC<RemoteControlProps> = ({
           )}
         </div>
       </div>
+
+      {notice && (
+        <div
+          role="status"
+          aria-live="polite"
+          className={`fixed bottom-4 inset-x-4 max-w-sm mx-auto rounded-xl px-4 py-3 text-xs font-semibold shadow-2xl border ${
+            notice.kind === 'ok'
+              ? 'bg-emerald-600/90 border-emerald-400/50 text-white'
+              : notice.kind === 'warn'
+              ? 'bg-amber-500/95 border-amber-300 text-[#061a3e]'
+              : 'bg-rose-600/95 border-rose-400 text-white'
+          }`}
+        >
+          {notice.text}
+        </div>
+      )}
 
       {/* Backstage footer note */}
       <div className="pt-4 text-center text-[11px] text-gray-500 border-t border-gray-800/60 mt-4">
