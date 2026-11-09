@@ -31,17 +31,27 @@ export const WinnerModal: React.FC<WinnerModalProps> = ({
   const [modalTimerTrigger, setModalTimerTrigger] = useState(0);
   const [isTimerRunning, setIsTimerRunning] = useState(false);
   const [hasStarted, setHasStarted] = useState(false);
+  const lastHandledSignalTsRef = React.useRef<number>(0);
+  const onStartTimerRef = React.useRef(onStartTimer);
 
-  // Sync external remote timer action signals
   useEffect(() => {
-    if (!timerActionSignal) return;
+    onStartTimerRef.current = onStartTimer;
+  });
+
+  // Sync external remote timer action signals (strictly one-shot execution per timestamp)
+  useEffect(() => {
+    if (!timerActionSignal || timerActionSignal.ts <= lastHandledSignalTsRef.current) return;
+    lastHandledSignalTsRef.current = timerActionSignal.ts;
+
     if (timerActionSignal.type === 'start') {
       if (!hasStarted) {
         setModalTimerTrigger((prev) => prev + 1);
         setHasStarted(true);
       }
       setIsTimerRunning(true);
-      onStartTimer();
+      if (onStartTimerRef.current) {
+        onStartTimerRef.current();
+      }
     } else if (timerActionSignal.type === 'pause') {
       setIsTimerRunning(false);
     } else if (timerActionSignal.type === 'reset') {
@@ -49,7 +59,7 @@ export const WinnerModal: React.FC<WinnerModalProps> = ({
       setIsTimerRunning(false);
       setHasStarted(false);
     }
-  }, [timerActionSignal, onStartTimer, hasStarted]);
+  }, [timerActionSignal, hasStarted]);
 
   useEffect(() => {
     if (isOpen && word) {

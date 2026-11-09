@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
   Disc,
   Trophy,
@@ -119,6 +119,10 @@ export const RemoteControl: React.FC<RemoteControlProps> = ({
     }, 2800);
   };
 
+  const handleStageState = useCallback((newState: StageSyncState) => {
+    setStageState((prev) => ({ ...prev, ...newState }));
+  }, []);
+
   const {
     pushWinners,
     clearBoard,
@@ -131,20 +135,18 @@ export const RemoteControl: React.FC<RemoteControlProps> = ({
     closeModal,
     requestStageState,
   } = useStageSync({
-    onStageState: (newState) => {
-      setStageState((prev) => ({ ...prev, ...newState }));
-    },
+    onStageState: handleStageState,
   });
 
   const [remoteSecondsRemaining, setRemoteSecondsRemaining] = useState<number>(40);
   const [isRemoteTimerRunning, setIsRemoteTimerRunning] = useState<boolean>(false);
 
-  // Sync remaining seconds when stage updates duration or word
+  // Sync remaining seconds when stage updates duration or word, but only if timer is not actively running
   useEffect(() => {
-    if (stageState.timerDuration) {
+    if (!isRemoteTimerRunning && stageState.timerDuration) {
       setRemoteSecondsRemaining(stageState.timerDuration);
     }
-  }, [stageState.timerDuration, stageState.winningWord]);
+  }, [stageState.timerDuration, stageState.winningWord, isRemoteTimerRunning]);
 
   // Live remote countdown ticker
   useEffect(() => {

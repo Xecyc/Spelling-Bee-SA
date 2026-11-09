@@ -137,7 +137,6 @@ export default function App() {
   const [winningSlice, setWinningSlice] = useState<WheelSlice | null>(null);
   const [showWinnerModal, setShowWinnerModal] = useState(false);
   const [remoteTimerSignal, setRemoteTimerSignal] = useState<TimerActionSignal | null>(null);
-  const [autoStartTimerTrigger, setAutoStartTimerTrigger] = useState<number>(0);
   const [showDocumentAnalyzer, setShowDocumentAnalyzer] = useState(false);
 
   // Load shared wheels from server on mount (syncs across multiple PCs)
@@ -336,6 +335,13 @@ export default function App() {
     setShowWinnerModal(false);
   }, [winningSlice, activeWheel.id]);
 
+  const handleStartModalTimer = useCallback(() => {
+    if (currentMode === 'studio') {
+      setCurrentMode('presentation');
+      setCurrentSlide(1);
+    }
+  }, [currentMode, setCurrentMode, setCurrentSlide]);
+
   // Remote Control action handler from WebSocket / BroadcastChannel
   const handleRemoteAction = useCallback(
     (action: string, payload?: any) => {
@@ -395,7 +401,7 @@ export default function App() {
     isRemoteRoute,
     isWheelSpinning,
     showWinnerModal,
-    winningSlice,
+    winningSlice?.text,
     activeWheel.name,
     activeWheel.timerDuration,
     broadcastStageState,
@@ -422,7 +428,7 @@ export default function App() {
     isRemoteRoute,
     isWheelSpinning,
     showWinnerModal,
-    winningSlice,
+    winningSlice?.text,
     activeWheel.name,
     activeWheel.timerDuration,
     broadcastStageState,
@@ -601,7 +607,6 @@ export default function App() {
             onSpinStart={handleSpinStart}
             onSpinEnd={handleSpinEnd}
             onStopSpin={handleSpinStop}
-            autoStartTimerTrigger={autoStartTimerTrigger}
             winnersData={winnersData}
           />
 
@@ -665,14 +670,7 @@ export default function App() {
             setWinningSlice(null);
           }}
           onRemoveWord={handleRemoveWinningWord}
-          onStartTimer={() => {
-            setAutoStartTimerTrigger((prev) => prev + 1);
-            // If in studio, switch back to slide 1 (the wheel slide)
-            if (currentMode === 'studio') {
-              setCurrentMode('presentation');
-              setCurrentSlide(1);
-            }
-          }}
+          onStartTimer={handleStartModalTimer}
         />
       )}
 

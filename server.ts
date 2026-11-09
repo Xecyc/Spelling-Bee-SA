@@ -249,8 +249,11 @@ app.get('/api/remote/poll', (req, res) => {
 app.post('/api/remote/stage-state', (req, res) => {
   const { state } = req.body;
   if (state) {
+    const isSame = JSON.stringify(state) === JSON.stringify(latestStageState);
     latestStageState = state;
-    dispatchRemoteMessage('stage_state', state);
+    if (!isSame) {
+      dispatchRemoteMessage('stage_state', state);
+    }
   }
   res.json({ ok: true });
 });

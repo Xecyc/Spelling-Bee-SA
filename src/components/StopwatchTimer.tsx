@@ -25,11 +25,16 @@ export const StopwatchTimer: React.FC<StopwatchTimerProps> = ({
 
   const isRunning = typeof controlledIsRunning === 'boolean' ? controlledIsRunning : internalIsRunning;
 
+  const onRunningChangeRef = useRef(onRunningChange);
+  const onTimeEndRef = useRef(onTimeEnd);
+  useEffect(() => {
+    onRunningChangeRef.current = onRunningChange;
+    onTimeEndRef.current = onTimeEnd;
+  });
+
   const setRunningState = (val: boolean) => {
     setInternalIsRunning(val);
-    if (onRunningChange) {
-      onRunningChange(val);
-    }
+    onRunningChangeRef.current?.(val);
   };
 
   // Sync with controlled prop if passed
@@ -59,34 +64,41 @@ export const StopwatchTimer: React.FC<StopwatchTimerProps> = ({
 
   // Timer interval
   useEffect(() => {
-    if (isRunning) {
-      intervalRef.current = window.setInterval(() => {
-        setSecondsRemaining((prev) => {
-          if (prev <= 1) {
-            audioManager.playTimerFinished();
-            if (onTimeEnd) onTimeEnd();
-            setRunningState(false);
-            return 0;
-          }
-          if (prev <= 6) {
-            audioManager.playTimerWarning();
-          }
-          return prev - 1;
-        });
-      }, 1000);
-    } else {
+    if (!isRunning) {
       if (intervalRef.current) {
         clearInterval(intervalRef.current);
         intervalRef.current = null;
       }
+      return;
     }
+
+    intervalRef.current = window.setInterval(() => {
+      setSecondsRemaining((prev) => {
+        if (prev <= 1) {
+          if (intervalRef.current) {
+            clearInterval(intervalRef.current);
+            intervalRef.current = null;
+          }
+          audioManager.playTimerFinished();
+          onTimeEndRef.current?.();
+          setInternalIsRunning(false);
+          onRunningChangeRef.current?.(false);
+          return 0;
+        }
+        if (prev <= 6) {
+          audioManager.playTimerWarning();
+        }
+        return prev - 1;
+      });
+    }, 1000);
 
     return () => {
       if (intervalRef.current) {
         clearInterval(intervalRef.current);
+        intervalRef.current = null;
       }
     };
-  }, [isRunning, onTimeEnd]);
+  }, [isRunning]);
 
   const toggleRunning = () => {
     if (secondsRemaining === 0) {

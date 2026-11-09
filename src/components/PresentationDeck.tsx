@@ -15,7 +15,6 @@ interface PresentationDeckProps {
   onSpinStart: () => void;
   onSpinEnd: (slice: WheelSlice) => void;
   onStopSpin?: () => void;
-  autoStartTimerTrigger: number;
   winnersData?: WinnersData | null;
 }
 
@@ -27,7 +26,6 @@ export const PresentationDeck: React.FC<PresentationDeckProps> = ({
   onSpinStart,
   onSpinEnd,
   onStopSpin,
-  autoStartTimerTrigger,
   winnersData,
 }) => {
   // Touch swipe support for mobile devices

@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useCallback } from 'react';
 import { io, Socket } from 'socket.io-client';
 import { useContestStore } from '../store';
 import { WinnersData } from '../types/presentation';
@@ -305,7 +305,10 @@ export function useStageSync(options?: UseStageSyncOptions) {
     };
   }, [isRemoteRoute, setCurrentMode, setCurrentSlide, setIsConnected, setLatency, setWinnersData, socket]);
 
-  const broadcastAction = (type: string, payload?: any) => {
+  const lastBroadcastStateJsonRef = useRef<string>('');
+  const lastBroadcastTimeRef = useRef<number>(0);
+
+  const broadcastAction = useCallback((type: string, payload?: any) => {
     socket.emit(type, payload);
     if (channelRef.current) {
       channelRef.current.postMessage({ type, payload });
@@ -322,9 +325,9 @@ export function useStageSync(options?: UseStageSyncOptions) {
         body: JSON.stringify({ type, payload }),
       }).catch(() => {});
     } catch {}
-  };
+  }, [socket]);
 
-  const pushWinners = (payload: WinnersData) => {
+  const pushWinners = useCallback((payload: WinnersData) => {
     socket.emit('push_winners', payload);
     if (channelRef.current) {
       channelRef.current.postMessage({ type: 'show_winners', payload });
@@ -335,9 +338,9 @@ export function useStageSync(options?: UseStageSyncOptions) {
         JSON.stringify({ type: 'show_winners', payload, ts: Date.now() })
       );
     } catch {}
-  };
+  }, [socket]);
 
-  const clearBoard = () => {
+  const clearBoard = useCallback(() => {
     socket.emit('clear_board');
     if (channelRef.current) {
       channelRef.current.postMessage({ type: 'clear_board' });
@@ -348,24 +351,38 @@ export function useStageSync(options?: UseStageSyncOptions) {
         JSON.stringify({ type: 'clear_board', ts: Date.now() })
       );
     } catch {}
-  };
+  }, [socket]);
 
-  const spinWheel = () => broadcastAction('spin_wheel');
-  const stopSpin = () => broadcastAction('stop_spin');
-  const startTimer = () => broadcastAction('start_timer');
-  const pauseTimer = () => broadcastAction('pause_timer');
-  const resetTimer = () => broadcastAction('reset_timer');
-  const removeWord = () => broadcastAction('remove_word');
-  const closeModal = () => broadcastAction('close_modal');
-  const setSlide = (slide: number) => broadcastAction('set_slide', slide);
+  const spinWheel = useCallback(() => broadcastAction('spin_wheel'), [broadcastAction]);
+  const stopSpin = useCallback(() => broadcastAction('stop_spin'), [broadcastAction]);
+  const startTimer = useCallback(() => broadcastAction('start_timer'), [broadcastAction]);
+  const pauseTimer = useCallback(() => broadcastAction('pause_timer'), [broadcastAction]);
+  const resetTimer = useCallback(() => broadcastAction('reset_timer'), [broadcastAction]);
+  const removeWord = useCallback(() => broadcastAction('remove_word'), [broadcastAction]);
+  const closeModal = useCallback(() => broadcastAction('close_modal'), [broadcastAction]);
+  const setSlide = useCallback((slide: number) => broadcastAction('set_slide', slide), [broadcastAction]);
 
-  const broadcastStageState = (state: StageSyncState) => {
+  const broadcastStageState = useCallback((state: StageSyncState) => {
+    // 1. Deduplication: skip if state has not actually changed
+    const stateJson = JSON.stringify(state);
+    if (stateJson === lastBroadcastStateJsonRef.current) {
+      return;
+    }
+
+    // 2. Throttle: enforce minimum 80ms interval between network state updates
+    const now = Date.now();
+    if (now - lastBroadcastTimeRef.current < 80) {
+      return;
+    }
+    lastBroadcastTimeRef.current = now;
+    lastBroadcastStateJsonRef.current = stateJson;
+
     socket.emit('sync_stage_state', state);
     if (channelRef.current) {
       channelRef.current.postMessage({ type: 'stage_state', payload: state });
     }
     try {
-      localStorage.setItem('salto_angel_stage_state', JSON.stringify({ state, ts: Date.now() }));
+      localStorage.setItem('salto_angel_stage_state', JSON.stringify({ state, ts: now }));
     } catch {}
 
     // HTTP stage state sync fallback
@@ -376,9 +393,9 @@ export function useStageSync(options?: UseStageSyncOptions) {
         body: JSON.stringify({ state }),
       }).catch(() => {});
     } catch {}
-  };
+  }, [socket]);
 
-  const requestStageState = () => {
+  const requestStageState = useCallback(() => {
     socket.emit('request_stage_state');
     try {
       fetch('/api/remote/stage-state')
@@ -393,7 +410,7 @@ export function useStageSync(options?: UseStageSyncOptions) {
         })
         .catch(() => {});
     } catch {}
-  };
+  }, [isRemoteRoute, setWinnersData, socket]);
 
   return {
     pushWinners,
