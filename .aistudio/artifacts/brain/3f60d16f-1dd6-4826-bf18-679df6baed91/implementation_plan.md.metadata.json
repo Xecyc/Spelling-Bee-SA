@@ -1,5 +1,0 @@
-{
-  "summary":  "Implementation plan and architectural specification for U.E.P. Salto Ángel Spelling Bee 2026. Documents the stage roulette display, mobile remote control synchronization, auto-expiring spin lease watchdog, wall-clock fallback timers, and cross-device persistence. Plan Mode is fully restored and operational.",
-  "updatedAt":  "2026-11-09T01:15:09.126615390Z",
-  "userFacing":  true
-}
