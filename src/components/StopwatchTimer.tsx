@@ -125,7 +125,7 @@ export const StopwatchTimer: React.FC<StopwatchTimerProps> = ({
           onRunningChangeRef.current?.(false);
           return 0;
         }
-        if (prev <= 6) {
+        if (prev <= 11) {
           audioManager.playTimerWarning();
         }
         return prev - 1;
@@ -194,7 +194,7 @@ export const StopwatchTimer: React.FC<StopwatchTimerProps> = ({
     return `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
   };
 
-  const isWarning = secondsRemaining <= 5 && secondsRemaining > 0;
+  const isWarning = secondsRemaining <= 10 && secondsRemaining > 0;
   const isExpired = secondsRemaining === 0;
 
   return (

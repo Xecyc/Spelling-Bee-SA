@@ -3,7 +3,6 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Trophy, Award, Medal, Crown } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { WinnersData } from '../types/presentation';
-import { audioManager } from '../utils/audio';
 
 export interface Winners {
   first: string;
@@ -63,7 +62,6 @@ export const PodiumSlide: React.FC<PodiumSlideProps> = ({
     // Timed to synchronize with 1st place golden champion reveal
     const timer = setTimeout(() => {
       try {
-        audioManager.playFanfare();
         confetti({
           particleCount: 110,
           spread: 85,

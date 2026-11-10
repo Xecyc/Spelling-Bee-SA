@@ -215,6 +215,41 @@ export default function App() {
     return () => document.removeEventListener('fullscreenchange', handleFsChange);
   }, []);
 
+  // Fullscreen mouse cursor inactivity auto-hide (3 seconds)
+  useEffect(() => {
+    if (!isFullscreen) {
+      document.documentElement.classList.remove('hide-cursor');
+      return;
+    }
+
+    let timer: ReturnType<typeof setTimeout> | null = null;
+
+    const showCursorAndArmTimer = () => {
+      document.documentElement.classList.remove('hide-cursor');
+      if (timer) clearTimeout(timer);
+      timer = setTimeout(() => {
+        document.documentElement.classList.add('hide-cursor');
+      }, 3000);
+    };
+
+    // Arm timer immediately on entering fullscreen
+    showCursorAndArmTimer();
+
+    window.addEventListener('mousemove', showCursorAndArmTimer, { passive: true });
+    window.addEventListener('mousedown', showCursorAndArmTimer, { passive: true });
+    window.addEventListener('keydown', showCursorAndArmTimer, { passive: true });
+    window.addEventListener('touchstart', showCursorAndArmTimer, { passive: true });
+
+    return () => {
+      if (timer) clearTimeout(timer);
+      document.documentElement.classList.remove('hide-cursor');
+      window.removeEventListener('mousemove', showCursorAndArmTimer);
+      window.removeEventListener('mousedown', showCursorAndArmTimer);
+      window.removeEventListener('keydown', showCursorAndArmTimer);
+      window.removeEventListener('touchstart', showCursorAndArmTimer);
+    };
+  }, [isFullscreen]);
+
   const toggleFullscreen = useCallback(() => {
     if (!document.fullscreenElement) {
       document.documentElement.requestFullscreen().catch(() => {});
