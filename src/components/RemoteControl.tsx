@@ -10,12 +10,21 @@ import {
   Send,
   ExternalLink,
   ChevronDown,
+  ChevronLeft,
+  ChevronRight,
+  LayoutGrid,
+  Volume2,
+  VolumeX,
+  Maximize2,
+  Minimize2,
   CheckCircle2,
   Sparkles,
   Loader2,
   Square,
   AlertTriangle,
+  Layers,
 } from 'lucide-react';
+import { audioManager } from '../utils/audio';
 import { useStageSync, StageSyncState } from '../hooks/useStageSync';
 import { useContestStore } from '../store';
 import type { DeliveryResult } from '../utils/remoteProtocol';
@@ -117,6 +126,7 @@ export const RemoteControl: React.FC<RemoteControlProps> = ({
 
   // Accordion drop-down menus
   const [isRouletteOpen, setIsRouletteOpen] = useState(true);
+  const [isSlidesOpen, setIsSlidesOpen] = useState(false);
   const [isPodiumOpen, setIsPodiumOpen] = useState(false);
 
   const [stageReturnUrl, setStageReturnUrl] = useState<string>('/');
@@ -132,6 +142,9 @@ export const RemoteControl: React.FC<RemoteControlProps> = ({
       }
       if (typeof newState.timerDuration === 'number') {
         setSessionTimerDuration(newState.timerDuration);
+      }
+      if (typeof newState.currentSlide === 'number') {
+        setRemoteSlide(newState.currentSlide);
       }
       // Only reset seconds if a new winning word arrived from stage
       if (newState.winningWord && newState.winningWord !== prev.winningWord) {
@@ -168,10 +181,25 @@ export const RemoteControl: React.FC<RemoteControlProps> = ({
     setTimerDuration,
     removeWord,
     closeModal,
+    setSlide,
+    toggleFullscreen,
     requestStageState,
   } = useStageSync({
     onStageState: handleStageState,
   });
+
+  const totalSlides = 3;
+  const [remoteSlide, setRemoteSlide] = useState<number>(() => {
+    return typeof stageState.currentSlide === 'number' ? stageState.currentSlide : 1;
+  });
+  const [isMuted, setIsMuted] = useState(false);
+  const isStageFullscreen = Boolean(stageState.isFullscreen);
+
+  const slideTitles = [
+    'Welcome / Cover',
+    'Roulette Wheel',
+    'Winner Podium',
+  ];
 
   const [remoteSecondsRemaining, setRemoteSecondsRemaining] = useState<number>(getSessionTimerDuration());
   const [isRemoteTimerRunning, setIsRemoteTimerRunning] = useState<boolean>(false);
@@ -239,6 +267,38 @@ export const RemoteControl: React.FC<RemoteControlProps> = ({
     }
   };
 
+  const handlePrevSlide = () => {
+    if (remoteSlide > 0) {
+      const next = remoteSlide - 1;
+      setRemoteSlide(next);
+      void dispatch(`Slide ${next + 1}`, () => setSlide(next));
+    }
+  };
+
+  const handleNextSlide = () => {
+    if (remoteSlide < totalSlides - 1) {
+      const next = remoteSlide + 1;
+      setRemoteSlide(next);
+      void dispatch(`Slide ${next + 1}`, () => setSlide(next));
+    }
+  };
+
+  const handleGoToSlide = (idx: number) => {
+    setRemoteSlide(idx);
+    void dispatch(`Slide ${idx + 1}`, () => setSlide(idx));
+  };
+
+  const handleToggleMute = () => {
+    const next = !isMuted;
+    setIsMuted(next);
+    audioManager.setMuted(next);
+    showNotice('ok', next ? 'Stage Audio Muted' : 'Stage Audio Active');
+  };
+
+  const handleToggleStageFullscreen = () => {
+    void dispatch('Toggle stage fullscreen', toggleFullscreen);
+  };
+
   // Live remote countdown ticker
   useEffect(() => {
     if (!isRemoteTimerRunning) return;
@@ -246,6 +306,7 @@ export const RemoteControl: React.FC<RemoteControlProps> = ({
       setRemoteSecondsRemaining((prev) => {
         if (prev <= 1) {
           setIsRemoteTimerRunning(false);
+          audioManager.playTimerFinished();
           return 0;
         }
         return prev - 1;
@@ -311,6 +372,7 @@ export const RemoteControl: React.FC<RemoteControlProps> = ({
       setStageState((prev) => ({ ...prev, isSpinning: false }));
       return;
     }
+    setRemoteSlide(1);
     if (onSpinWheel) {
       onSpinWheel();
     }
@@ -392,7 +454,10 @@ export const RemoteControl: React.FC<RemoteControlProps> = ({
     }
 
     void dispatch('Push to stage', () => pushWinners(payload)).then((ok) => {
-      if (ok && onPushWinners) onPushWinners(payload);
+      if (ok) {
+        setRemoteSlide(2);
+        if (onPushWinners) onPushWinners(payload);
+      }
     });
   };
 
@@ -416,7 +481,7 @@ export const RemoteControl: React.FC<RemoteControlProps> = ({
   const isWordModalActive = Boolean(stageState.showWinnerModal && stageState.winningWord);
 
   return (
-    <div className="bg-[#121418] text-white min-h-screen p-3.5 sm:p-5 max-w-sm sm:max-w-md mx-auto flex flex-col justify-between font-sans select-none">
+    <div className="bg-[#121418] text-white min-h-screen p-3.5 sm:p-5 pb-6 max-w-sm sm:max-w-md mx-auto flex flex-col justify-between font-sans select-none relative">
       <div className="space-y-3">
         {!isConnected && (
           <div className="flex items-start gap-2 rounded-xl border border-rose-500/40 bg-rose-500/10 p-3 text-xs text-rose-200">
@@ -649,7 +714,143 @@ export const RemoteControl: React.FC<RemoteControlProps> = ({
         </div>
 
         {/* ========================================================================= */}
-        {/* DROPDOWN 2: PODIUM MENU                                                  */}
+        {/* DROPDOWN 2: SLIDES CONTROLS                                              */}
+        {/* ========================================================================= */}
+        <div className="rounded-2xl bg-[#1a1d24] border border-gray-800 overflow-hidden shadow-lg">
+          {/* Accordion Toggle Header */}
+          <button
+            type="button"
+            onClick={() => setIsSlidesOpen(!isSlidesOpen)}
+            className="w-full px-3.5 py-2.5 bg-[#20242d] hover:bg-[#252a35] flex items-center justify-between transition cursor-pointer text-left"
+          >
+            <div className="flex items-center gap-2">
+              <Layers className="w-4 h-4 text-sky-400" />
+              <span className="text-xs font-black uppercase tracking-wider text-white">
+                Slides Controls
+              </span>
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-sky-500/20 text-sky-300">
+                Slide {remoteSlide + 1} / {totalSlides}
+              </span>
+              <ChevronDown
+                className={`w-4 h-4 text-gray-400 transition-transform duration-200 ${
+                  isSlidesOpen ? 'rotate-180 text-sky-400' : ''
+                }`}
+              />
+            </div>
+          </button>
+
+          {isSlidesOpen && (
+            <div className="p-3.5 space-y-3 animate-in fade-in duration-150">
+              {/* Genially-style Navigation Pill Bar inside card */}
+              <div className="flex items-center justify-between px-3 py-2 rounded-xl bg-[#0e1117] border border-gray-700/80 shadow-inner">
+                {/* Previous Slide Button */}
+                <button
+                  type="button"
+                  onClick={handlePrevSlide}
+                  disabled={remoteSlide <= 0}
+                  className="p-1.5 rounded-lg text-slate-300 hover:text-white hover:bg-white/10 disabled:opacity-25 disabled:hover:bg-transparent transition-colors cursor-pointer"
+                  title="Previous Slide"
+                >
+                  <ChevronLeft className="w-4 h-4" />
+                </button>
+
+                {/* Current Slide Display */}
+                <div className="flex flex-col items-center">
+                  <span className="text-[10px] uppercase font-bold text-gray-400 tracking-wider">Current Slide</span>
+                  <span className="font-mono font-black text-sm tracking-widest text-sky-400 tabular-nums">
+                    {remoteSlide + 1} / {totalSlides}
+                  </span>
+                </div>
+
+                {/* Next Slide Button */}
+                <button
+                  type="button"
+                  onClick={handleNextSlide}
+                  disabled={remoteSlide >= totalSlides - 1}
+                  className="p-1.5 rounded-lg text-slate-300 hover:text-white hover:bg-white/10 disabled:opacity-25 disabled:hover:bg-transparent transition-colors cursor-pointer"
+                  title="Next Slide"
+                >
+                  <ChevronRight className="w-4 h-4" />
+                </button>
+
+                <div className="w-[1px] h-6 bg-gray-700 mx-1" />
+
+                {/* Audio Mute/Unmute */}
+                <button
+                  type="button"
+                  onClick={handleToggleMute}
+                  className="p-1.5 rounded-lg text-slate-300 hover:text-amber-400 hover:bg-white/10 transition-colors cursor-pointer"
+                  title={isMuted ? 'Stage Audio Muted' : 'Stage Audio Active'}
+                >
+                  {!isMuted ? (
+                    <Volume2 className="w-4 h-4 text-emerald-400" />
+                  ) : (
+                    <VolumeX className="w-4 h-4 text-rose-400" />
+                  )}
+                </button>
+
+                {/* Stage Fullscreen Button */}
+                <button
+                  type="button"
+                  onClick={handleToggleStageFullscreen}
+                  className="p-1.5 rounded-lg text-slate-300 hover:text-sky-300 hover:bg-white/10 transition-colors cursor-pointer"
+                  title={isStageFullscreen ? 'Exit Stage Fullscreen' : 'Stage Fullscreen'}
+                >
+                  {isStageFullscreen ? (
+                    <Minimize2 className="w-4 h-4 text-sky-400" />
+                  ) : (
+                    <Maximize2 className="w-4 h-4 text-sky-400" />
+                  )}
+                </button>
+              </div>
+
+              {/* Quick Jump Slide Cards */}
+              <div className="space-y-1.5">
+                <span className="text-[10px] uppercase font-bold text-gray-400 tracking-wider block px-1">
+                  Jump to Slide
+                </span>
+                <div className="grid grid-cols-1 gap-1.5">
+                  {slideTitles.map((title, idx) => {
+                    const isActive = remoteSlide === idx;
+                    return (
+                      <button
+                        key={idx}
+                        type="button"
+                        onClick={() => handleGoToSlide(idx)}
+                        className={`w-full px-3 py-2 rounded-xl border text-left transition flex items-center justify-between cursor-pointer ${
+                          isActive
+                            ? 'bg-sky-500/20 border-sky-400 text-sky-200 font-bold ring-1 ring-sky-400/40 shadow-sm'
+                            : 'bg-[#252932] border-gray-700/80 text-gray-300 hover:bg-[#2b303b] hover:border-gray-600'
+                        }`}
+                      >
+                        <div className="flex items-center gap-2.5 truncate">
+                          <span
+                            className={`w-5 h-5 rounded-md flex items-center justify-center text-[11px] font-black font-mono shrink-0 ${
+                              isActive ? 'bg-sky-400 text-[#061a3e]' : 'bg-gray-700 text-gray-300'
+                            }`}
+                          >
+                            {idx + 1}
+                          </span>
+                          <span className="text-xs truncate">{title}</span>
+                        </div>
+                        {isActive && (
+                          <span className="text-[10px] uppercase font-bold text-sky-300 bg-sky-400/20 px-2 py-0.5 rounded-full shrink-0">
+                            Active
+                          </span>
+                        )}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* ========================================================================= */}
+        {/* DROPDOWN 3: PODIUM MENU                                                  */}
         {/* ========================================================================= */}
         <div className="rounded-2xl bg-[#1a1d24] border border-gray-800 overflow-hidden shadow-lg">
           {/* Accordion Toggle Header */}
@@ -750,7 +951,7 @@ export const RemoteControl: React.FC<RemoteControlProps> = ({
         <div
           role="status"
           aria-live="polite"
-          className={`fixed bottom-4 inset-x-4 max-w-sm mx-auto rounded-xl px-4 py-3 text-xs font-semibold shadow-2xl border ${
+          className={`fixed bottom-16 inset-x-4 max-w-sm mx-auto z-50 rounded-xl px-4 py-3 text-xs font-semibold shadow-2xl border ${
             notice.kind === 'ok'
               ? 'bg-emerald-600/90 border-emerald-400/50 text-white'
               : notice.kind === 'warn'
@@ -763,7 +964,7 @@ export const RemoteControl: React.FC<RemoteControlProps> = ({
       )}
 
       {/* Backstage footer note */}
-      <div className="pt-4 text-center text-[11px] text-gray-500 border-t border-gray-800/60 mt-4">
+      <div className="pt-4 text-center text-[11px] text-gray-500 border-t border-gray-800/60 mt-4 mb-2">
         <a
           href={stageReturnUrl}
           onClick={handleReturnClick}

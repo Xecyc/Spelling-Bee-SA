@@ -23,6 +23,7 @@ export const COMMAND_TYPES = [
   'push_winners',
   'clear_board',
   'set_slide',
+  'toggle_fullscreen',
 ] as const;
 
 export type CommandType = (typeof COMMAND_TYPES)[number];
@@ -45,6 +46,7 @@ export const COMMAND_LABELS: Record<CommandType, string> = {
   push_winners: 'Push to stage',
   clear_board: 'Clear board',
   set_slide: 'Change slide',
+  toggle_fullscreen: 'Toggle fullscreen',
 };
 
 /** A command older than this (measured by the server clock) is never replayed. */
@@ -86,6 +88,7 @@ export interface StageSyncState {
   timeLeft?: number;
   isTimerRunning?: boolean;
   currentSlide?: number;
+  isFullscreen?: boolean;
   winnersData?: WinnersData | null;
 }
 

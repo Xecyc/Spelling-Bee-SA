@@ -70,15 +70,18 @@ export const StopwatchTimer: React.FC<StopwatchTimerProps> = ({
     }
   }, [controlledIsRunning]);
 
-  // Sync when initialSeconds changes - always ensure stopped state
+  // Sync when initialSeconds changes (e.g. configured duration changed while stopped)
+  const prevInitialSecondsRef = useRef(initialSeconds);
   useEffect(() => {
-    if (initialSeconds !== undefined) {
+    if (initialSeconds !== undefined && initialSeconds !== prevInitialSecondsRef.current) {
+      prevInitialSecondsRef.current = initialSeconds;
       setTotalSeconds(initialSeconds);
-      setSecondsRemaining(initialSeconds);
-      setEditValue(String(initialSeconds));
-      setRunningState(false);
+      if (!isRunning) {
+        setSecondsRemaining(initialSeconds);
+        setEditValue(String(initialSeconds));
+      }
     }
-  }, [initialSeconds]);
+  }, [initialSeconds, isRunning]);
 
   // Auto-focus and select text when editing begins
   useEffect(() => {

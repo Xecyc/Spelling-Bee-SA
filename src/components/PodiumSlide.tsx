@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Trophy, Award, Medal, Crown } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { WinnersData } from '../types/presentation';
+import { audioManager } from '../utils/audio';
 
 export interface Winners {
   first: string;
@@ -59,31 +60,34 @@ export const PodiumSlide: React.FC<PodiumSlideProps> = ({
       return;
     }
 
+    // Timed to synchronize with 1st place golden champion reveal
     const timer = setTimeout(() => {
       try {
+        audioManager.playFanfare();
         confetti({
-          particleCount: 90,
-          spread: 80,
-          origin: { y: 0.55 },
+          particleCount: 110,
+          spread: 85,
+          origin: { y: 0.5 },
           colors: ['#FACC15', '#F59E0B', '#FFFFFF', '#3B82F6', '#EF4444'],
         });
       } catch (e) {
         // Fallback if canvas-confetti is not installed
       }
-    }, 1200);
+    }, 4600);
 
     return () => clearTimeout(timer);
   }, [isActive, winners]);
 
   return (
     <div
-      className="relative w-full h-full aspect-video flex flex-col items-center justify-end pb-8 bg-cover bg-center overflow-hidden select-none"
+      className="relative w-full h-full aspect-video flex flex-col items-center justify-center p-4 sm:p-6 bg-cover bg-center overflow-hidden select-none"
       style={{ backgroundImage: `url(${backgroundUrl})` }}
     >
-      {/* Full-Screen Subtle Vignette Overlay to unify background */}
-      <div className="absolute inset-0 bg-gradient-to-t from-[#040B1A]/90 via-[#07132B]/55 to-transparent pointer-events-none z-0" />
+      {/* Full-Screen Backdrop Blur & Dark Dimming to emphasize the podium */}
+      <div className="absolute inset-0 backdrop-blur-md bg-[#040B1A]/55 pointer-events-none z-0" />
+      <div className="absolute inset-0 bg-gradient-to-t from-[#040B1A]/90 via-[#07132B]/50 to-transparent pointer-events-none z-0" />
 
-      {/* Center Framed Stage Backdrop Card - only displayed once winners have been chosen and pushed */}
+      {/* Center Framed Stage Backdrop Card - elevated closer to center */}
       <AnimatePresence>
         {hasActualWinners && (
           <motion.div
@@ -92,13 +96,13 @@ export const PodiumSlide: React.FC<PodiumSlideProps> = ({
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: 20 }}
             transition={{ duration: 0.6, ease: 'easeOut' }}
-            className="relative z-10 w-[88%] max-w-5xl h-[72%] rounded-3xl bg-[#07132B]/85 backdrop-blur-md border-2 border-yellow-400/30 shadow-[0_25px_70px_rgba(0,0,0,0.85),inset_0_0_60px_rgba(30,58,138,0.35)] flex flex-col items-center justify-end px-8 pb-6 overflow-hidden"
+            className="relative z-10 w-[90%] max-w-5xl max-h-[84%] sm:h-[78%] rounded-3xl bg-[#07132B]/90 backdrop-blur-xl border-2 border-yellow-400/35 shadow-[0_25px_80px_rgba(0,0,0,0.9),inset_0_0_60px_rgba(30,58,138,0.4)] flex flex-col items-center justify-center px-6 sm:px-8 py-6 overflow-hidden my-auto"
           >
         {/* Ambient Center Spotlight Glow inside Stage Card */}
         <motion.div
           initial={{ opacity: 0, scale: 0.5 }}
           animate={{ opacity: [0, 0.5, 0.35], scale: [0.8, 1.1, 1] }}
-          transition={{ delay: 2.2, duration: 2, repeat: Infinity, repeatType: 'reverse' }}
+          transition={{ delay: 1.2, duration: 2, repeat: Infinity, repeatType: 'reverse' }}
           className="absolute bottom-8 w-[26rem] h-[26rem] rounded-full bg-yellow-400/20 blur-[80px] pointer-events-none z-0"
         />
 
@@ -110,7 +114,7 @@ export const PodiumSlide: React.FC<PodiumSlideProps> = ({
             <motion.div
               initial={{ opacity: 0, scale: 0.4, y: 30 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
-              transition={{ delay: 1.7, type: 'spring', stiffness: 220, damping: 14 }}
+              transition={{ delay: 3.1, type: 'spring', stiffness: 220, damping: 14 }}
               className="relative mb-4 w-full flex flex-col items-center"
             >
               <motion.div
@@ -132,7 +136,7 @@ export const PodiumSlide: React.FC<PodiumSlideProps> = ({
             <motion.div
               initial={{ y: 260, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
-              transition={{ delay: 1.1, type: 'spring', stiffness: 90, damping: 14 }}
+              transition={{ delay: 2.6, type: 'spring', stiffness: 90, damping: 14 }}
               className="w-full flex flex-col items-center"
             >
               <div className="w-[106%] h-3.5 rounded-t-lg bg-gradient-to-r from-slate-300 via-white to-slate-300 shadow-[0_0_15px_rgba(226,232,240,0.4)] border-b-2 border-slate-500 z-10" />
@@ -160,11 +164,11 @@ export const PodiumSlide: React.FC<PodiumSlideProps> = ({
             <motion.div
               initial={{ opacity: 0, scale: 0.3, y: 40 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
-              transition={{ delay: 3.1, type: 'spring', stiffness: 200, damping: 12 }}
+              transition={{ delay: 4.4, type: 'spring', stiffness: 200, damping: 12 }}
               className="relative mb-5 w-full flex flex-col items-center"
             >
-              <FourPointStar className="w-6 h-6 text-yellow-300 absolute -top-5 -left-3 z-30 drop-shadow-[0_0_8px_rgba(250,204,21,0.9)]" delay={3.3} />
-              <FourPointStar className="w-5 h-5 text-yellow-300 absolute top-1 -right-4 z-30 drop-shadow-[0_0_8px_rgba(250,204,21,0.9)]" delay={3.6} />
+              <FourPointStar className="w-6 h-6 text-yellow-300 absolute -top-5 -left-3 z-30 drop-shadow-[0_0_8px_rgba(250,204,21,0.9)]" delay={4.6} />
+              <FourPointStar className="w-5 h-5 text-yellow-300 absolute top-1 -right-4 z-30 drop-shadow-[0_0_8px_rgba(250,204,21,0.9)]" delay={4.8} />
 
               <motion.div
                 animate={{ y: [0, -6, 0], scale: [1, 1.05, 1] }}
@@ -178,7 +182,7 @@ export const PodiumSlide: React.FC<PodiumSlideProps> = ({
                 <motion.div
                   initial={{ x: '-100%' }}
                   animate={{ x: '200%' }}
-                  transition={{ delay: 3.5, duration: 1.5, repeat: Infinity, repeatDelay: 3 }}
+                  transition={{ delay: 4.7, duration: 1.5, repeat: Infinity, repeatDelay: 3 }}
                   className="absolute inset-0 w-1/2 bg-gradient-to-r from-transparent via-yellow-300/20 to-transparent skew-x-12 pointer-events-none"
                 />
                 <div className="text-2xl md:text-3xl font-black text-transparent bg-clip-text bg-gradient-to-b from-yellow-100 via-yellow-300 to-amber-400 leading-tight break-words drop-shadow-[0_2px_10px_rgba(250,204,21,0.4)]">
@@ -191,7 +195,7 @@ export const PodiumSlide: React.FC<PodiumSlideProps> = ({
             <motion.div
               initial={{ y: 340, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
-              transition={{ delay: 2.3, type: 'spring', stiffness: 80, damping: 12 }}
+              transition={{ delay: 3.8, type: 'spring', stiffness: 80, damping: 12 }}
               className="w-full flex flex-col items-center"
             >
               <div className="w-[108%] h-4 rounded-t-lg bg-gradient-to-r from-amber-500 via-yellow-200 to-amber-500 shadow-[0_0_20px_rgba(250,204,21,0.7)] border-b-2 border-amber-700 z-10" />
@@ -223,7 +227,7 @@ export const PodiumSlide: React.FC<PodiumSlideProps> = ({
             <motion.div
               initial={{ opacity: 0, scale: 0.4, y: 30 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
-              transition={{ delay: 0.6, type: 'spring', stiffness: 220, damping: 14 }}
+              transition={{ delay: 2.0, type: 'spring', stiffness: 220, damping: 14 }}
               className="relative mb-4 w-full flex flex-col items-center"
             >
               <motion.div
@@ -245,7 +249,7 @@ export const PodiumSlide: React.FC<PodiumSlideProps> = ({
             <motion.div
               initial={{ y: 220, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
-              transition={{ delay: 0.1, type: 'spring', stiffness: 90, damping: 14 }}
+              transition={{ delay: 1.5, type: 'spring', stiffness: 90, damping: 14 }}
               className="w-full flex flex-col items-center"
             >
               <div className="w-[106%] h-3.5 rounded-t-lg bg-gradient-to-r from-amber-700 via-amber-300 to-amber-700 shadow-[0_0_15px_rgba(217,119,6,0.4)] border-b-2 border-amber-900 z-10" />

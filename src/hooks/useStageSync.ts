@@ -76,6 +76,7 @@ export function useStageSync(options?: UseStageSyncOptions) {
     removeWord: useCallback(() => send('remove_word'), [send]),
     closeModal: useCallback(() => send('close_modal'), [send]),
     setSlide: useCallback((slide: number) => send('set_slide', slide), [send]),
+    toggleFullscreen: useCallback(() => send('toggle_fullscreen'), [send]),
     broadcastStageState,
     requestStageState,
   };

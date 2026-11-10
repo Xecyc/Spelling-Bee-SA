@@ -215,13 +215,13 @@ export default function App() {
     return () => document.removeEventListener('fullscreenchange', handleFsChange);
   }, []);
 
-  const toggleFullscreen = () => {
+  const toggleFullscreen = useCallback(() => {
     if (!document.fullscreenElement) {
       document.documentElement.requestFullscreen().catch(() => {});
     } else {
       document.exitFullscreen().catch(() => {});
     }
-  };
+  }, []);
 
   // Find active wheel
   const activeWheel = wheels.find((w) => w.id === activeWheelId) || wheels[0] || INITIAL_WHEELS[0];
@@ -378,15 +378,20 @@ export default function App() {
             setCurrentSlide(payload as PresentationSlideId);
           }
           break;
+        case 'toggle_fullscreen':
+          toggleFullscreen();
+          break;
         case 'stop_spin':
           // A stray Stop tap while idle must not pop a random word onto the stage.
           if (isSpinningRef.current) handleSpinStop();
           break;
         case 'start_timer':
+          setModalTimerState((prev) => ({ ...prev, isRunning: true }));
           setRemoteTimerSignal({ type: 'start', ts: Date.now() });
           break;
         case 'stop_timer':
         case 'pause_timer':
+          setModalTimerState((prev) => ({ ...prev, isRunning: false }));
           setRemoteTimerSignal({ type: 'pause', ts: Date.now() });
           break;
         case 'reset_timer': {
@@ -440,7 +445,7 @@ export default function App() {
           break;
       }
     },
-    [handleSpinStart, handleSpinStop, handleRemoveWinningWord, setCurrentMode, setCurrentSlide, setWinnersData]
+    [handleSpinStart, handleSpinStop, handleRemoveWinningWord, setCurrentMode, setCurrentSlide, setWinnersData, toggleFullscreen]
   );
 
   // Centralized Stage & Remote sync hook
@@ -458,6 +463,7 @@ export default function App() {
       timeLeft: showWinnerModal ? modalTimerState.timeLeft : getSessionTimerDuration(),
       isTimerRunning: showWinnerModal ? modalTimerState.isRunning : false,
       currentSlide,
+      isFullscreen,
       winnersData,
     });
   }, [
@@ -470,6 +476,7 @@ export default function App() {
     modalTimerState.timeLeft,
     modalTimerState.isRunning,
     currentSlide,
+    isFullscreen,
     winnersData,
     broadcastStageState,
   ]);

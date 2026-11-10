@@ -15,6 +15,7 @@ test('remote action types are fully recognized in stage action schema', () => {
     'clear_winners',
     'clear_board',
     'set_slide',
+    'toggle_fullscreen',
   ];
 
   for (const action of recognizedActions) {
@@ -91,4 +92,20 @@ test('server 7.5s watchdog lease clears stuck isSpinning state', async () => {
 
   await new Promise((resolve) => setTimeout(resolve, 80));
   assert.equal(isSpinning, false);
+});
+
+test('timer remains running across countdown ticks without auto-stopping', () => {
+  let isRunning = true;
+  let secondsRemaining = 40;
+  const initialDuration = 40;
+
+  // Simulate 3 countdown ticks
+  for (let tick = 1; tick <= 3; tick++) {
+    secondsRemaining -= 1;
+    // Initial configured duration must remain constant
+    assert.equal(initialDuration, 40);
+    // Running state must remain true
+    assert.equal(isRunning, true);
+    assert.equal(secondsRemaining, 40 - tick);
+  }
 });

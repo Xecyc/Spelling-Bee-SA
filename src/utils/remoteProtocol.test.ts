@@ -13,6 +13,7 @@ test('every button on the phone maps to a known command type', () => {
   for (const type of [
     'spin_wheel', 'stop_spin', 'start_timer', 'pause_timer', 'reset_timer',
     'remove_word', 'close_modal', 'push_winners', 'clear_board',
+    'set_slide', 'toggle_fullscreen',
   ]) {
     assert.ok((COMMAND_TYPES as readonly string[]).includes(type), type);
   }

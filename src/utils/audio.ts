@@ -150,22 +150,45 @@ class AudioManager {
       if (!this.ctx) return;
 
       const now = this.ctx.currentTime;
-      [880, 1100, 1320].forEach((freq, idx) => {
+      const freq = 2048; // Classic digital quartz alarm clock / watch piezo frequency
+
+      // Classic electronic digital alarm clock: 3 groups of "beep beep beep"
+      const beepStartTimes = [
+        // Group 1: beep beep beep
+        now + 0.00,
+        now + 0.13,
+        now + 0.26,
+        // Group 2: beep beep beep
+        now + 0.50,
+        now + 0.63,
+        now + 0.76,
+        // Group 3: beep beep beep
+        now + 1.00,
+        now + 1.13,
+        now + 1.26,
+      ];
+
+      beepStartTimes.forEach((start, idx) => {
         if (!this.ctx) return;
         const osc = this.ctx.createOscillator();
         const gain = this.ctx.createGain();
 
-        const t = now + idx * 0.12;
-        osc.type = 'triangle';
-        osc.frequency.setValueAtTime(freq, t);
-        gain.gain.setValueAtTime(0.22 * this.volume, t);
-        gain.gain.exponentialRampToValueAtTime(0.0001, t + 0.25);
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(freq, start);
+
+        const dur = idx === beepStartTimes.length - 1 ? 0.12 : 0.08;
+        const peakVol = 0.32 * this.volume;
+
+        gain.gain.setValueAtTime(0.0001, start);
+        gain.gain.linearRampToValueAtTime(peakVol, start + 0.005);
+        gain.gain.setValueAtTime(peakVol, start + dur - 0.008);
+        gain.gain.linearRampToValueAtTime(0.0001, start + dur);
 
         osc.connect(gain);
         gain.connect(this.ctx.destination);
 
-        osc.start(t);
-        osc.stop(t + 0.26);
+        osc.start(start);
+        osc.stop(start + dur + 0.015);
       });
     } catch {
       // Safe catch
