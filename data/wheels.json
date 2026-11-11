@@ -7,7 +7,7 @@
     "grade": "1st - 3rd",
     "place": "general",
     "spinDuration": 6,
-    "timerDuration": 40,
+    "timerDuration": 30,
     "slices": [
       {
         "id": "slice-1794212135852-0-9c1a2",
@@ -119,7 +119,7 @@
     "grade": "1st",
     "place": "tiebreak",
     "spinDuration": 6,
-    "timerDuration": 20,
+    "timerDuration": 30,
     "slices": [
       {
         "id": "slice-1794212135852-0-cifkp",
@@ -321,7 +321,7 @@
     "grade": "2nd",
     "place": "tiebreak",
     "spinDuration": 6,
-    "timerDuration": 20,
+    "timerDuration": 30,
     "slices": [
       {
         "id": "slice-1794212135852-0-ynvaz",
@@ -513,7 +513,7 @@
     "grade": "3rd",
     "place": "tiebreak",
     "spinDuration": 6,
-    "timerDuration": 20,
+    "timerDuration": 30,
     "slices": [
       {
         "id": "slice-1794212135852-0-916r3",
@@ -735,7 +735,7 @@
     "grade": "4th - 6th",
     "place": "general",
     "spinDuration": 6,
-    "timerDuration": 40,
+    "timerDuration": 30,
     "slices": [
       {
         "id": "slice-1794212135852-0-dfd3c",
@@ -897,7 +897,7 @@
     "grade": "4th",
     "place": "tiebreak",
     "spinDuration": 6,
-    "timerDuration": 20,
+    "timerDuration": 30,
     "slices": [
       {
         "id": "slice-1794212135852-0-0rixu",
@@ -1169,7 +1169,7 @@
     "grade": "5th",
     "place": "tiebreak",
     "spinDuration": 6,
-    "timerDuration": 20,
+    "timerDuration": 30,
     "slices": [
       {
         "id": "slice-1794212135852-0-5l0na",
@@ -1426,7 +1426,7 @@
     "grade": "6th",
     "place": "tiebreak",
     "spinDuration": 6,
-    "timerDuration": 20,
+    "timerDuration": 30,
     "slices": [
       {
         "id": "slice-1794212135852-0-6upwp",
@@ -1890,7 +1890,7 @@
     "grade": "High School",
     "place": "tiebreak",
     "spinDuration": 6,
-    "timerDuration": 20,
+    "timerDuration": 40,
     "slices": [
       {
         "id": "slice-1794212135852-0-ajixk",

@@ -29,14 +29,19 @@ import {
   setSessionTimerDuration,
   resetSessionTimerDuration,
   DEFAULT_TIMER_SECONDS,
+  getDefaultTimerForGroup,
 } from './utils/timerSession';
 
 const sanitizeWheel = (wheel: WheelConfig): WheelConfig => {
   const palette = (wheel.group === 'high_school' && wheel.place === 'championship')
     ? CHAMPIONSHIP_PALETTE
     : VIBRANT_STAGE_PALETTE;
+  const timerDuration = typeof wheel.timerDuration === 'number' && wheel.timerDuration >= 5 && wheel.timerDuration <= 600
+    ? wheel.timerDuration
+    : (wheel.group === 'elementary' ? 30 : 40);
   return {
     ...wheel,
+    timerDuration,
     slices: recalibrateSliceColors(wheel.slices, palette),
   };
 };
@@ -74,10 +79,14 @@ export default function App() {
   const isRemoteRoute = useContestStore((s) => s.isRemoteRoute);
   const setIsRemoteRoute = useContestStore((s) => s.setIsRemoteRoute);
 
-  // Wheels state with localStorage persistence (sanitized for balanced palette)
+  // Wheels state with localStorage persistence (sanitized for balanced palette & 30s elementary timer)
   const [wheels, setWheels] = useState<WheelConfig[]>(() => {
     try {
-      const saved = localStorage.getItem('salto_angel_wheels_2026_v7');
+      // Clear previous versions
+      localStorage.removeItem('salto_angel_wheels_2026_v7');
+      localStorage.removeItem('salto_angel_wheels_2026_v6');
+      localStorage.removeItem('salto_angel_wheels_2026_v4');
+      const saved = localStorage.getItem('salto_angel_wheels_2026_v8');
       if (saved) {
         const parsed = JSON.parse(saved);
         if (
@@ -146,9 +155,12 @@ export default function App() {
   const [modalTimerState, setModalTimerState] = useState<{
     timeLeft: number;
     isRunning: boolean;
-  }>({
-    timeLeft: 40,
-    isRunning: false,
+  }>(() => {
+    const initialDuration = INITIAL_WHEELS[0]?.timerDuration || 30;
+    return {
+      timeLeft: getSessionTimerDuration(initialDuration),
+      isRunning: false,
+    };
   });
   const [podiumAnimationKey, setPodiumAnimationKey] = useState<number>(Date.now());
 
@@ -161,7 +173,7 @@ export default function App() {
         if (Array.isArray(data.wheels) && data.wheels.length > 0) {
           const sanitized = data.wheels.map(sanitizeWheel);
           setWheels(sanitized);
-          localStorage.setItem('salto_angel_wheels_2026_v7', JSON.stringify(sanitized));
+          localStorage.setItem('salto_angel_wheels_2026_v8', JSON.stringify(sanitized));
         }
       })
       .catch(() => {
@@ -172,7 +184,7 @@ export default function App() {
   // Save wheels to localStorage and shared server endpoint
   useEffect(() => {
     try {
-      localStorage.setItem('salto_angel_wheels_2026_v7', JSON.stringify(wheels));
+      localStorage.setItem('salto_angel_wheels_2026_v8', JSON.stringify(wheels));
       fetch('/api/wheels', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -266,6 +278,18 @@ export default function App() {
     setWheels((prev) => prev.map((w) => (w.id === updated.id ? updated : w)));
   };
 
+  // Update timer duration for current active wheel (persists across spins & saves to localStorage)
+  const handleWheelTimerChange = useCallback(
+    (newDuration: number) => {
+      setWheels((prev) =>
+        prev.map((w) => (w.id === activeWheel.id ? { ...w, timerDuration: newDuration } : w))
+      );
+      setSessionTimerDuration(newDuration);
+      setModalTimerState({ timeLeft: newDuration, isRunning: false });
+    },
+    [activeWheel.id]
+  );
+
   // Create a new wheel
   const handleCreateWheel = (role: WheelRole, name: string) => {
     const defaultTimer = getSessionTimerDuration();
@@ -297,13 +321,20 @@ export default function App() {
     }
   };
 
-  // Select wheel (resets winning slice and modal to prevent unwanted timer auto-start when switching wheels/places)
+  // Select wheel (resets winning slice and modal, auto-switches timer duration to division default)
   const handleSelectWheel = (wheelId: string) => {
     setActiveWheelId(wheelId);
     setIsWheelSpinning(false);
     setWinningSlice(null);
     setShowWinnerModal(false);
-    setModalTimerState({ timeLeft: getSessionTimerDuration(), isRunning: false });
+
+    const targetWheel = wheels.find((w) => w.id === wheelId);
+    const divDuration = typeof targetWheel?.timerDuration === 'number' && targetWheel.timerDuration >= 5 && targetWheel.timerDuration <= 600
+      ? targetWheel.timerDuration
+      : (targetWheel?.group === 'elementary' ? 30 : 40);
+
+    setSessionTimerDuration(divDuration);
+    setModalTimerState({ timeLeft: divDuration, isRunning: false });
   };
 
   const isSpinningRef = useRef(false);
@@ -442,6 +473,9 @@ export default function App() {
         case 'set_timer_duration':
           if (typeof payload === 'number' && payload >= 5 && payload <= 600) {
             setSessionTimerDuration(payload);
+            setWheels((prev) =>
+              prev.map((w) => (w.id === activeWheel.id ? { ...w, timerDuration: payload } : w))
+            );
             setModalTimerState((prev) => ({
               ...prev,
               timeLeft: prev.isRunning ? prev.timeLeft : payload,
@@ -494,8 +528,10 @@ export default function App() {
       showWinnerModal,
       winningWord: winningSlice?.text || null,
       currentWheelName: activeWheel.name,
-      timerDuration: getSessionTimerDuration(),
-      timeLeft: showWinnerModal ? modalTimerState.timeLeft : getSessionTimerDuration(),
+      timerDuration: activeWheel.timerDuration || (activeWheel.group === 'elementary' ? 30 : 40),
+      timeLeft: showWinnerModal
+        ? modalTimerState.timeLeft
+        : (activeWheel.timerDuration || (activeWheel.group === 'elementary' ? 30 : 40)),
       isTimerRunning: showWinnerModal ? modalTimerState.isRunning : false,
       currentSlide,
       isFullscreen,
@@ -547,7 +583,7 @@ export default function App() {
       grade: '1st',
       place: '1st',
       spinDuration: 6,
-      timerDuration: 40,
+      timerDuration: 30,
       slices: [
         { id: `s-starter-1`, text: 'START', color: '#FBBF24', enabled: true, weight: 1 },
         { id: `s-starter-2`, text: 'TEST', color: '#60A5FA', enabled: true, weight: 1 },
@@ -602,6 +638,7 @@ export default function App() {
   // 7. Reset cloud and local storage
   const handleResetCloudStorage = async () => {
     try {
+      localStorage.removeItem('salto_angel_wheels_2026_v8');
       localStorage.removeItem('salto_angel_wheels_2026_v7');
       localStorage.removeItem('salto_angel_wheels_2026_v6');
       localStorage.removeItem('salto_angel_wheels_2026_v4');
@@ -746,16 +783,18 @@ export default function App() {
           isOpen={showWinnerModal}
           word={winningSlice.text}
           sliceColor={winningSlice.color}
-          timerDuration={getSessionTimerDuration()}
+          timerDuration={activeWheel.timerDuration ?? (activeWheel.group === 'elementary' ? 30 : 40)}
           timerActionSignal={remoteTimerSignal}
           onTimerTick={(timeLeft, isRunning) => {
             setModalTimerState({ timeLeft, isRunning });
           }}
+          onDurationChange={handleWheelTimerChange}
           onClose={() => {
             setShowWinnerModal(false);
             setWinningSlice(null);
+            const savedDuration = activeWheel.timerDuration ?? (activeWheel.group === 'elementary' ? 30 : 40);
             setModalTimerState({
-              timeLeft: getSessionTimerDuration(),
+              timeLeft: savedDuration,
               isRunning: false,
             });
           }}

@@ -2,11 +2,18 @@
 // Persists user-entered duration across wheels and slides during the session,
 // and resets to 40 seconds upon reset action or when the user exits the site.
 
-export const DEFAULT_TIMER_SECONDS = 40;
+export const DEFAULT_TIMER_SECONDS = 30;
+export const ELEMENTARY_DEFAULT_TIMER_SECONDS = 30;
+export const HIGH_SCHOOL_DEFAULT_TIMER_SECONDS = 40;
+
+export function getDefaultTimerForGroup(group?: string): number {
+  return group === 'elementary' ? ELEMENTARY_DEFAULT_TIMER_SECONDS : HIGH_SCHOOL_DEFAULT_TIMER_SECONDS;
+}
+
 const SESSION_TIMER_KEY = 'salto_angel_session_timer';
 
-export function getSessionTimerDuration(): number {
-  if (typeof window === 'undefined') return DEFAULT_TIMER_SECONDS;
+export function getSessionTimerDuration(defaultFallback = ELEMENTARY_DEFAULT_TIMER_SECONDS): number {
+  if (typeof window === 'undefined') return defaultFallback;
   try {
     const val = sessionStorage.getItem(SESSION_TIMER_KEY);
     if (val) {
@@ -18,7 +25,7 @@ export function getSessionTimerDuration(): number {
   } catch {
     // Fallback if sessionStorage is blocked
   }
-  return DEFAULT_TIMER_SECONDS;
+  return defaultFallback;
 }
 
 export function setSessionTimerDuration(seconds: number): void {

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   ChevronDown,
   Layers,
@@ -93,10 +93,62 @@ export const TopGeniallyBar: React.FC<TopGeniallyBarProps> = ({
     }
   }, [activeWheel]);
 
+  const containerRef = useRef<HTMLDivElement>(null);
+  const autoHideTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const clearAutoHideTimer = () => {
+    if (autoHideTimerRef.current) {
+      clearTimeout(autoHideTimerRef.current);
+      autoHideTimerRef.current = null;
+    }
+  };
+
+  const handleMouseEnter = () => {
+    clearAutoHideTimer();
+  };
+
+  const handleMouseLeave = () => {
+    clearAutoHideTimer();
+    if (isOpen) {
+      autoHideTimerRef.current = setTimeout(() => {
+        setIsOpen(false);
+      }, 3000);
+    }
+  };
+
+  // Click outside detection: immediately closes dropdown when clicking outside menu box
+  useEffect(() => {
+    if (!isOpen) {
+      clearAutoHideTimer();
+      return;
+    }
+
+    const handlePointerDownOutside = (e: MouseEvent | TouchEvent) => {
+      if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
+        clearAutoHideTimer();
+        setIsOpen(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handlePointerDownOutside);
+    document.addEventListener('touchstart', handlePointerDownOutside);
+
+    return () => {
+      document.removeEventListener('mousedown', handlePointerDownOutside);
+      document.removeEventListener('touchstart', handlePointerDownOutside);
+    };
+  }, [isOpen]);
+
+  // Clean up auto-hide timer on unmount
+  useEffect(() => {
+    return () => clearAutoHideTimer();
+  }, []);
+
   // Keyboard shortcut: Esc closes dropdown
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
+        clearAutoHideTimer();
         setIsOpen(false);
       }
     };
@@ -104,20 +156,24 @@ export const TopGeniallyBar: React.FC<TopGeniallyBarProps> = ({
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, []);
 
+  const handleToggleClick = () => {
+    clearAutoHideTimer();
+    setIsOpen((prev) => !prev);
+  };
+
   return (
     <>
       {/* Top Hover-Zone Container for Auto-Hiding the Dropdown Menu */}
       <div
+        ref={containerRef}
         className="fixed top-0 left-1/2 -translate-x-1/2 z-50 flex flex-col items-center group pointer-events-auto"
-        onMouseEnter={() => {}}
-        onMouseLeave={() => {
-          setIsOpen(false);
-        }}
+        onMouseEnter={handleMouseEnter}
+        onMouseLeave={handleMouseLeave}
       >
         {/* Transparent Hover-Zone Wrapper (w-48 h-8) revealing the tab on hover */}
         <div className="w-48 h-7 flex items-start justify-center cursor-pointer">
           <button
-            onClick={() => setIsOpen(!isOpen)}
+            onClick={handleToggleClick}
             style={{ transition: 'opacity 0.3s ease, background-color 0.2s ease, transform 0.2s ease' }}
             className={`w-10 h-6 flex items-center justify-center rounded-b-xl bg-[#061a3e]/90 hover:bg-[#071f4c] text-blue-200 hover:text-amber-400 border-x border-b border-blue-400/30 shadow-lg backdrop-blur-md cursor-pointer ${
               isOpen ? 'opacity-100' : 'opacity-0 group-hover:opacity-100 focus:opacity-100'

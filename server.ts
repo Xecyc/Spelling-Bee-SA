@@ -20,8 +20,12 @@ function sanitizeServerWheel(wheel: any): any {
   const palette = (wheel.group === 'high_school' && wheel.place === 'championship')
     ? CHAMPIONSHIP_PALETTE
     : VIBRANT_STAGE_PALETTE;
+  const timerDuration = typeof wheel.timerDuration === 'number' && wheel.timerDuration >= 5 && wheel.timerDuration <= 600
+    ? wheel.timerDuration
+    : (wheel.group === 'elementary' ? 30 : 40);
   return {
     ...wheel,
+    timerDuration,
     slices: recalibrateSliceColors(wheel.slices, palette),
   };
 }

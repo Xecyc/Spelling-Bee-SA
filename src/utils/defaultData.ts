@@ -142,7 +142,7 @@ export const INITIAL_WHEELS: WheelConfig[] = [
     grade: '1st - 3rd',
     place: 'general',
     spinDuration: 6,
-    timerDuration: 40,
+    timerDuration: 30,
     slices: createSlicesFromWords(WORDS_MAIN_1ST_3RD),
   },
   {
@@ -153,7 +153,7 @@ export const INITIAL_WHEELS: WheelConfig[] = [
     grade: '1st',
     place: 'tiebreak',
     spinDuration: 6,
-    timerDuration: 40,
+    timerDuration: 30,
     slices: createSlicesFromWords(combineUniqueWords(WORDS_MAIN_1ST_3RD, WORDS_TB_1ST)),
   },
   {
@@ -164,7 +164,7 @@ export const INITIAL_WHEELS: WheelConfig[] = [
     grade: '2nd',
     place: 'tiebreak',
     spinDuration: 6,
-    timerDuration: 40,
+    timerDuration: 30,
     slices: createSlicesFromWords(combineUniqueWords(WORDS_MAIN_1ST_3RD, WORDS_TB_2ND)),
   },
   {
@@ -175,7 +175,7 @@ export const INITIAL_WHEELS: WheelConfig[] = [
     grade: '3rd',
     place: 'tiebreak',
     spinDuration: 6,
-    timerDuration: 40,
+    timerDuration: 30,
     slices: createSlicesFromWords(combineUniqueWords(WORDS_MAIN_1ST_3RD, WORDS_TB_3RD)),
   },
 
@@ -190,7 +190,7 @@ export const INITIAL_WHEELS: WheelConfig[] = [
     grade: '4th - 6th',
     place: 'general',
     spinDuration: 6,
-    timerDuration: 40,
+    timerDuration: 30,
     slices: createSlicesFromWords(WORDS_MAIN_4TH_6TH),
   },
   {
@@ -201,7 +201,7 @@ export const INITIAL_WHEELS: WheelConfig[] = [
     grade: '4th',
     place: 'tiebreak',
     spinDuration: 6,
-    timerDuration: 40,
+    timerDuration: 30,
     slices: createSlicesFromWords(combineUniqueWords(WORDS_MAIN_4TH_6TH, WORDS_TB_4TH)),
   },
   {
@@ -212,7 +212,7 @@ export const INITIAL_WHEELS: WheelConfig[] = [
     grade: '5th',
     place: 'tiebreak',
     spinDuration: 6,
-    timerDuration: 40,
+    timerDuration: 30,
     slices: createSlicesFromWords(combineUniqueWords(WORDS_MAIN_4TH_6TH, WORDS_TB_5TH)),
   },
   {
@@ -223,7 +223,7 @@ export const INITIAL_WHEELS: WheelConfig[] = [
     grade: '6th',
     place: 'tiebreak',
     spinDuration: 6,
-    timerDuration: 40,
+    timerDuration: 30,
     slices: createSlicesFromWords(combineUniqueWords(WORDS_MAIN_4TH_6TH, WORDS_TB_6TH)),
   },
 

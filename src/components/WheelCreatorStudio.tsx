@@ -440,9 +440,10 @@ export const WheelCreatorStudio: React.FC<WheelCreatorStudioProps> = ({
   const handleTimerInputBlur = () => {
     const parsed = parseInt(timerDurationInput, 10);
     if (isNaN(parsed) || parsed <= 0) {
-      setTimerDurationInput('40');
-      setSessionTimerDuration(40);
-      onUpdateWheel({ ...currentWheel, timerDuration: 40 });
+      const defaultForGroup = currentWheel.group === 'elementary' ? 30 : 40;
+      setTimerDurationInput(String(defaultForGroup));
+      setSessionTimerDuration(defaultForGroup);
+      onUpdateWheel({ ...currentWheel, timerDuration: defaultForGroup });
     } else {
       const clamped = Math.max(1, Math.min(600, parsed));
       setTimerDurationInput(String(clamped));

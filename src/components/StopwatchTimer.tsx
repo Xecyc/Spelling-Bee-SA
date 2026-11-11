@@ -27,7 +27,7 @@ export const StopwatchTimer: React.FC<StopwatchTimerProps> = ({
   onTick,
   onDurationChange,
 }) => {
-  const sessionInitial = getSessionTimerDuration();
+  const sessionInitial = getSessionTimerDuration(30);
   const effectiveInitial = initialSeconds !== undefined ? initialSeconds : sessionInitial;
 
   const [totalSeconds, setTotalSeconds] = useState(effectiveInitial);
@@ -91,6 +91,20 @@ export const StopwatchTimer: React.FC<StopwatchTimerProps> = ({
     }
   }, [isEditing]);
 
+  // Commit edit if unmounting while editing
+  useEffect(() => {
+    return () => {
+      if (isEditing) {
+        const clean = editValue.trim().replace(/\D/g, '');
+        const parsed = parseInt(clean, 10);
+        if (!isNaN(parsed) && parsed >= 5 && parsed <= 600) {
+          setSessionTimerDuration(parsed);
+          onDurationChangeRef.current?.(parsed);
+        }
+      }
+    };
+  }, [isEditing, editValue]);
+
   // Handle auto-start trigger only when explicitly incremented by user action
   useEffect(() => {
     if (autoStartTrigger && autoStartTrigger > 0 && autoStartTrigger > lastTriggerRef.current) {
@@ -125,7 +139,7 @@ export const StopwatchTimer: React.FC<StopwatchTimerProps> = ({
           onRunningChangeRef.current?.(false);
           return 0;
         }
-        if (prev <= 11) {
+        if (prev <= 6) {
           audioManager.playTimerWarning();
         }
         return prev - 1;
@@ -194,7 +208,7 @@ export const StopwatchTimer: React.FC<StopwatchTimerProps> = ({
     return `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
   };
 
-  const isWarning = secondsRemaining <= 10 && secondsRemaining > 0;
+  const isWarning = secondsRemaining <= 5 && secondsRemaining > 0;
   const isExpired = secondsRemaining === 0;
 
   return (
