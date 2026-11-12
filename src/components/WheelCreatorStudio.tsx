@@ -1184,7 +1184,7 @@ export const WheelCreatorStudio: React.FC<WheelCreatorStudioProps> = ({
       // Check for CRÓNICA #X pattern (e.g. "CRÓNICA #1 Maracaibo" or "CRÓNICA #1: Maracaibo")
       const match = lineRaw.match(/^(CRÓNICA\s*#\d+)[:\s-]*(.+)$/i);
       const cronica = match ? match[1].toUpperCase() : undefined;
-      const cleanWord = match ? match[2].trim().toUpperCase() : lineRaw;
+      const cleanWord = match ? match[2].trim() : lineRaw;
 
       if (i < currentWheel.slices.length) {
         updatedSlices.push({
@@ -2233,12 +2233,12 @@ export const WheelCreatorStudio: React.FC<WheelCreatorStudioProps> = ({
                           value={slice.text}
                           onChange={(e) => {
                             const updated = currentWheel.slices.map((s) =>
-                              s.id === slice.id ? { ...s, text: e.target.value.toUpperCase() } : s
+                              s.id === slice.id ? { ...s, text: e.target.value } : s
                             );
                             onUpdateWheel({ ...currentWheel, slices: updated });
                           }}
                           placeholder={`Option ${index + 1}`}
-                          className="flex-1 min-w-0 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg px-2.5 py-1 text-xs text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-1 focus:ring-indigo-500 font-bold uppercase"
+                          className="flex-1 min-w-0 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg px-2.5 py-1 text-xs text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-1 focus:ring-indigo-500 font-bold"
                         />
 
                         {/* Weight Stepper */}

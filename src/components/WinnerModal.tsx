@@ -159,10 +159,10 @@ export const WinnerModal: React.FC<WinnerModalProps> = ({
           </div>
         )}
 
-        {/* Winning Word Display: Crisp, solid golden-yellow with bold sans-serif, no glow */}
+        {/* Winning Word Display: Crisp, solid golden-yellow with bold sans-serif, respects original casing */}
         <div className="my-2 py-1 px-4 w-full flex items-center justify-center overflow-hidden">
           <h2
-            className={`${getWordFontSizeClass(word)} font-sans font-black tracking-wider text-amber-400 whitespace-nowrap select-all uppercase`}
+            className={`${getWordFontSizeClass(word)} font-sans font-black tracking-wider text-amber-400 whitespace-nowrap select-all`}
           >
             {word}
           </h2>

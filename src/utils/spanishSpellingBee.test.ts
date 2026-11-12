@@ -35,29 +35,35 @@ test('Spanish Elementary Wheel vocabulary maps 84 clean words to their respectiv
     assert.ok(slice.color && slice.color.startsWith('#'), `Slice ${idx} must have a valid hex color`);
   });
 
-  // Spot-check key words and crónicas from the dataset
-  const maracaiboSlice = SPANISH_ELEMENTARY_WHEEL.slices.find((s) => s.text === 'MARACAIBO');
-  assert.ok(maracaiboSlice, 'Must include MARACAIBO');
+  // Spot-check key words and crónicas from the dataset respecting original casing
+  const maracaiboSlice = SPANISH_ELEMENTARY_WHEEL.slices.find((s) => s.text === 'Maracaibo');
+  assert.ok(maracaiboSlice, 'Must include Maracaibo with title case');
   assert.equal(maracaiboSlice.cronica, 'CRÓNICA #1');
 
-  const basilicaSlice = SPANISH_ELEMENTARY_WHEEL.slices.find((s) => s.text === 'BASÍLICA');
-  assert.ok(basilicaSlice, 'Must include BASÍLICA');
+  const basilicaSlice = SPANISH_ELEMENTARY_WHEEL.slices.find((s) => s.text === 'Basílica');
+  assert.ok(basilicaSlice, 'Must include Basílica with title case');
   assert.equal(basilicaSlice.cronica, 'CRÓNICA #2');
 
-  const chiquinquiraSlice = SPANISH_ELEMENTARY_WHEEL.slices.find((s) => s.text === 'CHIQUINQUIRÁ');
-  assert.ok(chiquinquiraSlice, 'Must include CHIQUINQUIRÁ');
+  const chiquinquiraSlice = SPANISH_ELEMENTARY_WHEEL.slices.find((s) => s.text === 'Chiquinquirá');
+  assert.ok(chiquinquiraSlice, 'Must include Chiquinquirá with title case');
   assert.equal(chiquinquiraSlice.cronica, 'CRÓNICA #2');
 
-  const urdanetaSlice = SPANISH_ELEMENTARY_WHEEL.slices.find((s) => s.text === 'URDANETA');
-  assert.ok(urdanetaSlice, 'Must include URDANETA');
+  const urdanetaSlice = SPANISH_ELEMENTARY_WHEEL.slices.find((s) => s.text === 'Urdaneta');
+  assert.ok(urdanetaSlice, 'Must include Urdaneta with title case');
   assert.equal(urdanetaSlice.cronica, 'CRÓNICA #12');
 
-  const empedraoSlice = SPANISH_ELEMENTARY_WHEEL.slices.find((s) => s.text === 'EMPEDRAO');
-  assert.ok(empedraoSlice, 'Must include EMPEDRAO');
+  const empedraoSlice = SPANISH_ELEMENTARY_WHEEL.slices.find((s) => s.text === 'Empedrao');
+  assert.ok(empedraoSlice, 'Must include Empedrao with title case');
   assert.equal(empedraoSlice.cronica, 'CRÓNICA #21');
 
-  const iluminacionSlice = SPANISH_ELEMENTARY_WHEEL.slices.find((s) => s.text === 'ILUMINACIÓN');
-  assert.ok(iluminacionSlice, 'Must include ILUMINACIÓN');
+  // Verify Zapara has capital Z (corrected from lowercase document error)
+  const zaparaSlice = SPANISH_ELEMENTARY_WHEEL.slices.find((s) => s.text === 'Zapara');
+  assert.ok(zaparaSlice, 'Must include Zapara with capital Z');
+  assert.equal(zaparaSlice.cronica, 'CRÓNICA #23');
+
+  // Verify common noun is lowercase as in the document
+  const iluminacionSlice = SPANISH_ELEMENTARY_WHEEL.slices.find((s) => s.text === 'iluminación');
+  assert.ok(iluminacionSlice, 'Must include iluminación in lowercase');
   assert.equal(iluminacionSlice.cronica, 'CRÓNICA #30');
 });
 

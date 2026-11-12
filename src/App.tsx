@@ -85,10 +85,11 @@ export default function App() {
   const [wheels, setWheels] = useState<WheelConfig[]>(() => {
     try {
       // Clear previous versions
+      localStorage.removeItem('salto_angel_wheels_2026_v8');
       localStorage.removeItem('salto_angel_wheels_2026_v7');
       localStorage.removeItem('salto_angel_wheels_2026_v6');
       localStorage.removeItem('salto_angel_wheels_2026_v4');
-      const saved = localStorage.getItem('salto_angel_wheels_2026_v8');
+      const saved = localStorage.getItem('salto_angel_wheels_2026_v9');
       if (saved) {
         const parsed = JSON.parse(saved);
         if (
@@ -177,7 +178,7 @@ export default function App() {
         if (Array.isArray(data.wheels) && data.wheels.length > 0) {
           const sanitized = data.wheels.map(sanitizeWheel);
           setWheels(sanitized);
-          localStorage.setItem('salto_angel_wheels_2026_v8', JSON.stringify(sanitized));
+          localStorage.setItem('salto_angel_wheels_2026_v9', JSON.stringify(sanitized));
         }
       })
       .catch(() => {
@@ -188,7 +189,7 @@ export default function App() {
   // Save wheels to localStorage and shared server endpoint
   useEffect(() => {
     try {
-      localStorage.setItem('salto_angel_wheels_2026_v8', JSON.stringify(wheels));
+      localStorage.setItem('salto_angel_wheels_2026_v9', JSON.stringify(wheels));
       fetch('/api/wheels', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -614,7 +615,12 @@ export default function App() {
       const customDefault = localStorage.getItem('salto_angel_factory_default_wheels');
       if (customDefault) {
         const parsed = JSON.parse(customDefault);
-        if (Array.isArray(parsed) && parsed.length > 0) {
+        const isLegacyUppercase = Array.isArray(parsed) && parsed.some((w: any) =>
+          w.slices?.some((s: any) => s.text === 'MARACAIBO')
+        );
+        if (isLegacyUppercase) {
+          localStorage.removeItem('salto_angel_factory_default_wheels');
+        } else if (Array.isArray(parsed) && parsed.length > 0) {
           const sanitized = parsed.map(sanitizeWheel);
           setWheels(sanitized);
           setActiveWheelId(sanitized[0].id);
@@ -706,10 +712,12 @@ export default function App() {
   // 7. Reset cloud and local storage
   const handleResetCloudStorage = async () => {
     try {
+      localStorage.removeItem('salto_angel_wheels_2026_v9');
       localStorage.removeItem('salto_angel_wheels_2026_v8');
       localStorage.removeItem('salto_angel_wheels_2026_v7');
       localStorage.removeItem('salto_angel_wheels_2026_v6');
       localStorage.removeItem('salto_angel_wheels_2026_v4');
+      localStorage.removeItem('salto_angel_factory_default_wheels');
       await fetch('/api/wheels', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },

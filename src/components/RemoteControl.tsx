@@ -615,7 +615,7 @@ export const RemoteControl: React.FC<RemoteControlProps> = ({
                       </span>
                     </div>
                   )}
-                  <h2 className="text-2xl sm:text-3xl font-sans font-black tracking-wider text-amber-400 uppercase select-all truncate my-1">
+                  <h2 className="text-2xl sm:text-3xl font-sans font-black tracking-wider text-amber-400 select-all truncate my-1">
                     {stageState.winningWord || 'READY FOR WORD'}
                   </h2>
                 </div>
