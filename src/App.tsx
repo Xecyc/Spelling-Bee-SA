@@ -98,7 +98,12 @@ export default function App() {
           parsed.some((w) => w.group === 'high_school')
         ) {
           const hasSpanish = parsed.some((w) => w.language === 'es' || w.id === 'wheel-spanish-elem-1-6');
-          const fullList = hasSpanish ? parsed : [INITIAL_WHEELS[0], ...parsed];
+          const fullList = (hasSpanish ? parsed : [INITIAL_WHEELS[0], ...parsed]).map((w) => {
+            if ((w.id === 'wheel-spanish-elem-1-6' || w.language === 'es') && w.name.includes('1° a 6°')) {
+              return { ...w, name: 'Primaria (4to a 6to Grado)' };
+            }
+            return w;
+          });
           return fullList.map(sanitizeWheel);
         }
       }

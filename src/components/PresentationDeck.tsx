@@ -196,7 +196,7 @@ export const PresentationDeck: React.FC<PresentationDeckProps> = ({
             <div className="text-xs sm:text-sm md:text-base font-black tracking-wider text-amber-300 drop-shadow-[0_2px_8px_rgba(0,0,0,0.8)] uppercase">
               {(() => {
                 if (isSpanishMode) {
-                  return 'Primaria · 1° a 6° Grado';
+                  return 'PRIMARIA, 4TO A 6TO GRADO';
                 }
                 const isGeneral =
                   activeWheel.role === 'general' ||

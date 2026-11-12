@@ -269,7 +269,7 @@ export const TopGeniallyBar: React.FC<TopGeniallyBarProps> = ({
             {effectiveContestLanguage === 'es' ? (
               <div className="border-t border-blue-900/60 pt-2.5">
                 <div className="text-[11px] font-bold text-blue-200/80 uppercase tracking-wider mb-2">
-                  Ruleta de Primaria (1° a 6° Grado)
+                  Ruleta de Primaria (4to a 6to Grado)
                 </div>
                 {(() => {
                   const spanishWheel = wheels.find((w) => w.id === 'wheel-spanish-elem-1-6' || w.language === 'es') || wheels[0];
@@ -291,7 +291,7 @@ export const TopGeniallyBar: React.FC<TopGeniallyBarProps> = ({
                           {spanishWheel.name}
                         </div>
                         <div className="text-[10px] opacity-80 font-medium">
-                          1° a 6° Grado · {spanishWheel.slices?.length || 0} Palabras
+                          4to a 6to Grado · {spanishWheel.slices?.length || 0} Palabras
                         </div>
                       </div>
                       <div className="px-2 py-0.5 rounded-lg bg-black/20 text-[11px] font-mono font-bold">

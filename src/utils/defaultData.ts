@@ -267,7 +267,7 @@ export const WORDS_SPANISH_ELEMENTARY = WORDS_SPANISH_CRONICAS.map((item) => ite
 
 export const SPANISH_ELEMENTARY_WHEEL: WheelConfig = {
   id: 'wheel-spanish-elem-1-6',
-  name: 'Primaria (1° a 6° Grado)',
+  name: 'Primaria (4to a 6to Grado)',
   role: 'general',
   group: 'elementary',
   grade: '1st - 6th',
@@ -283,7 +283,7 @@ export const SPANISH_ELEMENTARY_WHEEL: WheelConfig = {
 // ============================================================================
 export const INITIAL_WHEELS: WheelConfig[] = [
   // --------------------------------------------------------------------------
-  // Spanish Contest: Elementary (1° a 6° Grado) - DEFAULT
+  // Spanish Contest: Elementary (4to a 6to Grado) - DEFAULT
   // --------------------------------------------------------------------------
   SPANISH_ELEMENTARY_WHEEL,
 
