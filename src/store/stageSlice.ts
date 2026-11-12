@@ -1,9 +1,10 @@
 import { StateCreator } from 'zustand';
-import { PresentationSlideId, SoundSettings } from '../types/presentation';
+import { PresentationSlideId, SoundSettings, ContestLanguage } from '../types/presentation';
 
 export interface StageStateSlice {
   currentMode: 'presentation' | 'studio';
   currentSlide: PresentationSlideId;
+  contestLanguage: ContestLanguage;
   isFullscreen: boolean;
   isRemoteRoute: boolean;
   soundSettings: SoundSettings;
@@ -11,6 +12,7 @@ export interface StageStateSlice {
 
   setCurrentMode: (mode: 'presentation' | 'studio') => void;
   setCurrentSlide: (slide: PresentationSlideId) => void;
+  setContestLanguage: (lang: ContestLanguage) => void;
   setIsFullscreen: (fullscreen: boolean) => void;
   setIsRemoteRoute: (isRemote: boolean) => void;
   setSoundSettings: (settings: SoundSettings | ((prev: SoundSettings) => SoundSettings)) => void;
@@ -37,6 +39,7 @@ function initialCheckIsRemote(): boolean {
 export const createStageSlice: StateCreator<StageStateSlice> = (set, get) => ({
   currentMode: 'presentation',
   currentSlide: 0,
+  contestLanguage: 'es',
   isFullscreen: false,
   isRemoteRoute: initialCheckIsRemote(),
   showRemoteModal: false,
@@ -50,6 +53,7 @@ export const createStageSlice: StateCreator<StageStateSlice> = (set, get) => ({
 
   setCurrentMode: (mode) => set({ currentMode: mode }),
   setCurrentSlide: (slide) => set({ currentSlide: slide }),
+  setContestLanguage: (lang) => set({ contestLanguage: lang }),
   setIsFullscreen: (fullscreen) => set({ isFullscreen: fullscreen }),
   setIsRemoteRoute: (isRemote) => set({ isRemoteRoute: isRemote }),
   setSoundSettings: (settingsOrUpdater) =>

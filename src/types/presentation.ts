@@ -11,6 +11,8 @@ export type WheelRole = 'general' | 'tiebreak' | '1st' | '2nd' | '3rd' | 'champi
 export type WheelGroup = 'elementary' | 'high_school' | 'custom';
 export type WheelPlace = 'general' | 'tiebreak' | '1st' | '2nd_3rd' | 'championship' | 'custom';
 
+export type ContestLanguage = 'en' | 'es';
+
 export interface WheelConfig {
   id: string;
   name: string;
@@ -19,6 +21,7 @@ export interface WheelConfig {
   group?: WheelGroup;
   grade?: string;
   place?: WheelPlace;
+  language?: ContestLanguage;
   slices: WheelSlice[];
   spinDuration: number; // in seconds, default 6
   timerDuration?: number; // in seconds, default 40 for 1st, 20 for 2nd/3rd

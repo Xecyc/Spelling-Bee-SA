@@ -188,18 +188,25 @@ export const RemoteControl: React.FC<RemoteControlProps> = ({
     onStageState: handleStageState,
   });
 
-  const totalSlides = 3;
+  const contestLanguage = useContestStore((s) => s.contestLanguage);
+  const isSpanish =
+    contestLanguage === 'es' ||
+    stageState.currentWheelName?.toLowerCase().includes('primaria') ||
+    stageState.currentWheelName?.toLowerCase().includes('grado');
+  const totalSlides = isSpanish ? 2 : 3;
   const [remoteSlide, setRemoteSlide] = useState<number>(() => {
     return typeof stageState.currentSlide === 'number' ? stageState.currentSlide : 1;
   });
   const [isMuted, setIsMuted] = useState(false);
   const isStageFullscreen = Boolean(stageState.isFullscreen);
 
-  const slideTitles = [
-    'Welcome / Cover',
-    'Roulette Wheel',
-    'Winner Podium',
-  ];
+  const slideTitles = isSpanish
+    ? ['Concurso de Deletreo', 'Ruleta Interactiva']
+    : [
+        'Welcome / Cover',
+        'Roulette Wheel',
+        'Winner Podium',
+      ];
 
   const [remoteSecondsRemaining, setRemoteSecondsRemaining] = useState<number>(getSessionTimerDuration());
   const [isRemoteTimerRunning, setIsRemoteTimerRunning] = useState<boolean>(false);
@@ -850,101 +857,103 @@ export const RemoteControl: React.FC<RemoteControlProps> = ({
         </div>
 
         {/* ========================================================================= */}
-        {/* DROPDOWN 3: PODIUM MENU                                                  */}
+        {/* DROPDOWN 3: PODIUM MENU (English Mode Only)                              */}
         {/* ========================================================================= */}
-        <div className="rounded-2xl bg-[#1a1d24] border border-gray-800 overflow-hidden shadow-lg">
-          {/* Accordion Toggle Header */}
-          <button
-            type="button"
-            onClick={() => setIsPodiumOpen(!isPodiumOpen)}
-            className="w-full px-3.5 py-2.5 bg-[#20242d] hover:bg-[#252a35] flex items-center justify-between transition cursor-pointer text-left"
-          >
-            <div className="flex items-center gap-2">
-              <Trophy className="w-4 h-4 text-yellow-400" />
-              <span className="text-xs font-black uppercase tracking-wider text-white">
-                Podium Menu
-              </span>
-            </div>
-            <div className="flex items-center gap-2">
-              {(winners.first || winners.second || winners.third) && (
-                <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-yellow-400/20 text-yellow-300">
-                  Ready
+        {!isSpanish && (
+          <div className="rounded-2xl bg-[#1a1d24] border border-gray-800 overflow-hidden shadow-lg">
+            {/* Accordion Toggle Header */}
+            <button
+              type="button"
+              onClick={() => setIsPodiumOpen(!isPodiumOpen)}
+              className="w-full px-3.5 py-2.5 bg-[#20242d] hover:bg-[#252a35] flex items-center justify-between transition cursor-pointer text-left"
+            >
+              <div className="flex items-center gap-2">
+                <Trophy className="w-4 h-4 text-yellow-400" />
+                <span className="text-xs font-black uppercase tracking-wider text-white">
+                  Podium Menu
                 </span>
-              )}
-              <ChevronDown
-                className={`w-4 h-4 text-gray-400 transition-transform duration-200 ${
-                  isPodiumOpen ? 'rotate-180 text-yellow-400' : ''
-                }`}
-              />
-            </div>
-          </button>
-
-          {isPodiumOpen && (
-            <form onSubmit={handlePushWinners} className="p-3.5 space-y-2.5 animate-in fade-in duration-150">
-              {/* 1st Place Input (champion text removed) */}
-              <div>
-                <label className="block text-[11px] font-bold text-yellow-400 uppercase tracking-wider mb-1">
-                  1st Place
-                </label>
-                <input
-                  type="text"
-                  value={winners.first}
-                  onChange={(e) => setWinners({ ...winners, first: e.target.value })}
-                  placeholder="e.g. Sofia Rodriguez"
-                  className="w-full py-2 px-3 rounded-lg bg-[#252932] border border-gray-700 focus:outline-none focus:border-yellow-400 text-xs text-white"
+              </div>
+              <div className="flex items-center gap-2">
+                {(winners.first || winners.second || winners.third) && (
+                  <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-yellow-400/20 text-yellow-300">
+                    Ready
+                  </span>
+                )}
+                <ChevronDown
+                  className={`w-4 h-4 text-gray-400 transition-transform duration-200 ${
+                    isPodiumOpen ? 'rotate-180 text-yellow-400' : ''
+                  }`}
                 />
               </div>
+            </button>
 
-              {/* 2nd Place Input (runner-up text removed) */}
-              <div>
-                <label className="block text-[11px] font-bold text-slate-300 uppercase tracking-wider mb-1">
-                  2nd Place
-                </label>
-                <input
-                  type="text"
-                  value={winners.second}
-                  onChange={(e) => setWinners({ ...winners, second: e.target.value })}
-                  placeholder="e.g. Mateo Gonzalez"
-                  className="w-full py-2 px-3 rounded-lg bg-[#252932] border border-gray-700 focus:outline-none focus:border-slate-300 text-xs text-white"
-                />
-              </div>
+            {isPodiumOpen && (
+              <form onSubmit={handlePushWinners} className="p-3.5 space-y-2.5 animate-in fade-in duration-150">
+                {/* 1st Place Input (champion text removed) */}
+                <div>
+                  <label className="block text-[11px] font-bold text-yellow-400 uppercase tracking-wider mb-1">
+                    1st Place
+                  </label>
+                  <input
+                    type="text"
+                    value={winners.first}
+                    onChange={(e) => setWinners({ ...winners, first: e.target.value })}
+                    placeholder="e.g. Sofia Rodriguez"
+                    className="w-full py-2 px-3 rounded-lg bg-[#252932] border border-gray-700 focus:outline-none focus:border-yellow-400 text-xs text-white"
+                  />
+                </div>
 
-              {/* 3rd Place Input */}
-              <div>
-                <label className="block text-[11px] font-bold text-amber-500 uppercase tracking-wider mb-1">
-                  3rd Place
-                </label>
-                <input
-                  type="text"
-                  value={winners.third}
-                  onChange={(e) => setWinners({ ...winners, third: e.target.value })}
-                  placeholder="e.g. Camila Perez"
-                  className="w-full py-2 px-3 rounded-lg bg-[#252932] border border-gray-700 focus:outline-none focus:border-amber-500 text-xs text-white"
-                />
-              </div>
+                {/* 2nd Place Input (runner-up text removed) */}
+                <div>
+                  <label className="block text-[11px] font-bold text-slate-300 uppercase tracking-wider mb-1">
+                    2nd Place
+                  </label>
+                  <input
+                    type="text"
+                    value={winners.second}
+                    onChange={(e) => setWinners({ ...winners, second: e.target.value })}
+                    placeholder="e.g. Mateo Gonzalez"
+                    className="w-full py-2 px-3 rounded-lg bg-[#252932] border border-gray-700 focus:outline-none focus:border-slate-300 text-xs text-white"
+                  />
+                </div>
 
-              {/* Action Buttons */}
-              <div className="grid grid-cols-2 gap-2 pt-1.5">
-                <button
-                  type="button"
-                  onClick={handleClearBoard}
-                  className="py-2.5 px-3 rounded-xl bg-rose-600/15 text-rose-400 hover:bg-rose-600/25 border border-rose-500/20 font-bold text-xs flex items-center justify-center gap-1.5 transition cursor-pointer active:scale-95"
-                >
-                  <RotateCcw className="w-3.5 h-3.5" />
-                  <span>Clear Board</span>
-                </button>
+                {/* 3rd Place Input */}
+                <div>
+                  <label className="block text-[11px] font-bold text-amber-500 uppercase tracking-wider mb-1">
+                    3rd Place
+                  </label>
+                  <input
+                    type="text"
+                    value={winners.third}
+                    onChange={(e) => setWinners({ ...winners, third: e.target.value })}
+                    placeholder="e.g. Camila Perez"
+                    className="w-full py-2 px-3 rounded-lg bg-[#252932] border border-gray-700 focus:outline-none focus:border-amber-500 text-xs text-white"
+                  />
+                </div>
 
-                <button
-                  type="submit"
-                  className="py-2.5 px-3 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs flex items-center justify-center gap-1.5 transition cursor-pointer active:scale-95 shadow-sm"
-                >
-                  <Send className="w-3.5 h-3.5" />
-                  <span>Push to Stage</span>
-                </button>
-              </div>
-            </form>
-          )}
-        </div>
+                {/* Action Buttons */}
+                <div className="grid grid-cols-2 gap-2 pt-1.5">
+                  <button
+                    type="button"
+                    onClick={handleClearBoard}
+                    className="py-2.5 px-3 rounded-xl bg-rose-600/15 text-rose-400 hover:bg-rose-600/25 border border-rose-500/20 font-bold text-xs flex items-center justify-center gap-1.5 transition cursor-pointer active:scale-95"
+                  >
+                    <RotateCcw className="w-3.5 h-3.5" />
+                    <span>Clear Board</span>
+                  </button>
+
+                  <button
+                    type="submit"
+                    className="py-2.5 px-3 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs flex items-center justify-center gap-1.5 transition cursor-pointer active:scale-95 shadow-sm"
+                  >
+                    <Send className="w-3.5 h-3.5" />
+                    <span>Push to Stage</span>
+                  </button>
+                </div>
+              </form>
+            )}
+          </div>
+        )}
       </div>
 
       {notice && (

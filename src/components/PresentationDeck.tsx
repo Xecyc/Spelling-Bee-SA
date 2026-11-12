@@ -39,6 +39,9 @@ export const PresentationDeck: React.FC<PresentationDeckProps> = ({
     setTouchStartY(e.touches[0].clientY);
   };
 
+  const isSpanishMode = activeWheel.language === 'es';
+  const maxSlideIndex = isSpanishMode ? 1 : 2;
+
   const handleTouchEnd = (e: React.TouchEvent) => {
     if (touchStartX === null || touchStartY === null) return;
     const touchEndX = e.changedTouches[0].clientX;
@@ -48,7 +51,7 @@ export const PresentationDeck: React.FC<PresentationDeckProps> = ({
 
     // Detect horizontal swipe gesture
     if (Math.abs(diffX) > Math.abs(diffY) && Math.abs(diffX) > 45) {
-      if (diffX > 0 && currentSlide < 2) {
+      if (diffX > 0 && currentSlide < maxSlideIndex) {
         goToNext();
       } else if (diffX < 0 && currentSlide > 0) {
         goToPrev();
@@ -64,7 +67,7 @@ export const PresentationDeck: React.FC<PresentationDeckProps> = ({
       if (['INPUT', 'TEXTAREA'].includes((e.target as HTMLElement)?.tagName)) {
         return;
       }
-      if (e.key === 'ArrowRight' && currentSlide < 2) {
+      if (e.key === 'ArrowRight' && currentSlide < maxSlideIndex) {
         onSetSlide((currentSlide + 1) as PresentationSlideId);
       } else if (e.key === 'ArrowLeft' && currentSlide > 0) {
         onSetSlide((currentSlide - 1) as PresentationSlideId);
@@ -72,7 +75,7 @@ export const PresentationDeck: React.FC<PresentationDeckProps> = ({
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [currentSlide, onSetSlide]);
+  }, [currentSlide, maxSlideIndex, onSetSlide]);
 
   const goToPrev = () => {
     if (currentSlide > 0) {
@@ -81,7 +84,7 @@ export const PresentationDeck: React.FC<PresentationDeckProps> = ({
   };
 
   const goToNext = () => {
-    if (currentSlide < 2) {
+    if (currentSlide < maxSlideIndex) {
       onSetSlide((currentSlide + 1) as PresentationSlideId);
     }
   };
@@ -107,7 +110,7 @@ export const PresentationDeck: React.FC<PresentationDeckProps> = ({
       )}
 
       {/* 2. Right Navigation Arrow with Transparent Hover-Zone */}
-      {currentSlide < 2 && (
+      {currentSlide < maxSlideIndex && (
         <div
           className="fixed right-0 top-0 bottom-0 w-24 z-40 flex items-center justify-end pr-4 group pointer-events-auto"
           title="Hover to reveal next slide button"
@@ -138,12 +141,16 @@ export const PresentationDeck: React.FC<PresentationDeckProps> = ({
         >
           <img
             src={
-              activeWheel.group === 'high_school'
+              isSpanishMode
+                ? `${import.meta.env.BASE_URL}assets/aistudio/image_5d551975.png`
+                : activeWheel.group === 'high_school'
                 ? `${import.meta.env.BASE_URL}assets/backgrounds/hs-welcome.jpg`
                 : `${import.meta.env.BASE_URL}assets/backgrounds/elementary-welcome.png`
             }
             alt={
-              activeWheel.group === 'high_school'
+              isSpanishMode
+                ? 'Salto Ángel Concurso de Deletreo Primaria 2026'
+                : activeWheel.group === 'high_school'
                 ? 'Salto Ángel Spelling Bee High School 2026'
                 : 'Salto Ángel Spelling Bee Elementary 2026'
             }
@@ -161,12 +168,16 @@ export const PresentationDeck: React.FC<PresentationDeckProps> = ({
           {/* Clean background without static wheel/timer */}
           <img
             src={
-              activeWheel.group === 'high_school'
+              isSpanishMode
+                ? `${import.meta.env.BASE_URL}assets/aistudio/image_a510c802.png`
+                : activeWheel.group === 'high_school'
                 ? `${import.meta.env.BASE_URL}assets/backgrounds/hs-wheel.jpg`
                 : `${import.meta.env.BASE_URL}assets/backgrounds/elementary-wheel.jpg`
             }
             alt={
-              activeWheel.group === 'high_school'
+              isSpanishMode
+                ? 'Salto Ángel Concurso de Deletreo Primaria 2026 - Ruleta'
+                : activeWheel.group === 'high_school'
                 ? 'Salto Ángel High School Wheel Challenge'
                 : 'Salto Ángel Elementary Wheel Challenge'
             }
@@ -184,6 +195,9 @@ export const PresentationDeck: React.FC<PresentationDeckProps> = ({
           >
             <div className="text-xs sm:text-sm md:text-base font-black tracking-wider text-amber-300 drop-shadow-[0_2px_8px_rgba(0,0,0,0.8)] uppercase">
               {(() => {
+                if (isSpanishMode) {
+                  return 'Primaria · 1° a 6° Grado';
+                }
                 const isGeneral =
                   activeWheel.role === 'general' ||
                   activeWheel.place === 'general' ||
@@ -223,25 +237,27 @@ export const PresentationDeck: React.FC<PresentationDeckProps> = ({
           </div>
         </div>
 
-        {/* SLIDE 2 / 3: Remote Controlled Winner Podium (Dynamic Elementary vs High School) */}
-        <div
-          className={`absolute inset-0 w-full h-full transition-opacity duration-300 ${
-            (currentSlide === 2 || currentSlide === 3)
-              ? 'opacity-100 z-10 pointer-events-auto'
-              : 'opacity-0 z-0 pointer-events-none'
-          }`}
-        >
-          <PodiumSlide
-            key={podiumAnimationKey || 'podium-slide'}
-            isActive={currentSlide === 2 || currentSlide === 3}
-            winners={winnersData || { first: '', second: '', third: '' }}
-            backgroundUrl={
-              activeWheel.group === 'high_school'
-                ? `${import.meta.env.BASE_URL}assets/backgrounds/hs-podium.jpg`
-                : `${import.meta.env.BASE_URL}assets/backgrounds/elementary-podium.png`
-            }
-          />
-        </div>
+        {/* SLIDE 2 / 3: Remote Controlled Winner Podium (English Mode Only) */}
+        {!isSpanishMode && (
+          <div
+            className={`absolute inset-0 w-full h-full transition-opacity duration-300 ${
+              (currentSlide === 2 || currentSlide === 3)
+                ? 'opacity-100 z-10 pointer-events-auto'
+                : 'opacity-0 z-0 pointer-events-none'
+            }`}
+          >
+            <PodiumSlide
+              key={podiumAnimationKey || 'podium-slide'}
+              isActive={currentSlide === 2 || currentSlide === 3}
+              winners={winnersData || { first: '', second: '', third: '' }}
+              backgroundUrl={
+                activeWheel.group === 'high_school'
+                  ? `${import.meta.env.BASE_URL}assets/backgrounds/hs-podium.jpg`
+                  : `${import.meta.env.BASE_URL}assets/backgrounds/elementary-podium.png`
+              }
+            />
+          </div>
+        )}
       </div>
     </div>
   );

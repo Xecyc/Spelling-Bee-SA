@@ -24,6 +24,8 @@ interface TopGeniallyBarProps {
   isFullscreen: boolean;
   onToggleFullscreen: () => void;
   onOpenRemoteModal?: () => void;
+  contestLanguage?: 'es' | 'en';
+  onSwitchContestLanguage?: (lang: 'es' | 'en') => void;
 }
 
 export const TopGeniallyBar: React.FC<TopGeniallyBarProps> = ({
@@ -37,10 +39,13 @@ export const TopGeniallyBar: React.FC<TopGeniallyBarProps> = ({
   isFullscreen,
   onToggleFullscreen,
   onOpenRemoteModal,
+  contestLanguage,
+  onSwitchContestLanguage,
 }) => {
   const [isOpen, setIsOpen] = useState(false);
 
   const activeWheel = wheels.find((w) => w.id === activeWheelId) || wheels[0];
+  const effectiveContestLanguage = contestLanguage || (activeWheel?.language === 'es' ? 'es' : 'en');
   const [selectedGroup, setSelectedGroup] = useState<'elementary' | 'high_school'>(
     (activeWheel?.group as 'elementary' | 'high_school') || 'elementary'
   );
@@ -232,12 +237,77 @@ export const TopGeniallyBar: React.FC<TopGeniallyBarProps> = ({
               </button>
             </div>
 
-            {/* Quick Tiebreaker Wheel Selection */}
-            <div className="border-t border-blue-900/60 pt-2.5">
-              {/* Group Tabs: Elementary vs High School */}
-              <div className="flex items-center p-0.5 bg-[#081f49] border border-blue-400/20 rounded-xl mb-2">
-                <button
-                  onClick={() => {
+            {/* Contest Switcher: Español - English (Matching Slides/Studio style) */}
+            <div className="grid grid-cols-2 gap-1.5 mb-2.5">
+              <button
+                onClick={() => {
+                  onSwitchContestLanguage?.('es');
+                }}
+                className={`flex items-center justify-center gap-1.5 py-2 px-3 rounded-xl transition-all cursor-pointer font-black text-xs uppercase tracking-wide border ${
+                  effectiveContestLanguage === 'es'
+                    ? 'bg-amber-400 text-[#06152d] border-amber-300 shadow-md shadow-amber-400/20'
+                    : 'bg-[#0a2354]/60 text-blue-100 border-blue-400/20 hover:bg-[#0e2f6d] hover:border-blue-400/40 hover:text-white'
+                }`}
+              >
+                <span>Español</span>
+              </button>
+
+              <button
+                onClick={() => {
+                  onSwitchContestLanguage?.('en');
+                }}
+                className={`flex items-center justify-center gap-1.5 py-2 px-3 rounded-xl transition-all cursor-pointer font-black text-xs uppercase tracking-wide border ${
+                  effectiveContestLanguage === 'en'
+                    ? 'bg-amber-400 text-[#06152d] border-amber-300 shadow-md shadow-amber-400/20'
+                    : 'bg-[#0a2354]/60 text-blue-100 border-blue-400/20 hover:bg-[#0e2f6d] hover:border-blue-400/40 hover:text-white'
+                }`}
+              >
+                <span>English</span>
+              </button>
+            </div>
+
+            {effectiveContestLanguage === 'es' ? (
+              <div className="border-t border-blue-900/60 pt-2.5">
+                <div className="text-[11px] font-bold text-blue-200/80 uppercase tracking-wider mb-2">
+                  Ruleta de Primaria (1° a 6° Grado)
+                </div>
+                {(() => {
+                  const spanishWheel = wheels.find((w) => w.id === 'wheel-spanish-elem-1-6' || w.language === 'es') || wheels[0];
+                  const isSelected = activeWheelId === spanishWheel.id;
+                  return (
+                    <button
+                      onClick={() => {
+                        onSelectWheel(spanishWheel.id);
+                        setIsOpen(false);
+                      }}
+                      className={`w-full p-2.5 rounded-xl text-left transition-all cursor-pointer border flex items-center justify-between ${
+                        isSelected
+                          ? 'bg-amber-400 text-[#06152d] border-amber-300 shadow-md shadow-amber-400/20 font-black'
+                          : 'bg-[#0a2354]/60 text-blue-100 border-blue-400/20 hover:bg-[#0e2f6d] hover:border-blue-400/40 hover:text-white'
+                      }`}
+                    >
+                      <div>
+                        <div className="text-xs font-black uppercase tracking-wide">
+                          {spanishWheel.name}
+                        </div>
+                        <div className="text-[10px] opacity-80 font-medium">
+                          1° a 6° Grado · {spanishWheel.slices?.length || 0} Palabras
+                        </div>
+                      </div>
+                      <div className="px-2 py-0.5 rounded-lg bg-black/20 text-[11px] font-mono font-bold">
+                        {spanishWheel.timerDuration || 30}s
+                      </div>
+                    </button>
+                  );
+                })()}
+              </div>
+            ) : (
+              /* Quick Tiebreaker Wheel Selection */
+              <div className="border-t border-blue-900/60 pt-2.5">
+                {/* Group Tabs: Elementary vs High School */}
+                <div className="flex items-center p-0.5 bg-[#081f49] border border-blue-400/20 rounded-xl mb-2">
+                  <button
+                    onClick={() => {
                     setSelectedGroup('elementary');
                     const isBlock1 = ['1st', '2nd', '3rd'].includes(selectedGrade);
                     if (isCurrentTiebreak) {
@@ -468,7 +538,8 @@ export const TopGeniallyBar: React.FC<TopGeniallyBarProps> = ({
                   </button>
                 </div>
               )}
-            </div>
+              </div>
+            )}
 
             {/* Toolbar Settings (Sound and Fullscreen) */}
             <div className="pt-2.5 border-t border-blue-900/60 mt-2 flex items-center justify-between px-1">

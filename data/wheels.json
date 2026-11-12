@@ -1,5 +1,318 @@
 [
   {
+    "id": "wheel-spanish-elem-1-6",
+    "name": "Primaria (1° a 6° Grado)",
+    "role": "general",
+    "group": "elementary",
+    "grade": "1st - 6th",
+    "place": "general",
+    "language": "es",
+    "spinDuration": 6,
+    "timerDuration": 30,
+    "slices": [
+      {
+        "id": "slice-1794436634503-0-wgi03",
+        "text": "AMISTAD",
+        "color": "#FACC15"
+      },
+      {
+        "id": "slice-1794436634503-1-8t0z9",
+        "text": "BIBLIOTECA",
+        "color": "#4ADE80"
+      },
+      {
+        "id": "slice-1794436634503-2-ohpx4",
+        "text": "CAMINO",
+        "color": "#60A5FA"
+      },
+      {
+        "id": "slice-1794436634503-3-6f0gm",
+        "text": "CORAZÓN",
+        "color": "#F472B6"
+      },
+      {
+        "id": "slice-1794436634503-4-16gf6",
+        "text": "DIBUJO",
+        "color": "#FB923C"
+      },
+      {
+        "id": "slice-1794436634503-5-fs7hm",
+        "text": "ESTRELLA",
+        "color": "#A78BFA"
+      },
+      {
+        "id": "slice-1794436634503-6-ledog",
+        "text": "FAMILIA",
+        "color": "#2DD4BF"
+      },
+      {
+        "id": "slice-1794436634503-7-6sm7x",
+        "text": "GUITARRA",
+        "color": "#F87171"
+      },
+      {
+        "id": "slice-1794436634503-8-zyl6s",
+        "text": "HERMANO",
+        "color": "#FACC15"
+      },
+      {
+        "id": "slice-1794436634503-9-6olh9",
+        "text": "ILUSIÓN",
+        "color": "#4ADE80"
+      },
+      {
+        "id": "slice-1794436634503-10-kapgj",
+        "text": "JARDÍN",
+        "color": "#60A5FA"
+      },
+      {
+        "id": "slice-1794436634503-11-9d0n8",
+        "text": "LÁPIZ",
+        "color": "#F472B6"
+      },
+      {
+        "id": "slice-1794436634503-12-36ke0",
+        "text": "MÚSICA",
+        "color": "#FB923C"
+      },
+      {
+        "id": "slice-1794436634503-13-spvmy",
+        "text": "NATURALEZA",
+        "color": "#A78BFA"
+      },
+      {
+        "id": "slice-1794436634503-14-zu6wc",
+        "text": "ORQUÍDEA",
+        "color": "#2DD4BF"
+      },
+      {
+        "id": "slice-1794436634503-15-2zhzd",
+        "text": "PAISAJE",
+        "color": "#F87171"
+      },
+      {
+        "id": "slice-1794436634503-16-mpnkg",
+        "text": "QUESO",
+        "color": "#FACC15"
+      },
+      {
+        "id": "slice-1794436634503-17-pawub",
+        "text": "RELÁMPAGO",
+        "color": "#4ADE80"
+      },
+      {
+        "id": "slice-1794436634503-18-zgj54",
+        "text": "SONRISA",
+        "color": "#60A5FA"
+      },
+      {
+        "id": "slice-1794436634503-19-h95vm",
+        "text": "TELÉFONO",
+        "color": "#F472B6"
+      },
+      {
+        "id": "slice-1794436634503-20-eavak",
+        "text": "UNIVERSO",
+        "color": "#FB923C"
+      },
+      {
+        "id": "slice-1794436634503-21-p78qo",
+        "text": "VENTANA",
+        "color": "#A78BFA"
+      },
+      {
+        "id": "slice-1794436634503-22-x9dzi",
+        "text": "ZAPATO",
+        "color": "#2DD4BF"
+      },
+      {
+        "id": "slice-1794436634503-23-dy7ij",
+        "text": "ÁRBOL",
+        "color": "#F87171"
+      },
+      {
+        "id": "slice-1794436634503-24-ely16",
+        "text": "BRÚJULA",
+        "color": "#FACC15"
+      },
+      {
+        "id": "slice-1794436634503-25-jzlwz",
+        "text": "CAMPANARIO",
+        "color": "#4ADE80"
+      },
+      {
+        "id": "slice-1794436634503-26-ih780",
+        "text": "DINOSAURIO",
+        "color": "#60A5FA"
+      },
+      {
+        "id": "slice-1794436634503-27-fc359",
+        "text": "ESCUELA",
+        "color": "#F472B6"
+      },
+      {
+        "id": "slice-1794436634503-28-vob4f",
+        "text": "FIESTA",
+        "color": "#FB923C"
+      },
+      {
+        "id": "slice-1794436634503-29-rtzup",
+        "text": "GIRASOL",
+        "color": "#A78BFA"
+      },
+      {
+        "id": "slice-1794436634503-30-2mghb",
+        "text": "HOSPITAL",
+        "color": "#2DD4BF"
+      },
+      {
+        "id": "slice-1794436634503-31-nrhlz",
+        "text": "IGLESIA",
+        "color": "#F87171"
+      },
+      {
+        "id": "slice-1794436634503-32-6e47o",
+        "text": "JIRAFA",
+        "color": "#FACC15"
+      },
+      {
+        "id": "slice-1794436634503-33-tahx2",
+        "text": "LECTURA",
+        "color": "#4ADE80"
+      },
+      {
+        "id": "slice-1794436634503-34-wzkap",
+        "text": "MARIPOSA",
+        "color": "#60A5FA"
+      },
+      {
+        "id": "slice-1794436634503-35-gurm6",
+        "text": "NECTARINA",
+        "color": "#F472B6"
+      },
+      {
+        "id": "slice-1794436634503-36-95puj",
+        "text": "ÑANDÚ",
+        "color": "#FB923C"
+      },
+      {
+        "id": "slice-1794436634503-37-uwx8r",
+        "text": "OCEANÍA",
+        "color": "#A78BFA"
+      },
+      {
+        "id": "slice-1794436634503-38-uobwa",
+        "text": "PELÍCULA",
+        "color": "#2DD4BF"
+      },
+      {
+        "id": "slice-1794436634503-39-wsp78",
+        "text": "QUÍMICA",
+        "color": "#F87171"
+      },
+      {
+        "id": "slice-1794436634503-40-0rbqs",
+        "text": "RUISEÑOR",
+        "color": "#FACC15"
+      },
+      {
+        "id": "slice-1794436634503-41-94wea",
+        "text": "SABIDURÍA",
+        "color": "#4ADE80"
+      },
+      {
+        "id": "slice-1794436634503-42-gtbb1",
+        "text": "TORMENTA",
+        "color": "#60A5FA"
+      },
+      {
+        "id": "slice-1794436634503-43-rq1m2",
+        "text": "UNICORNIO",
+        "color": "#F472B6"
+      },
+      {
+        "id": "slice-1794436634503-44-qn6xa",
+        "text": "VOLCÁN",
+        "color": "#FB923C"
+      },
+      {
+        "id": "slice-1794436634503-45-lu3i8",
+        "text": "XILÓFONO",
+        "color": "#A78BFA"
+      },
+      {
+        "id": "slice-1794436634503-46-khvbi",
+        "text": "YACIMIENTO",
+        "color": "#2DD4BF"
+      },
+      {
+        "id": "slice-1794436634503-47-euvib",
+        "text": "ZANAHORIA",
+        "color": "#F87171"
+      },
+      {
+        "id": "slice-1794436634503-48-87tzz",
+        "text": "AZÚCAR",
+        "color": "#FACC15"
+      },
+      {
+        "id": "slice-1794436634503-49-4mqom",
+        "text": "BONDAD",
+        "color": "#4ADE80"
+      },
+      {
+        "id": "slice-1794436634503-50-fiy3i",
+        "text": "CASTILLO",
+        "color": "#60A5FA"
+      },
+      {
+        "id": "slice-1794436634503-51-ve38z",
+        "text": "DELFINES",
+        "color": "#F472B6"
+      },
+      {
+        "id": "slice-1794436634503-52-ga1ys",
+        "text": "ESFUERZO",
+        "color": "#FB923C"
+      },
+      {
+        "id": "slice-1794436634503-53-jblbe",
+        "text": "FANTASÍA",
+        "color": "#A78BFA"
+      },
+      {
+        "id": "slice-1794436634503-54-g5hva",
+        "text": "GENEROSIDAD",
+        "color": "#2DD4BF"
+      },
+      {
+        "id": "slice-1794436634503-55-n3npc",
+        "text": "HISTORIA",
+        "color": "#F87171"
+      },
+      {
+        "id": "slice-1794436634503-56-lwfaq",
+        "text": "IMAGINACIÓN",
+        "color": "#FACC15"
+      },
+      {
+        "id": "slice-1794436634503-57-rtwdp",
+        "text": "JUGUETE",
+        "color": "#4ADE80"
+      },
+      {
+        "id": "slice-1794436634503-58-5ctjq",
+        "text": "LEALTAD",
+        "color": "#60A5FA"
+      },
+      {
+        "id": "slice-1794436634503-59-rvgel",
+        "text": "MONTAÑA",
+        "color": "#F472B6"
+      }
+    ]
+  },
+  {
     "id": "wheel-elem-1-3-general",
     "name": "1st-3rd Grade - General",
     "role": "general",
@@ -109,7 +422,8 @@
         "text": "MORNING",
         "color": "#F472B6"
       }
-    ]
+    ],
+    "language": "en"
   },
   {
     "id": "wheel-elem-1st-tb",
@@ -311,7 +625,8 @@
         "text": "GRANDMOTHER",
         "color": "#A78BFA"
       }
-    ]
+    ],
+    "language": "en"
   },
   {
     "id": "wheel-elem-2nd-tb",
@@ -503,7 +818,8 @@
         "text": "DATE",
         "color": "#F472B6"
       }
-    ]
+    ],
+    "language": "en"
   },
   {
     "id": "wheel-elem-3rd-tb",
@@ -725,7 +1041,8 @@
         "text": "WEEKLY",
         "color": "#4ADE80"
       }
-    ]
+    ],
+    "language": "en"
   },
   {
     "id": "wheel-elem-4-6-general",
@@ -887,7 +1204,8 @@
         "text": "UNIVERSITY",
         "color": "#A78BFA"
       }
-    ]
+    ],
+    "language": "en"
   },
   {
     "id": "wheel-elem-4th-tb",
@@ -1159,7 +1477,8 @@
         "text": "GLOBE",
         "color": "#F472B6"
       }
-    ]
+    ],
+    "language": "en"
   },
   {
     "id": "wheel-elem-5th-tb",
@@ -1416,7 +1735,8 @@
         "text": "DECEMBER",
         "color": "#4ADE80"
       }
-    ]
+    ],
+    "language": "en"
   },
   {
     "id": "wheel-elem-6th-tb",
@@ -1668,7 +1988,8 @@
         "text": "PERCENTAGE",
         "color": "#F87171"
       }
-    ]
+    ],
+    "language": "en"
   },
   {
     "id": "wheel-hs-general",
@@ -1880,7 +2201,8 @@
         "text": "SUNBURN",
         "color": "#F87171"
       }
-    ]
+    ],
+    "language": "en"
   },
   {
     "id": "wheel-hs-tb",
@@ -2257,6 +2579,7 @@
         "text": "RUN",
         "color": "#4ADE80"
       }
-    ]
+    ],
+    "language": "en"
   }
 ]

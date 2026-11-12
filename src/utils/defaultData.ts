@@ -127,12 +127,44 @@ const WORDS_TB_HIGHSCHOOL = [
   'SPEND', 'WRITE', 'STRIKE', 'SWEAR', 'RUN',
 ];
 
+// Spanish Elementary Vocabulary (1° a 6° Grado - Concurso de Deletreo)
+export const WORDS_SPANISH_ELEMENTARY = [
+  'AMISTAD', 'BIBLIOTECA', 'CAMINO', 'CORAZÓN', 'DIBUJO', 'ESTRELLA',
+  'FAMILIA', 'GUITARRA', 'HERMANO', 'ILUSIÓN', 'JARDÍN', 'LÁPIZ',
+  'MÚSICA', 'NATURALEZA', 'ORQUÍDEA', 'PAISAJE', 'QUESO', 'RELÁMPAGO',
+  'SONRISA', 'TELÉFONO', 'UNIVERSO', 'VENTANA', 'ZAPATO', 'ÁRBOL',
+  'BRÚJULA', 'CAMPANARIO', 'DINOSAURIO', 'ESCUELA', 'FIESTA', 'GIRASOL',
+  'HOSPITAL', 'IGLESIA', 'JIRAFA', 'LECTURA', 'MARIPOSA', 'NECTARINA',
+  'ÑANDÚ', 'OCEANÍA', 'PELÍCULA', 'QUÍMICA', 'RUISEÑOR', 'SABIDURÍA',
+  'TORMENTA', 'UNICORNIO', 'VOLCÁN', 'XILÓFONO', 'YACIMIENTO', 'ZANAHORIA',
+  'AZÚCAR', 'BONDAD', 'CASTILLO', 'DELFINES', 'ESFUERZO', 'FANTASÍA',
+  'GENEROSIDAD', 'HISTORIA', 'IMAGINACIÓN', 'JUGUETE', 'LEALTAD', 'MONTAÑA',
+];
+
+export const SPANISH_ELEMENTARY_WHEEL: WheelConfig = {
+  id: 'wheel-spanish-elem-1-6',
+  name: 'Primaria (1° a 6° Grado)',
+  role: 'general',
+  group: 'elementary',
+  grade: '1st - 6th',
+  place: 'general',
+  language: 'es',
+  spinDuration: 6,
+  timerDuration: 30,
+  slices: createSlicesFromWords(WORDS_SPANISH_ELEMENTARY),
+};
+
 // ============================================================================
-// OFFICIAL 10 WHEELS CONFIGURATION (SALTO ÁNGEL 2026)
+// OFFICIAL 11 WHEELS CONFIGURATION (SALTO ÁNGEL 2026 - SPANISH + ENGLISH)
 // ============================================================================
 export const INITIAL_WHEELS: WheelConfig[] = [
   // --------------------------------------------------------------------------
-  // Group 1: Elementary (1st to 3rd Grade)
+  // Spanish Contest: Elementary (1° a 6° Grado) - DEFAULT
+  // --------------------------------------------------------------------------
+  SPANISH_ELEMENTARY_WHEEL,
+
+  // --------------------------------------------------------------------------
+  // Group 1: Elementary (1st to 3rd Grade) - English
   // --------------------------------------------------------------------------
   {
     id: 'wheel-elem-1-3-general',
@@ -141,6 +173,7 @@ export const INITIAL_WHEELS: WheelConfig[] = [
     group: 'elementary',
     grade: '1st - 3rd',
     place: 'general',
+    language: 'en',
     spinDuration: 6,
     timerDuration: 30,
     slices: createSlicesFromWords(WORDS_MAIN_1ST_3RD),

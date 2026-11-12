@@ -78,6 +78,8 @@ export default function App() {
   const setWinnersData = useContestStore((s) => s.setWinnersData);
   const isRemoteRoute = useContestStore((s) => s.isRemoteRoute);
   const setIsRemoteRoute = useContestStore((s) => s.setIsRemoteRoute);
+  const contestLanguage = useContestStore((s) => s.contestLanguage);
+  const setContestLanguage = useContestStore((s) => s.setContestLanguage);
 
   // Wheels state with localStorage persistence (sanitized for balanced palette & 30s elementary timer)
   const [wheels, setWheels] = useState<WheelConfig[]>(() => {
@@ -94,7 +96,9 @@ export default function App() {
           parsed.length >= 10 &&
           parsed.some((w) => w.group === 'high_school')
         ) {
-          return parsed.map(sanitizeWheel);
+          const hasSpanish = parsed.some((w) => w.language === 'es' || w.id === 'wheel-spanish-elem-1-6');
+          const fullList = hasSpanish ? parsed : [INITIAL_WHEELS[0], ...parsed];
+          return fullList.map(sanitizeWheel);
         }
       }
     } catch {
@@ -103,7 +107,7 @@ export default function App() {
     return INITIAL_WHEELS.map(sanitizeWheel);
   });
 
-  // Active wheel id
+  // Active wheel id (defaults to Spanish elementary wheel)
   const [activeWheelId, setActiveWheelId] = useState<string>(() => {
     return INITIAL_WHEELS[0].id;
   });
@@ -329,6 +333,15 @@ export default function App() {
     setShowWinnerModal(false);
 
     const targetWheel = wheels.find((w) => w.id === wheelId);
+    if (targetWheel?.language === 'es') {
+      setContestLanguage('es');
+      if (currentSlide > 1) {
+        setCurrentSlide(1);
+      }
+    } else if (targetWheel) {
+      setContestLanguage('en');
+    }
+
     const divDuration = typeof targetWheel?.timerDuration === 'number' && targetWheel.timerDuration >= 5 && targetWheel.timerDuration <= 600
       ? targetWheel.timerDuration
       : (targetWheel?.group === 'elementary' ? 30 : 40);
@@ -336,6 +349,32 @@ export default function App() {
     setSessionTimerDuration(divDuration);
     setModalTimerState({ timeLeft: divDuration, isRunning: false });
   };
+
+  // Switch contest language between Spanish and English
+  const handleSwitchContestLanguage = useCallback(
+    (lang: 'es' | 'en') => {
+      setContestLanguage(lang);
+      if (lang === 'es') {
+        const spanishWheel =
+          wheels.find((w) => w.language === 'es' || w.id === 'wheel-spanish-elem-1-6') ||
+          INITIAL_WHEELS[0];
+        if (spanishWheel) {
+          handleSelectWheel(spanishWheel.id);
+        }
+        if (currentSlide > 1) {
+          setCurrentSlide(1);
+        }
+      } else {
+        const englishWheel =
+          wheels.find((w) => w.language !== 'es' && w.id !== 'wheel-spanish-elem-1-6') ||
+          INITIAL_WHEELS[1];
+        if (englishWheel) {
+          handleSelectWheel(englishWheel.id);
+        }
+      }
+    },
+    [wheels, currentSlide, setCurrentSlide, setContestLanguage]
+  );
 
   const isSpinningRef = useRef(false);
   isSpinningRef.current = isWheelSpinning;
@@ -713,6 +752,8 @@ export default function App() {
         isFullscreen={isFullscreen}
         onToggleFullscreen={toggleFullscreen}
         onOpenRemoteModal={() => setShowRemoteModal(true)}
+        contestLanguage={contestLanguage}
+        onSwitchContestLanguage={handleSwitchContestLanguage}
       />
 
       {/* Main View: Presentation Deck vs. Wheel Creator Studio */}
@@ -733,14 +774,15 @@ export default function App() {
           {/* Bottom Genially Navigation Bar */}
           <BottomGeniallyBar
             currentSlide={currentSlide}
-            totalSlides={3}
+            totalSlides={activeWheel.language === 'es' ? 2 : 3}
             onPrevSlide={() => {
               if (currentSlide > 0) {
                 setCurrentSlide((currentSlide - 1) as PresentationSlideId);
               }
             }}
             onNextSlide={() => {
-              if (currentSlide < 2) {
+              const maxSlide = activeWheel.language === 'es' ? 1 : 2;
+              if (currentSlide < maxSlide) {
                 setCurrentSlide((currentSlide + 1) as PresentationSlideId);
               }
             }}
@@ -749,7 +791,11 @@ export default function App() {
             onUpdateSoundSettings={setSoundSettings}
             isFullscreen={isFullscreen}
             onToggleFullscreen={toggleFullscreen}
-            slideTitles={SLIDE_TITLES}
+            slideTitles={
+              activeWheel.language === 'es'
+                ? ['Concurso de Deletreo', 'Ruleta Interactiva']
+                : SLIDE_TITLES
+            }
           />
         </>
       ) : (

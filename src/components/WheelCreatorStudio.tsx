@@ -1827,16 +1827,30 @@ export const WheelCreatorStudio: React.FC<WheelCreatorStudioProps> = ({
           <div className="w-full max-w-2xl flex flex-wrap items-center justify-between gap-2 shrink-0 mb-1">
             {/* Left: Group Tabs + Hidden Wheel Selection Menu */}
             <div className="flex items-center gap-2 flex-wrap">
-              {/* Group Tabs: Elementary vs High School */}
+              {/* Group Tabs: Español vs Elementary vs High School */}
               <div className="flex items-center p-0.5 bg-slate-200/70 dark:bg-slate-800/80 rounded-lg text-xs font-bold">
                 <button
                   onClick={() => {
                     const target =
-                      wheels.find((w) => w.group === 'elementary') || wheels[0];
+                      wheels.find((w) => w.language === 'es' || w.id === 'wheel-spanish-elem-1-6') || wheels[0];
                     onSelectWheel(target.id);
                   }}
                   className={`px-3 py-1 rounded-md transition-all cursor-pointer ${
-                    currentWheel.group === 'elementary'
+                    currentWheel.language === 'es'
+                      ? 'bg-amber-500 text-slate-950 font-black shadow-xs'
+                      : 'text-slate-600 dark:text-slate-400 hover:text-white'
+                  }`}
+                >
+                  Español
+                </button>
+                <button
+                  onClick={() => {
+                    const target =
+                      wheels.find((w) => w.group === 'elementary' && w.language !== 'es') || wheels[0];
+                    onSelectWheel(target.id);
+                  }}
+                  className={`px-3 py-1 rounded-md transition-all cursor-pointer ${
+                    currentWheel.group === 'elementary' && currentWheel.language !== 'es'
                       ? 'bg-indigo-600 text-white shadow-xs'
                       : 'text-slate-600 dark:text-slate-400 hover:text-white'
                   }`}
@@ -1885,13 +1899,15 @@ export const WheelCreatorStudio: React.FC<WheelCreatorStudioProps> = ({
                     />
                     <div className="absolute top-full left-0 mt-1.5 w-64 max-h-72 overflow-y-auto bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl shadow-2xl p-1.5 z-40 space-y-1">
                       <div className="px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-slate-400 border-b border-slate-100 dark:border-slate-800 mb-1">
-                        Select Wheel ({currentWheel.group === 'high_school' ? 'High School' : 'Elementary'})
+                        Select Wheel ({currentWheel.language === 'es' ? 'Español (Primaria)' : currentWheel.group === 'high_school' ? 'High School' : 'Elementary'})
                       </div>
                       {wheels
                         .filter((w) =>
-                          currentWheel.group === 'high_school'
+                          currentWheel.language === 'es'
+                            ? w.language === 'es'
+                            : currentWheel.group === 'high_school'
                             ? w.group === 'high_school'
-                            : w.group === 'elementary' || !w.group
+                            : (w.group === 'elementary' || !w.group) && w.language !== 'es'
                         )
                         .map((w) => (
                           <div
