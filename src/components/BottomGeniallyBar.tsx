@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import {
   ChevronLeft,
   ChevronRight,
@@ -38,12 +38,38 @@ export const BottomGeniallyBar: React.FC<BottomGeniallyBarProps> = ({
   slideTitles,
 }) => {
   const [showThumbnails, setShowThumbnails] = useState(false);
-  const [isBarHovered, setIsBarHovered] = useState(false);
-  const [isTouchDevice, setIsTouchDevice] = useState(false);
+  const [isHovered, setIsHovered] = useState(false);
+  const [isTemporarilyVisible, setIsTemporarilyVisible] = useState(false);
+  const autoHideTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
-  useEffect(() => {
-    setIsTouchDevice('ontouchstart' in window || navigator.maxTouchPoints > 0);
+  // Clear timer helper
+  const clearAutoHide = useCallback(() => {
+    if (autoHideTimeoutRef.current) {
+      clearTimeout(autoHideTimeoutRef.current);
+      autoHideTimeoutRef.current = null;
+    }
   }, []);
+
+  // Show temporarily (for touch taps or slide changes) and then auto-hide after duration
+  const triggerTemporaryVisibility = useCallback((durationMs = 3500) => {
+    setIsTemporarilyVisible(true);
+    clearAutoHide();
+    autoHideTimeoutRef.current = setTimeout(() => {
+      setIsTemporarilyVisible(false);
+    }, durationMs);
+  }, [clearAutoHide]);
+
+  // Clean up on unmount
+  useEffect(() => {
+    return () => clearAutoHide();
+  }, [clearAutoHide]);
+
+  // Flash the bar briefly when changing slides so user can see slide number indicator, then auto-hide
+  useEffect(() => {
+    triggerTemporaryVisibility(2500);
+  }, [currentSlide, triggerTemporaryVisibility]);
+
+  const isVisible = isHovered || isTemporarilyVisible || showThumbnails;
 
   return (
     <>
@@ -90,23 +116,37 @@ export const BottomGeniallyBar: React.FC<BottomGeniallyBarProps> = ({
 
       {/* Floating Bottom Navigation Pill (Genially style) - 100% hidden when not hovered */}
       <div
-        className="fixed bottom-0 left-0 right-0 z-50 flex justify-center pb-2"
-        onMouseEnter={() => setIsBarHovered(true)}
-        onMouseLeave={() => setIsBarHovered(false)}
+        className="fixed bottom-0 left-0 right-0 z-50 flex justify-center pb-2 pointer-events-none group"
+        onMouseEnter={() => {
+          setIsHovered(true);
+          clearAutoHide();
+        }}
+        onMouseLeave={() => {
+          setIsHovered(false);
+          setIsTemporarilyVisible(false);
+          clearAutoHide();
+        }}
       >
         {/* Invisible hover trigger strip at the very bottom */}
-        <div className="absolute bottom-0 left-0 right-0 h-10 pointer-events-auto cursor-pointer" />
+        <div
+          className="absolute bottom-0 left-0 right-0 h-10 pointer-events-auto cursor-pointer"
+          onTouchStart={() => triggerTemporaryVisibility(3500)}
+        />
 
         <div
           className={`transition-all duration-300 ease-out transform flex items-center gap-1.5 sm:gap-2 px-3 py-1.5 rounded-full bg-slate-900/90 hover:bg-slate-900 border border-white/20 shadow-2xl backdrop-blur-md ${
-            isBarHovered || isTouchDevice
+            isVisible
               ? 'opacity-100 translate-y-0 scale-100 pointer-events-auto'
               : 'opacity-0 translate-y-full scale-95 pointer-events-none'
           }`}
+          onTouchStart={() => triggerTemporaryVisibility(3500)}
         >
           {/* Previous Slide Button */}
           <button
-            onClick={onPrevSlide}
+            onClick={() => {
+              onPrevSlide();
+              triggerTemporaryVisibility(2500);
+            }}
             disabled={currentSlide === 0}
             className="p-1 rounded-full text-slate-300 hover:text-white hover:bg-white/10 disabled:opacity-30 disabled:hover:bg-transparent transition-colors cursor-pointer"
             title="Previous Slide"
@@ -121,7 +161,10 @@ export const BottomGeniallyBar: React.FC<BottomGeniallyBarProps> = ({
 
           {/* Next Slide Button */}
           <button
-            onClick={onNextSlide}
+            onClick={() => {
+              onNextSlide();
+              triggerTemporaryVisibility(2500);
+            }}
             disabled={currentSlide === totalSlides - 1}
             className="p-1 rounded-full text-slate-300 hover:text-white hover:bg-white/10 disabled:opacity-30 disabled:hover:bg-transparent transition-colors cursor-pointer"
             title="Next Slide"
