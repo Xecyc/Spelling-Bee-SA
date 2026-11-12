@@ -11,6 +11,7 @@ export interface TimerActionSignal {
 interface WinnerModalProps {
   isOpen: boolean;
   word: string | null;
+  cronica?: string;
   sliceColor?: string;
   timerDuration?: number;
   onClose: () => void;
@@ -24,6 +25,7 @@ interface WinnerModalProps {
 export const WinnerModal: React.FC<WinnerModalProps> = ({
   isOpen,
   word,
+  cronica,
   sliceColor = '#FBBF24',
   timerDuration,
   onClose,
@@ -148,8 +150,17 @@ export const WinnerModal: React.FC<WinnerModalProps> = ({
         className="relative w-full max-w-xl sm:max-w-2xl my-auto bg-[#061a3e] rounded-3xl p-8 sm:p-12 text-center shadow-[0_25px_60px_-15px_rgba(0,0,0,0.75)] overflow-hidden flex flex-col items-center justify-center"
         style={{ margin: 'auto' }}
       >
+        {/* Crónica Badge (e.g. CRÓNICA #1) */}
+        {cronica && (
+          <div className="mb-2">
+            <span className="inline-flex items-center gap-1.5 px-4 py-1 rounded-full bg-amber-400 text-[#061a3e] font-black text-xs sm:text-sm uppercase tracking-widest shadow-md">
+              {cronica}
+            </span>
+          </div>
+        )}
+
         {/* Winning Word Display: Crisp, solid golden-yellow with bold sans-serif, no glow */}
-        <div className="my-3 py-2 px-4 w-full flex items-center justify-center overflow-hidden">
+        <div className="my-2 py-1 px-4 w-full flex items-center justify-center overflow-hidden">
           <h2
             className={`${getWordFontSizeClass(word)} font-sans font-black tracking-wider text-amber-400 whitespace-nowrap select-all uppercase`}
           >

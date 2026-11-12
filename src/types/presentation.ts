@@ -5,6 +5,7 @@ export interface WheelSlice {
   weight?: number;
   enabled?: boolean;
   image?: string | null;
+  cronica?: string;
 }
 
 export type WheelRole = 'general' | 'tiebreak' | '1st' | '2nd' | '3rd' | 'championship' | 'custom';

@@ -608,6 +608,13 @@ export const RemoteControl: React.FC<RemoteControlProps> = ({
                   <span className="text-[10px] uppercase font-bold text-blue-200/70 tracking-widest block">
                     {stageState.winningWord ? 'Word Chosen On Stage' : 'Stage Word & Timer Menu'}
                   </span>
+                  {stageState.winningCronica && (
+                    <div className="mt-1">
+                      <span className="inline-block px-2.5 py-0.5 rounded-full bg-amber-400 text-[#061a3e] font-black text-[10px] sm:text-xs uppercase tracking-wider shadow-sm">
+                        {stageState.winningCronica}
+                      </span>
+                    </div>
+                  )}
                   <h2 className="text-2xl sm:text-3xl font-sans font-black tracking-wider text-amber-400 uppercase select-all truncate my-1">
                     {stageState.winningWord || 'READY FOR WORD'}
                   </h2>

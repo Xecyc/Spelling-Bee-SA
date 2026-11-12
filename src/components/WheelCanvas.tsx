@@ -125,8 +125,9 @@ export const WheelCanvas: React.FC<WheelCanvasProps> = ({
         ctx.stroke();
       }
 
-      // Slice label text
-      const label = (cs.slice.text || '').trim();
+      // Slice label text (strictly the clean word, without any CRÓNICA prefix)
+      const rawText = (cs.slice.text || '').trim();
+      const label = rawText.replace(/^CRÓNICA\s*#\d+[:\s-]*/i, '').trim() || rawText;
       if (label) {
         ctx.save();
         ctx.translate(centerX, centerY);

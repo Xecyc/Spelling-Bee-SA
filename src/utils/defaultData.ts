@@ -38,6 +38,11 @@ export const combineUniqueWords = (base: string[], tiebreak: string[]): string[]
   return result;
 };
 
+export interface WordWithCronica {
+  word: string;
+  cronica: string;
+}
+
 export const createSlicesFromWords = (
   words: string[],
   palette: string[] = VIBRANT_STAGE_PALETTE
@@ -46,6 +51,19 @@ export const createSlicesFromWords = (
   return limited.map((word, index) => ({
     id: `slice-${Date.now()}-${index}-${Math.random().toString(36).substring(2, 7)}`,
     text: word.trim().toUpperCase(),
+    color: getBalancedSliceColor(index, limited.length, palette),
+  }));
+};
+
+export const createSlicesFromCronicas = (
+  items: WordWithCronica[],
+  palette: string[] = VIBRANT_STAGE_PALETTE
+): WheelSlice[] => {
+  const limited = items.slice(0, MAX_SLICES);
+  return limited.map((item, index) => ({
+    id: `slice-${Date.now()}-${index}-${Math.random().toString(36).substring(2, 7)}`,
+    text: item.word.trim().toUpperCase(),
+    cronica: item.cronica.trim().toUpperCase(),
     color: getBalancedSliceColor(index, limited.length, palette),
   }));
 };
@@ -127,19 +145,95 @@ const WORDS_TB_HIGHSCHOOL = [
   'SPEND', 'WRITE', 'STRIKE', 'SWEAR', 'RUN',
 ];
 
-// Spanish Elementary Vocabulary (1° a 6° Grado - Concurso de Deletreo)
-export const WORDS_SPANISH_ELEMENTARY = [
-  'AMISTAD', 'BIBLIOTECA', 'CAMINO', 'CORAZÓN', 'DIBUJO', 'ESTRELLA',
-  'FAMILIA', 'GUITARRA', 'HERMANO', 'ILUSIÓN', 'JARDÍN', 'LÁPIZ',
-  'MÚSICA', 'NATURALEZA', 'ORQUÍDEA', 'PAISAJE', 'QUESO', 'RELÁMPAGO',
-  'SONRISA', 'TELÉFONO', 'UNIVERSO', 'VENTANA', 'ZAPATO', 'ÁRBOL',
-  'BRÚJULA', 'CAMPANARIO', 'DINOSAURIO', 'ESCUELA', 'FIESTA', 'GIRASOL',
-  'HOSPITAL', 'IGLESIA', 'JIRAFA', 'LECTURA', 'MARIPOSA', 'NECTARINA',
-  'ÑANDÚ', 'OCEANÍA', 'PELÍCULA', 'QUÍMICA', 'RUISEÑOR', 'SABIDURÍA',
-  'TORMENTA', 'UNICORNIO', 'VOLCÁN', 'XILÓFONO', 'YACIMIENTO', 'ZANAHORIA',
-  'AZÚCAR', 'BONDAD', 'CASTILLO', 'DELFINES', 'ESFUERZO', 'FANTASÍA',
-  'GENEROSIDAD', 'HISTORIA', 'IMAGINACIÓN', 'JUGUETE', 'LEALTAD', 'MONTAÑA',
+// Spanish Elementary Vocabulary (1° a 6° Grado - Concurso de Deletreo con Crónicas)
+export const WORDS_SPANISH_CRONICAS: WordWithCronica[] = [
+  { cronica: 'CRÓNICA #1', word: 'MARACAIBO' },
+  { cronica: 'CRÓNICA #1', word: 'KILÓMETROS' },
+  { cronica: 'CRÓNICA #1', word: 'HATICOS' },
+  { cronica: 'CRÓNICA #1', word: 'EXTENSIÓN' },
+  { cronica: 'CRÓNICA #2', word: 'CAPITÁN' },
+  { cronica: 'CRÓNICA #2', word: 'RÚSTICA' },
+  { cronica: 'CRÓNICA #2', word: 'APARICIÓN' },
+  { cronica: 'CRÓNICA #2', word: 'BASÍLICA' },
+  { cronica: 'CRÓNICA #2', word: 'CHIQUINQUIRÁ' },
+  { cronica: 'CRÓNICA #3', word: 'CACERÍA' },
+  { cronica: 'CRÓNICA #3', word: 'PERDICES' },
+  { cronica: 'CRÓNICA #3', word: 'YAGUASAS' },
+  { cronica: 'CRÓNICA #3', word: 'BÁQUIROS' },
+  { cronica: 'CRÓNICA #3', word: 'PALOMITAS' },
+  { cronica: 'CRÓNICA #4', word: 'MARACAIBEROS' },
+  { cronica: 'CRÓNICA #5', word: 'PARROQUIAS' },
+  { cronica: 'CRÓNICA #6', word: 'TABLITA' },
+  { cronica: 'CRÓNICA #7', word: 'PROMOCIÓN' },
+  { cronica: 'CRÓNICA #7', word: 'ESPECTÁCULOS' },
+  { cronica: 'CRÓNICA #8', word: 'ELÉCTRICO' },
+  { cronica: 'CRÓNICA #8', word: 'KEROSENE' },
+  { cronica: 'CRÓNICA #8', word: 'INAUGURÓ' },
+  { cronica: 'CRÓNICA #9', word: 'CONSTRUIDA' },
+  { cronica: 'CRÓNICA #9', word: 'MATRIZ' },
+  { cronica: 'CRÓNICA #10', word: 'PATRONAZGO' },
+  { cronica: 'CRÓNICA #10', word: 'INTERCESOR' },
+  { cronica: 'CRÓNICA #10', word: 'HISTÓRICAMENTE' },
+  { cronica: 'CRÓNICA #10', word: 'ALCALDÍA' },
+  { cronica: 'CRÓNICA #10', word: 'HISTORIADORES' },
+  { cronica: 'CRÓNICA #11', word: 'EMBLEMÁTICO' },
+  { cronica: 'CRÓNICA #11', word: 'MEDIODÍA' },
+  { cronica: 'CRÓNICA #11', word: 'ARRAIGADA' },
+  { cronica: 'CRÓNICA #11', word: 'CARÁCTER' },
+  { cronica: 'CRÓNICA #11', word: 'AUTÓCTONO' },
+  { cronica: 'CRÓNICA #12', word: 'URDANETA' },
+  { cronica: 'CRÓNICA #12', word: 'HÉROE' },
+  { cronica: 'CRÓNICA #12', word: 'VENEZUELA' },
+  { cronica: 'CRÓNICA #12', word: 'ESTÉTICOS' },
+  { cronica: 'CRÓNICA #12', word: 'HOMBRILLO' },
+  { cronica: 'CRÓNICA #13', word: 'TURÍSTICO' },
+  { cronica: 'CRÓNICA #13', word: 'MECIÉNDOSE' },
+  { cronica: 'CRÓNICA #14', word: 'BUHONEROS' },
+  { cronica: 'CRÓNICA #14', word: 'MOLINA' },
+  { cronica: 'CRÓNICA #15', word: 'AMBROSIO' },
+  { cronica: 'CRÓNICA #16', word: 'NEOGÓTICO' },
+  { cronica: 'CRÓNICA #17', word: 'OBISPO' },
+  { cronica: 'CRÓNICA #18', word: 'ARQUITECTÓNICO' },
+  { cronica: 'CRÓNICA #19', word: 'ZAGALETÓN' },
+  { cronica: 'CRÓNICA #20', word: 'OVARIOTOMÍA' },
+  { cronica: 'CRÓNICA #20', word: 'CIRUGÍA' },
+  { cronica: 'CRÓNICA #21', word: 'EMPEDRAO' },
+  { cronica: 'CRÓNICA #21', word: 'PARROQUIANOS' },
+  { cronica: 'CRÓNICA #22', word: 'CONTEMPORÁNEO' },
+  { cronica: 'CRÓNICA #22', word: 'ZULIA' },
+  { cronica: 'CRÓNICA #22', word: 'INAUGURACIÓN' },
+  { cronica: 'CRÓNICA #23', word: 'CACIQUE' },
+  { cronica: 'CRÓNICA #23', word: 'INDÍGENAS' },
+  { cronica: 'CRÓNICA #23', word: 'ZAPARAS' },
+  { cronica: 'CRÓNICA #23', word: 'MÉRIDA' },
+  { cronica: 'CRÓNICA #24', word: 'LECTOESCRITURA' },
+  { cronica: 'CRÓNICA #25', word: 'DÉCADAS' },
+  { cronica: 'CRÓNICA #26', word: 'ARQUITECTURA' },
+  { cronica: 'CRÓNICA #26', word: 'MEZCLAN' },
+  { cronica: 'CRÓNICA #26', word: 'BERMÚDEZ' },
+  { cronica: 'CRÓNICA #27', word: 'VAGÓN' },
+  { cronica: 'CRÓNICA #27', word: 'FERROCARRIL' },
+  { cronica: 'CRÓNICA #27', word: 'ESPECÍFICAMENTE' },
+  { cronica: 'CRÓNICA #27', word: 'KILÓMETRO' },
+  { cronica: 'CRÓNICA #27', word: 'PERIJÁ' },
+  { cronica: 'CRÓNICA #28', word: 'LÁPIZ' },
+  { cronica: 'CRÓNICA #28', word: 'OBELISCO' },
+  { cronica: 'CRÓNICA #29', word: 'ÁRBOLES' },
+  { cronica: 'CRÓNICA #29', word: 'VEREDA' },
+  { cronica: 'CRÓNICA #29', word: 'BOHÍOS' },
+  { cronica: 'CRÓNICA #29', word: 'BÉISBOL' },
+  { cronica: 'CRÓNICA #29', word: 'FÚTBOL' },
+  { cronica: 'CRÓNICA #30', word: 'PARROQUIA' },
+  { cronica: 'CRÓNICA #30', word: 'BUSTAMANTE' },
+  { cronica: 'CRÓNICA #30', word: 'CONCEBIDOS' },
+  { cronica: 'CRÓNICA #30', word: 'PARTICIPACIÓN' },
+  { cronica: 'CRÓNICA #30', word: 'REHABILITACIÓN' },
+  { cronica: 'CRÓNICA #30', word: 'REHABILITA' },
+  { cronica: 'CRÓNICA #30', word: 'PAISAJISMO' },
+  { cronica: 'CRÓNICA #30', word: 'ILUMINACIÓN' },
 ];
+
+export const WORDS_SPANISH_ELEMENTARY = WORDS_SPANISH_CRONICAS.map((item) => item.word);
 
 export const SPANISH_ELEMENTARY_WHEEL: WheelConfig = {
   id: 'wheel-spanish-elem-1-6',
@@ -151,7 +245,7 @@ export const SPANISH_ELEMENTARY_WHEEL: WheelConfig = {
   language: 'es',
   spinDuration: 6,
   timerDuration: 30,
-  slices: createSlicesFromWords(WORDS_SPANISH_ELEMENTARY),
+  slices: createSlicesFromCronicas(WORDS_SPANISH_CRONICAS),
 };
 
 // ============================================================================

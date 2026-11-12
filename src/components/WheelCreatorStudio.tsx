@@ -125,6 +125,7 @@ interface WheelCreatorStudioProps {
   onReplaceAllWheels?: (newWheels: WheelConfig[]) => void;
   onTriggerTestCelebration?: (word?: string) => void;
   onResetCloudStorage?: () => void;
+  onSaveAsNewDefault?: () => Promise<boolean> | void;
 }
 
 export const WheelCreatorStudio: React.FC<WheelCreatorStudioProps> = ({
@@ -147,6 +148,7 @@ export const WheelCreatorStudio: React.FC<WheelCreatorStudioProps> = ({
   onReplaceAllWheels,
   onTriggerTestCelebration,
   onResetCloudStorage,
+  onSaveAsNewDefault,
 }) => {
   const currentWheel = wheels.find((w) => w.id === activeWheelId) || wheels[0];
 
@@ -213,7 +215,7 @@ export const WheelCreatorStudio: React.FC<WheelCreatorStudioProps> = ({
   // Dev & Testing Tools state (Studio View Only)
   const [showDevToolsMenu, setShowDevToolsMenu] = useState(false);
   const [devActionConfirm, setDevActionConfirm] = useState<{
-    type: 'remove_all' | 'revert_all' | 'clear_storage';
+    type: 'remove_all' | 'revert_all' | 'clear_storage' | 'save_default';
     title: string;
     message: string;
   } | null>(null);
@@ -239,6 +241,15 @@ export const WheelCreatorStudio: React.FC<WheelCreatorStudioProps> = ({
   }, [showDevToolsMenu]);
 
   // Dev actions
+  const handleTriggerSaveDefault = () => {
+    setShowDevToolsMenu(false);
+    setDevActionConfirm({
+      type: 'save_default',
+      title: 'Fijar como Nuevo Predeterminado',
+      message: '¿Deseas fijar la configuración actual de las ruletas como el nuevo predeterminado de fábrica? Cuando restablezcas las ruletas, volverán a esta versión actualizada.',
+    });
+  };
+
   const handleTriggerRemoveAll = () => {
     setShowDevToolsMenu(false);
     setDevActionConfirm({
@@ -253,7 +264,7 @@ export const WheelCreatorStudio: React.FC<WheelCreatorStudioProps> = ({
     setDevActionConfirm({
       type: 'revert_all',
       title: 'Revert All Wheels?',
-      message: 'This will restore all 10 official factory wheels (1st-3rd, 4th-6th & High School General & Tiebreak) with original words and timer durations.',
+      message: 'This will restore all official factory wheels with their latest saved default words and timer durations.',
     });
   };
 
@@ -396,6 +407,11 @@ export const WheelCreatorStudio: React.FC<WheelCreatorStudioProps> = ({
         onResetCloudStorage();
         showToast('Server sync and storage reset to factory default.');
       }
+    } else if (devActionConfirm.type === 'save_default') {
+      if (onSaveAsNewDefault) {
+        onSaveAsNewDefault();
+        showToast('¡Guardado como nuevo predeterminado de fábrica con éxito!');
+      }
     }
     setDevActionConfirm(null);
   };
@@ -452,13 +468,17 @@ export const WheelCreatorStudio: React.FC<WheelCreatorStudioProps> = ({
     }
   };
 
+  const formatSliceLine = (s: WheelSlice) => {
+    return s.cronica ? `${s.cronica} ${s.text}` : s.text;
+  };
+
   // Plain textarea bulk string
   const [textareaValue, setTextareaValue] = useState(() =>
-    currentWheel.slices.map((s) => s.text).join('\n')
+    currentWheel.slices.map(formatSliceLine).join('\n')
   );
 
   useEffect(() => {
-    setTextareaValue(currentWheel.slices.map((s) => s.text).join('\n'));
+    setTextareaValue(currentWheel.slices.map(formatSliceLine).join('\n'));
     setTitleDraft(currentWheel.name);
     setSubtitleDraft(currentWheel.subtitle || 'Click the wheel or press Ctrl+Enter to spin!');
   }, [currentWheel.id, currentWheel.slices, currentWheel.name, currentWheel.subtitle]);
@@ -1160,21 +1180,28 @@ export const WheelCreatorStudio: React.FC<WheelCreatorStudioProps> = ({
     const updatedSlices: WheelSlice[] = [];
 
     for (let i = 0; i < lines.length; i++) {
-      const lineText = lines[i];
+      const lineRaw = lines[i];
+      // Check for CRÓNICA #X pattern (e.g. "CRÓNICA #1 Maracaibo" or "CRÓNICA #1: Maracaibo")
+      const match = lineRaw.match(/^(CRÓNICA\s*#\d+)[:\s-]*(.+)$/i);
+      const cronica = match ? match[1].toUpperCase() : undefined;
+      const cleanWord = match ? match[2].trim().toUpperCase() : lineRaw;
+
       if (i < currentWheel.slices.length) {
         updatedSlices.push({
           ...currentWheel.slices[i],
-          text: lineText,
+          text: cleanWord,
+          ...(cronica ? { cronica } : {}),
         });
       } else {
         const pal =
           COLOR_PALETTES[paletteKey]?.colors || COLOR_PALETTES.classic.colors;
         updatedSlices.push({
           id: `slice-${Date.now()}-${i}-${Math.random().toString(36).substring(2, 6)}`,
-          text: lineText,
+          text: cleanWord,
           color: pal[i % pal.length],
           weight: 1,
           enabled: true,
+          ...(cronica ? { cronica } : {}),
         });
       }
     }
@@ -1576,6 +1603,19 @@ export const WheelCreatorStudio: React.FC<WheelCreatorStudioProps> = ({
                       Collection Management
                     </div>
 
+                    {/* Save Current as New Default */}
+                    <button
+                      type="button"
+                      onClick={handleTriggerSaveDefault}
+                      className="w-full px-2.5 py-1.5 rounded-lg hover:bg-emerald-50 dark:hover:bg-emerald-950/40 text-emerald-700 dark:text-emerald-400 flex items-center justify-between transition cursor-pointer text-left"
+                    >
+                      <span className="flex items-center gap-2 font-bold">
+                        <Check className="w-3.5 h-3.5 text-emerald-500" />
+                        <span>Fijar como Predeterminado</span>
+                      </span>
+                      <span className="text-[10px] text-emerald-600 dark:text-emerald-400 font-mono">guardar</span>
+                    </button>
+
                     {/* Revert All Wheels */}
                     <button
                       type="button"
@@ -1586,7 +1626,7 @@ export const WheelCreatorStudio: React.FC<WheelCreatorStudioProps> = ({
                         <RotateCcw className="w-3.5 h-3.5 text-blue-500" />
                         <span>Revert All Wheels</span>
                       </span>
-                      <span className="text-[10px] text-slate-400">14 official</span>
+                      <span className="text-[10px] text-slate-400">official</span>
                     </button>
 
                     {/* Remove All Wheels */}
@@ -3045,6 +3085,8 @@ export const WheelCreatorStudio: React.FC<WheelCreatorStudioProps> = ({
                 className={`px-4 py-2 rounded-xl text-xs font-bold text-white shadow-md transition cursor-pointer ${
                   devActionConfirm.type === 'remove_all'
                     ? 'bg-rose-600 hover:bg-rose-500'
+                    : devActionConfirm.type === 'save_default'
+                    ? 'bg-emerald-600 hover:bg-emerald-500'
                     : 'bg-amber-600 hover:bg-amber-500'
                 }`}
               >

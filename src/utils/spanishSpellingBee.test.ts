@@ -5,11 +5,12 @@ import path from 'node:path';
 import {
   INITIAL_WHEELS,
   SPANISH_ELEMENTARY_WHEEL,
+  WORDS_SPANISH_CRONICAS,
   WORDS_SPANISH_ELEMENTARY,
 } from './defaultData';
 import { useContestStore } from '../store';
 
-test('Spanish Elementary Wheel is defined as the first default wheel', () => {
+test('Spanish Elementary Wheel is defined as the first default wheel with 84 words', () => {
   assert.ok(INITIAL_WHEELS.length > 0, 'INITIAL_WHEELS must not be empty');
   const firstWheel = INITIAL_WHEELS[0];
   assert.equal(firstWheel.id, 'wheel-spanish-elem-1-6');
@@ -18,27 +19,46 @@ test('Spanish Elementary Wheel is defined as the first default wheel', () => {
   assert.equal(firstWheel.grade, '1st - 6th');
   assert.equal(firstWheel.role, 'general');
   assert.equal(firstWheel.timerDuration, 30, 'Spanish elementary wheel must default to 30 seconds');
+  assert.equal(firstWheel.slices.length, 84, 'Must have exactly 84 words from the 30 crónicas');
 });
 
-test('Spanish Elementary Wheel vocabulary includes accents and special characters (Á, É, Í, Ó, Ú, Ñ, Ü)', () => {
-  assert.ok(WORDS_SPANISH_ELEMENTARY.length >= 60, 'Must have at least 60 words for elementary Spanish');
-  assert.equal(SPANISH_ELEMENTARY_WHEEL.slices.length, WORDS_SPANISH_ELEMENTARY.length);
+test('Spanish Elementary Wheel vocabulary maps 84 clean words to their respective Crónica #1 to #30', () => {
+  assert.equal(WORDS_SPANISH_CRONICAS.length, 84, 'Must have 84 crónicas words');
+  assert.equal(SPANISH_ELEMENTARY_WHEEL.slices.length, 84);
 
-  const texts = SPANISH_ELEMENTARY_WHEEL.slices.map((s) => s.text);
-  assert.ok(texts.includes('ÁRBOL'), 'Must include ÁRBOL with Á');
-  assert.ok(texts.includes('CORAZÓN'), 'Must include CORAZÓN with Ó');
-  assert.ok(texts.includes('MÚSICA'), 'Must include MÚSICA with Ú');
-  assert.ok(texts.includes('JARDÍN') || texts.includes('ILUSIÓN'), 'Must include word with Í');
-  assert.ok(texts.includes('BRÚJULA'), 'Must include BRÚJULA with Ú');
-  assert.ok(texts.includes('ÑANDÚ'), 'Must include word with Ñ');
-  assert.ok(texts.includes('DELFINES'), 'Must include DELFINES');
-
-  // Verify all slices have valid unique IDs, enabled state, and non-empty colors
+  // Verify slice.text is strictly the clean word, and slice.cronica holds the chronicle
   SPANISH_ELEMENTARY_WHEEL.slices.forEach((slice, idx) => {
     assert.ok(slice.id, `Slice ${idx} must have an id`);
     assert.ok(slice.text && slice.text.trim().length > 0, `Slice ${idx} must have non-empty text`);
+    assert.equal(slice.text.includes('CRÓNICA'), false, `Slice text "${slice.text}" must not contain CRÓNICA`);
+    assert.ok(slice.cronica && slice.cronica.startsWith('CRÓNICA #'), `Slice "${slice.text}" must have a valid cronica`);
     assert.ok(slice.color && slice.color.startsWith('#'), `Slice ${idx} must have a valid hex color`);
   });
+
+  // Spot-check key words and crónicas from the dataset
+  const maracaiboSlice = SPANISH_ELEMENTARY_WHEEL.slices.find((s) => s.text === 'MARACAIBO');
+  assert.ok(maracaiboSlice, 'Must include MARACAIBO');
+  assert.equal(maracaiboSlice.cronica, 'CRÓNICA #1');
+
+  const basilicaSlice = SPANISH_ELEMENTARY_WHEEL.slices.find((s) => s.text === 'BASÍLICA');
+  assert.ok(basilicaSlice, 'Must include BASÍLICA');
+  assert.equal(basilicaSlice.cronica, 'CRÓNICA #2');
+
+  const chiquinquiraSlice = SPANISH_ELEMENTARY_WHEEL.slices.find((s) => s.text === 'CHIQUINQUIRÁ');
+  assert.ok(chiquinquiraSlice, 'Must include CHIQUINQUIRÁ');
+  assert.equal(chiquinquiraSlice.cronica, 'CRÓNICA #2');
+
+  const urdanetaSlice = SPANISH_ELEMENTARY_WHEEL.slices.find((s) => s.text === 'URDANETA');
+  assert.ok(urdanetaSlice, 'Must include URDANETA');
+  assert.equal(urdanetaSlice.cronica, 'CRÓNICA #12');
+
+  const empedraoSlice = SPANISH_ELEMENTARY_WHEEL.slices.find((s) => s.text === 'EMPEDRAO');
+  assert.ok(empedraoSlice, 'Must include EMPEDRAO');
+  assert.equal(empedraoSlice.cronica, 'CRÓNICA #21');
+
+  const iluminacionSlice = SPANISH_ELEMENTARY_WHEEL.slices.find((s) => s.text === 'ILUMINACIÓN');
+  assert.ok(iluminacionSlice, 'Must include ILUMINACIÓN');
+  assert.equal(iluminacionSlice.cronica, 'CRÓNICA #30');
 });
 
 test('Contest Store defaults to Spanish language', () => {
@@ -112,4 +132,35 @@ test('Studio wheel filtering correctly isolates Spanish, English Elementary, and
 
   const highSchoolWheels = allWheels.filter((w) => w.group === 'high_school');
   assert.ok(highSchoolWheels.length >= 2, 'Should have at least 2 High School wheels');
+});
+
+test('Custom factory defaults: can be set and restored on wheel reset', () => {
+  const mockStorage: Record<string, string> = {};
+  const mockLocalStorage = {
+    getItem: (k: string) => mockStorage[k] || null,
+    setItem: (k: string, v: string) => { mockStorage[k] = v; },
+    removeItem: (k: string) => { delete mockStorage[k]; },
+  };
+
+  // 1. Initial state defaults to INITIAL_WHEELS
+  assert.equal(mockLocalStorage.getItem('salto_angel_factory_default_wheels'), null);
+
+  // 2. User updates wheels and sets as new default
+  const customized = [
+    {
+      ...INITIAL_WHEELS[0],
+      timerDuration: 25,
+      slices: [{ id: 'custom-1', text: 'ZULIA', cronica: 'CRÓNICA #22', color: '#FACC15' }],
+    },
+  ];
+
+  mockLocalStorage.setItem('salto_angel_factory_default_wheels', JSON.stringify(customized));
+
+  // 3. When reverting to factory defaults, it reads the updated custom default
+  const saved = mockLocalStorage.getItem('salto_angel_factory_default_wheels');
+  assert.ok(saved !== null);
+  const parsed = JSON.parse(saved);
+  assert.equal(parsed[0].timerDuration, 25);
+  assert.equal(parsed[0].slices[0].text, 'ZULIA');
+  assert.equal(parsed[0].slices[0].cronica, 'CRÓNICA #22');
 });

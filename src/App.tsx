@@ -566,6 +566,7 @@ export default function App() {
       isSpinning: isWheelSpinning,
       showWinnerModal,
       winningWord: winningSlice?.text || null,
+      winningCronica: winningSlice?.cronica || null,
       currentWheelName: activeWheel.name,
       timerDuration: activeWheel.timerDuration || (activeWheel.group === 'elementary' ? 30 : 40),
       timeLeft: showWinnerModal
@@ -581,6 +582,7 @@ export default function App() {
     isWheelSpinning,
     showWinnerModal,
     winningSlice?.text,
+    winningSlice?.cronica,
     activeWheel.name,
     activeWheel.timerDuration,
     modalTimerState.timeLeft,
@@ -606,10 +608,37 @@ export default function App() {
   });
 
   // Dev tools actions:
-  // 1. Revert all wheels to factory defaults (INITIAL_WHEELS)
+  // 1. Revert all wheels to factory defaults (with user-saved custom default template support)
   const handleRevertAllWheels = () => {
+    try {
+      const customDefault = localStorage.getItem('salto_angel_factory_default_wheels');
+      if (customDefault) {
+        const parsed = JSON.parse(customDefault);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          const sanitized = parsed.map(sanitizeWheel);
+          setWheels(sanitized);
+          setActiveWheelId(sanitized[0].id);
+          return;
+        }
+      }
+    } catch {}
     setWheels(INITIAL_WHEELS);
     setActiveWheelId(INITIAL_WHEELS[0].id);
+  };
+
+  // 1b. Save current wheels as the new factory default template
+  const handleSaveAsNewDefault = async () => {
+    try {
+      localStorage.setItem('salto_angel_factory_default_wheels', JSON.stringify(wheels));
+      await fetch('/api/wheels', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ wheels }),
+      });
+      return true;
+    } catch {
+      return false;
+    }
   };
 
   // 2. Remove all wheels (leaves 1 clean starter wheel for testing)
@@ -819,6 +848,7 @@ export default function App() {
           onReplaceAllWheels={handleReplaceAllWheels}
           onTriggerTestCelebration={handleTriggerTestCelebration}
           onResetCloudStorage={handleResetCloudStorage}
+          onSaveAsNewDefault={handleSaveAsNewDefault}
         />
       )}
 
@@ -828,6 +858,7 @@ export default function App() {
           key={`winner-${activeWheel.id}-${winningSlice.id}`}
           isOpen={showWinnerModal}
           word={winningSlice.text}
+          cronica={winningSlice.cronica}
           sliceColor={winningSlice.color}
           timerDuration={activeWheel.timerDuration ?? (activeWheel.group === 'elementary' ? 30 : 40)}
           timerActionSignal={remoteTimerSignal}

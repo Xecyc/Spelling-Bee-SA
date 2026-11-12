@@ -83,6 +83,7 @@ export interface StageSyncState {
   isSpinning?: boolean;
   showWinnerModal?: boolean;
   winningWord?: string | null;
+  winningCronica?: string | null;
   currentWheelName?: string;
   timerDuration?: number;
   timeLeft?: number;

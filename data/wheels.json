@@ -11,303 +11,507 @@
     "timerDuration": 30,
     "slices": [
       {
-        "id": "slice-1794436634503-0-wgi03",
-        "text": "AMISTAD",
+        "id": "slice-1794453194134-0-1rqcz",
+        "text": "MARACAIBO",
+        "cronica": "CRÓNICA #1",
         "color": "#FACC15"
       },
       {
-        "id": "slice-1794436634503-1-8t0z9",
-        "text": "BIBLIOTECA",
+        "id": "slice-1794453194134-1-gexvl",
+        "text": "KILÓMETROS",
+        "cronica": "CRÓNICA #1",
         "color": "#4ADE80"
       },
       {
-        "id": "slice-1794436634503-2-ohpx4",
-        "text": "CAMINO",
+        "id": "slice-1794453194134-2-m2ya6",
+        "text": "HATICOS",
+        "cronica": "CRÓNICA #1",
         "color": "#60A5FA"
       },
       {
-        "id": "slice-1794436634503-3-6f0gm",
-        "text": "CORAZÓN",
+        "id": "slice-1794453194134-3-1g02s",
+        "text": "EXTENSIÓN",
+        "cronica": "CRÓNICA #1",
         "color": "#F472B6"
       },
       {
-        "id": "slice-1794436634503-4-16gf6",
-        "text": "DIBUJO",
+        "id": "slice-1794453194134-4-43shx",
+        "text": "CAPITÁN",
+        "cronica": "CRÓNICA #2",
         "color": "#FB923C"
       },
       {
-        "id": "slice-1794436634503-5-fs7hm",
-        "text": "ESTRELLA",
+        "id": "slice-1794453194134-5-hpfwu",
+        "text": "RÚSTICA",
+        "cronica": "CRÓNICA #2",
         "color": "#A78BFA"
       },
       {
-        "id": "slice-1794436634503-6-ledog",
-        "text": "FAMILIA",
+        "id": "slice-1794453194134-6-z6z4h",
+        "text": "APARICIÓN",
+        "cronica": "CRÓNICA #2",
         "color": "#2DD4BF"
       },
       {
-        "id": "slice-1794436634503-7-6sm7x",
-        "text": "GUITARRA",
+        "id": "slice-1794453194134-7-zohvh",
+        "text": "BASÍLICA",
+        "cronica": "CRÓNICA #2",
         "color": "#F87171"
       },
       {
-        "id": "slice-1794436634503-8-zyl6s",
-        "text": "HERMANO",
+        "id": "slice-1794453194134-8-q85s1",
+        "text": "CHIQUINQUIRÁ",
+        "cronica": "CRÓNICA #2",
         "color": "#FACC15"
       },
       {
-        "id": "slice-1794436634503-9-6olh9",
-        "text": "ILUSIÓN",
+        "id": "slice-1794453194134-9-9w638",
+        "text": "CACERÍA",
+        "cronica": "CRÓNICA #3",
         "color": "#4ADE80"
       },
       {
-        "id": "slice-1794436634503-10-kapgj",
-        "text": "JARDÍN",
+        "id": "slice-1794453194134-10-wg71e",
+        "text": "PERDICES",
+        "cronica": "CRÓNICA #3",
         "color": "#60A5FA"
       },
       {
-        "id": "slice-1794436634503-11-9d0n8",
+        "id": "slice-1794453194134-11-ftckl",
+        "text": "YAGUASAS",
+        "cronica": "CRÓNICA #3",
+        "color": "#F472B6"
+      },
+      {
+        "id": "slice-1794453194134-12-etdlu",
+        "text": "BÁQUIROS",
+        "cronica": "CRÓNICA #3",
+        "color": "#FB923C"
+      },
+      {
+        "id": "slice-1794453194134-13-kn91x",
+        "text": "PALOMITAS",
+        "cronica": "CRÓNICA #3",
+        "color": "#A78BFA"
+      },
+      {
+        "id": "slice-1794453194134-14-lk9iy",
+        "text": "MARACAIBEROS",
+        "cronica": "CRÓNICA #4",
+        "color": "#2DD4BF"
+      },
+      {
+        "id": "slice-1794453194134-15-tikzz",
+        "text": "PARROQUIAS",
+        "cronica": "CRÓNICA #5",
+        "color": "#F87171"
+      },
+      {
+        "id": "slice-1794453194134-16-tbj0e",
+        "text": "TABLITA",
+        "cronica": "CRÓNICA #6",
+        "color": "#FACC15"
+      },
+      {
+        "id": "slice-1794453194134-17-10nod",
+        "text": "PROMOCIÓN",
+        "cronica": "CRÓNICA #7",
+        "color": "#4ADE80"
+      },
+      {
+        "id": "slice-1794453194134-18-gc4xm",
+        "text": "ESPECTÁCULOS",
+        "cronica": "CRÓNICA #7",
+        "color": "#60A5FA"
+      },
+      {
+        "id": "slice-1794453194134-19-qetes",
+        "text": "ELÉCTRICO",
+        "cronica": "CRÓNICA #8",
+        "color": "#F472B6"
+      },
+      {
+        "id": "slice-1794453194134-20-x730p",
+        "text": "KEROSENE",
+        "cronica": "CRÓNICA #8",
+        "color": "#FB923C"
+      },
+      {
+        "id": "slice-1794453194134-21-ugv8u",
+        "text": "INAUGURÓ",
+        "cronica": "CRÓNICA #8",
+        "color": "#A78BFA"
+      },
+      {
+        "id": "slice-1794453194134-22-868op",
+        "text": "CONSTRUIDA",
+        "cronica": "CRÓNICA #9",
+        "color": "#2DD4BF"
+      },
+      {
+        "id": "slice-1794453194134-23-io0qz",
+        "text": "MATRIZ",
+        "cronica": "CRÓNICA #9",
+        "color": "#F87171"
+      },
+      {
+        "id": "slice-1794453194134-24-an68a",
+        "text": "PATRONAZGO",
+        "cronica": "CRÓNICA #10",
+        "color": "#FACC15"
+      },
+      {
+        "id": "slice-1794453194134-25-kqpjy",
+        "text": "INTERCESOR",
+        "cronica": "CRÓNICA #10",
+        "color": "#4ADE80"
+      },
+      {
+        "id": "slice-1794453194134-26-icxfy",
+        "text": "HISTÓRICAMENTE",
+        "cronica": "CRÓNICA #10",
+        "color": "#60A5FA"
+      },
+      {
+        "id": "slice-1794453194134-27-qavtf",
+        "text": "ALCALDÍA",
+        "cronica": "CRÓNICA #10",
+        "color": "#F472B6"
+      },
+      {
+        "id": "slice-1794453194134-28-suqxc",
+        "text": "HISTORIADORES",
+        "cronica": "CRÓNICA #10",
+        "color": "#FB923C"
+      },
+      {
+        "id": "slice-1794453194134-29-91x8g",
+        "text": "EMBLEMÁTICO",
+        "cronica": "CRÓNICA #11",
+        "color": "#A78BFA"
+      },
+      {
+        "id": "slice-1794453194134-30-rkk7w",
+        "text": "MEDIODÍA",
+        "cronica": "CRÓNICA #11",
+        "color": "#2DD4BF"
+      },
+      {
+        "id": "slice-1794453194134-31-yesuh",
+        "text": "ARRAIGADA",
+        "cronica": "CRÓNICA #11",
+        "color": "#F87171"
+      },
+      {
+        "id": "slice-1794453194134-32-o7n50",
+        "text": "CARÁCTER",
+        "cronica": "CRÓNICA #11",
+        "color": "#FACC15"
+      },
+      {
+        "id": "slice-1794453194134-33-u74p7",
+        "text": "AUTÓCTONO",
+        "cronica": "CRÓNICA #11",
+        "color": "#4ADE80"
+      },
+      {
+        "id": "slice-1794453194134-34-l1wh8",
+        "text": "URDANETA",
+        "cronica": "CRÓNICA #12",
+        "color": "#60A5FA"
+      },
+      {
+        "id": "slice-1794453194134-35-tvv2q",
+        "text": "HÉROE",
+        "cronica": "CRÓNICA #12",
+        "color": "#F472B6"
+      },
+      {
+        "id": "slice-1794453194134-36-t2817",
+        "text": "VENEZUELA",
+        "cronica": "CRÓNICA #12",
+        "color": "#FB923C"
+      },
+      {
+        "id": "slice-1794453194134-37-93ojg",
+        "text": "ESTÉTICOS",
+        "cronica": "CRÓNICA #12",
+        "color": "#A78BFA"
+      },
+      {
+        "id": "slice-1794453194134-38-3jam6",
+        "text": "HOMBRILLO",
+        "cronica": "CRÓNICA #12",
+        "color": "#2DD4BF"
+      },
+      {
+        "id": "slice-1794453194134-39-6ct3j",
+        "text": "TURÍSTICO",
+        "cronica": "CRÓNICA #13",
+        "color": "#F87171"
+      },
+      {
+        "id": "slice-1794453194134-40-khkng",
+        "text": "MECIÉNDOSE",
+        "cronica": "CRÓNICA #13",
+        "color": "#FACC15"
+      },
+      {
+        "id": "slice-1794453194134-41-wl73k",
+        "text": "BUHONEROS",
+        "cronica": "CRÓNICA #14",
+        "color": "#4ADE80"
+      },
+      {
+        "id": "slice-1794453194134-42-e1vo9",
+        "text": "MOLINA",
+        "cronica": "CRÓNICA #14",
+        "color": "#60A5FA"
+      },
+      {
+        "id": "slice-1794453194134-43-0u4vc",
+        "text": "AMBROSIO",
+        "cronica": "CRÓNICA #15",
+        "color": "#F472B6"
+      },
+      {
+        "id": "slice-1794453194134-44-2b4c6",
+        "text": "NEOGÓTICO",
+        "cronica": "CRÓNICA #16",
+        "color": "#FB923C"
+      },
+      {
+        "id": "slice-1794453194134-45-doktw",
+        "text": "OBISPO",
+        "cronica": "CRÓNICA #17",
+        "color": "#A78BFA"
+      },
+      {
+        "id": "slice-1794453194134-46-rbrs5",
+        "text": "ARQUITECTÓNICO",
+        "cronica": "CRÓNICA #18",
+        "color": "#2DD4BF"
+      },
+      {
+        "id": "slice-1794453194134-47-zv28g",
+        "text": "ZAGALETÓN",
+        "cronica": "CRÓNICA #19",
+        "color": "#F87171"
+      },
+      {
+        "id": "slice-1794453194134-48-keh95",
+        "text": "OVARIOTOMÍA",
+        "cronica": "CRÓNICA #20",
+        "color": "#FACC15"
+      },
+      {
+        "id": "slice-1794453194134-49-uie2a",
+        "text": "CIRUGÍA",
+        "cronica": "CRÓNICA #20",
+        "color": "#4ADE80"
+      },
+      {
+        "id": "slice-1794453194134-50-c80nt",
+        "text": "EMPEDRAO",
+        "cronica": "CRÓNICA #21",
+        "color": "#60A5FA"
+      },
+      {
+        "id": "slice-1794453194134-51-xpsni",
+        "text": "PARROQUIANOS",
+        "cronica": "CRÓNICA #21",
+        "color": "#F472B6"
+      },
+      {
+        "id": "slice-1794453194134-52-69ijr",
+        "text": "CONTEMPORÁNEO",
+        "cronica": "CRÓNICA #22",
+        "color": "#FB923C"
+      },
+      {
+        "id": "slice-1794453194134-53-q94c7",
+        "text": "ZULIA",
+        "cronica": "CRÓNICA #22",
+        "color": "#A78BFA"
+      },
+      {
+        "id": "slice-1794453194134-54-d1s3g",
+        "text": "INAUGURACIÓN",
+        "cronica": "CRÓNICA #22",
+        "color": "#2DD4BF"
+      },
+      {
+        "id": "slice-1794453194134-55-b8wx7",
+        "text": "CACIQUE",
+        "cronica": "CRÓNICA #23",
+        "color": "#F87171"
+      },
+      {
+        "id": "slice-1794453194134-56-yghvg",
+        "text": "INDÍGENAS",
+        "cronica": "CRÓNICA #23",
+        "color": "#FACC15"
+      },
+      {
+        "id": "slice-1794453194134-57-5rrsf",
+        "text": "ZAPARAS",
+        "cronica": "CRÓNICA #23",
+        "color": "#4ADE80"
+      },
+      {
+        "id": "slice-1794453194134-58-w17bi",
+        "text": "MÉRIDA",
+        "cronica": "CRÓNICA #23",
+        "color": "#60A5FA"
+      },
+      {
+        "id": "slice-1794453194134-59-tdx4m",
+        "text": "LECTOESCRITURA",
+        "cronica": "CRÓNICA #24",
+        "color": "#F472B6"
+      },
+      {
+        "id": "slice-1794453194134-60-oxvvd",
+        "text": "DÉCADAS",
+        "cronica": "CRÓNICA #25",
+        "color": "#FB923C"
+      },
+      {
+        "id": "slice-1794453194134-61-xpi64",
+        "text": "ARQUITECTURA",
+        "cronica": "CRÓNICA #26",
+        "color": "#A78BFA"
+      },
+      {
+        "id": "slice-1794453194134-62-80aqa",
+        "text": "MEZCLAN",
+        "cronica": "CRÓNICA #26",
+        "color": "#2DD4BF"
+      },
+      {
+        "id": "slice-1794453194134-63-xiwvm",
+        "text": "BERMÚDEZ",
+        "cronica": "CRÓNICA #26",
+        "color": "#F87171"
+      },
+      {
+        "id": "slice-1794453194134-64-tzvyt",
+        "text": "VAGÓN",
+        "cronica": "CRÓNICA #27",
+        "color": "#FACC15"
+      },
+      {
+        "id": "slice-1794453194134-65-sd5yw",
+        "text": "FERROCARRIL",
+        "cronica": "CRÓNICA #27",
+        "color": "#4ADE80"
+      },
+      {
+        "id": "slice-1794453194134-66-1opvd",
+        "text": "ESPECÍFICAMENTE",
+        "cronica": "CRÓNICA #27",
+        "color": "#60A5FA"
+      },
+      {
+        "id": "slice-1794453194134-67-ffdvk",
+        "text": "KILÓMETRO",
+        "cronica": "CRÓNICA #27",
+        "color": "#F472B6"
+      },
+      {
+        "id": "slice-1794453194134-68-yxu2x",
+        "text": "PERIJÁ",
+        "cronica": "CRÓNICA #27",
+        "color": "#FB923C"
+      },
+      {
+        "id": "slice-1794453194134-69-ckdvm",
         "text": "LÁPIZ",
-        "color": "#F472B6"
-      },
-      {
-        "id": "slice-1794436634503-12-36ke0",
-        "text": "MÚSICA",
-        "color": "#FB923C"
-      },
-      {
-        "id": "slice-1794436634503-13-spvmy",
-        "text": "NATURALEZA",
+        "cronica": "CRÓNICA #28",
         "color": "#A78BFA"
       },
       {
-        "id": "slice-1794436634503-14-zu6wc",
-        "text": "ORQUÍDEA",
+        "id": "slice-1794453194134-70-n5jet",
+        "text": "OBELISCO",
+        "cronica": "CRÓNICA #28",
         "color": "#2DD4BF"
       },
       {
-        "id": "slice-1794436634503-15-2zhzd",
-        "text": "PAISAJE",
+        "id": "slice-1794453194134-71-cx53n",
+        "text": "ÁRBOLES",
+        "cronica": "CRÓNICA #29",
         "color": "#F87171"
       },
       {
-        "id": "slice-1794436634503-16-mpnkg",
-        "text": "QUESO",
+        "id": "slice-1794453194134-72-1hg54",
+        "text": "VEREDA",
+        "cronica": "CRÓNICA #29",
         "color": "#FACC15"
       },
       {
-        "id": "slice-1794436634503-17-pawub",
-        "text": "RELÁMPAGO",
+        "id": "slice-1794453194134-73-tm43v",
+        "text": "BOHÍOS",
+        "cronica": "CRÓNICA #29",
         "color": "#4ADE80"
       },
       {
-        "id": "slice-1794436634503-18-zgj54",
-        "text": "SONRISA",
+        "id": "slice-1794453194134-74-9kmov",
+        "text": "BÉISBOL",
+        "cronica": "CRÓNICA #29",
         "color": "#60A5FA"
       },
       {
-        "id": "slice-1794436634503-19-h95vm",
-        "text": "TELÉFONO",
+        "id": "slice-1794453194134-75-gofff",
+        "text": "FÚTBOL",
+        "cronica": "CRÓNICA #29",
         "color": "#F472B6"
       },
       {
-        "id": "slice-1794436634503-20-eavak",
-        "text": "UNIVERSO",
+        "id": "slice-1794453194134-76-zbf71",
+        "text": "PARROQUIA",
+        "cronica": "CRÓNICA #30",
         "color": "#FB923C"
       },
       {
-        "id": "slice-1794436634503-21-p78qo",
-        "text": "VENTANA",
+        "id": "slice-1794453194134-77-j3fs9",
+        "text": "BUSTAMANTE",
+        "cronica": "CRÓNICA #30",
         "color": "#A78BFA"
       },
       {
-        "id": "slice-1794436634503-22-x9dzi",
-        "text": "ZAPATO",
+        "id": "slice-1794453194134-78-rhwn4",
+        "text": "CONCEBIDOS",
+        "cronica": "CRÓNICA #30",
         "color": "#2DD4BF"
       },
       {
-        "id": "slice-1794436634503-23-dy7ij",
-        "text": "ÁRBOL",
+        "id": "slice-1794453194134-79-jw97q",
+        "text": "PARTICIPACIÓN",
+        "cronica": "CRÓNICA #30",
         "color": "#F87171"
       },
       {
-        "id": "slice-1794436634503-24-ely16",
-        "text": "BRÚJULA",
+        "id": "slice-1794453194134-80-kgefz",
+        "text": "REHABILITACIÓN",
+        "cronica": "CRÓNICA #30",
         "color": "#FACC15"
       },
       {
-        "id": "slice-1794436634503-25-jzlwz",
-        "text": "CAMPANARIO",
+        "id": "slice-1794453194134-81-nqn87",
+        "text": "REHABILITA",
+        "cronica": "CRÓNICA #30",
         "color": "#4ADE80"
       },
       {
-        "id": "slice-1794436634503-26-ih780",
-        "text": "DINOSAURIO",
+        "id": "slice-1794453194134-82-n1uzc",
+        "text": "PAISAJISMO",
+        "cronica": "CRÓNICA #30",
         "color": "#60A5FA"
       },
       {
-        "id": "slice-1794436634503-27-fc359",
-        "text": "ESCUELA",
-        "color": "#F472B6"
-      },
-      {
-        "id": "slice-1794436634503-28-vob4f",
-        "text": "FIESTA",
-        "color": "#FB923C"
-      },
-      {
-        "id": "slice-1794436634503-29-rtzup",
-        "text": "GIRASOL",
-        "color": "#A78BFA"
-      },
-      {
-        "id": "slice-1794436634503-30-2mghb",
-        "text": "HOSPITAL",
-        "color": "#2DD4BF"
-      },
-      {
-        "id": "slice-1794436634503-31-nrhlz",
-        "text": "IGLESIA",
-        "color": "#F87171"
-      },
-      {
-        "id": "slice-1794436634503-32-6e47o",
-        "text": "JIRAFA",
-        "color": "#FACC15"
-      },
-      {
-        "id": "slice-1794436634503-33-tahx2",
-        "text": "LECTURA",
-        "color": "#4ADE80"
-      },
-      {
-        "id": "slice-1794436634503-34-wzkap",
-        "text": "MARIPOSA",
-        "color": "#60A5FA"
-      },
-      {
-        "id": "slice-1794436634503-35-gurm6",
-        "text": "NECTARINA",
-        "color": "#F472B6"
-      },
-      {
-        "id": "slice-1794436634503-36-95puj",
-        "text": "ÑANDÚ",
-        "color": "#FB923C"
-      },
-      {
-        "id": "slice-1794436634503-37-uwx8r",
-        "text": "OCEANÍA",
-        "color": "#A78BFA"
-      },
-      {
-        "id": "slice-1794436634503-38-uobwa",
-        "text": "PELÍCULA",
-        "color": "#2DD4BF"
-      },
-      {
-        "id": "slice-1794436634503-39-wsp78",
-        "text": "QUÍMICA",
-        "color": "#F87171"
-      },
-      {
-        "id": "slice-1794436634503-40-0rbqs",
-        "text": "RUISEÑOR",
-        "color": "#FACC15"
-      },
-      {
-        "id": "slice-1794436634503-41-94wea",
-        "text": "SABIDURÍA",
-        "color": "#4ADE80"
-      },
-      {
-        "id": "slice-1794436634503-42-gtbb1",
-        "text": "TORMENTA",
-        "color": "#60A5FA"
-      },
-      {
-        "id": "slice-1794436634503-43-rq1m2",
-        "text": "UNICORNIO",
-        "color": "#F472B6"
-      },
-      {
-        "id": "slice-1794436634503-44-qn6xa",
-        "text": "VOLCÁN",
-        "color": "#FB923C"
-      },
-      {
-        "id": "slice-1794436634503-45-lu3i8",
-        "text": "XILÓFONO",
-        "color": "#A78BFA"
-      },
-      {
-        "id": "slice-1794436634503-46-khvbi",
-        "text": "YACIMIENTO",
-        "color": "#2DD4BF"
-      },
-      {
-        "id": "slice-1794436634503-47-euvib",
-        "text": "ZANAHORIA",
-        "color": "#F87171"
-      },
-      {
-        "id": "slice-1794436634503-48-87tzz",
-        "text": "AZÚCAR",
-        "color": "#FACC15"
-      },
-      {
-        "id": "slice-1794436634503-49-4mqom",
-        "text": "BONDAD",
-        "color": "#4ADE80"
-      },
-      {
-        "id": "slice-1794436634503-50-fiy3i",
-        "text": "CASTILLO",
-        "color": "#60A5FA"
-      },
-      {
-        "id": "slice-1794436634503-51-ve38z",
-        "text": "DELFINES",
-        "color": "#F472B6"
-      },
-      {
-        "id": "slice-1794436634503-52-ga1ys",
-        "text": "ESFUERZO",
-        "color": "#FB923C"
-      },
-      {
-        "id": "slice-1794436634503-53-jblbe",
-        "text": "FANTASÍA",
-        "color": "#A78BFA"
-      },
-      {
-        "id": "slice-1794436634503-54-g5hva",
-        "text": "GENEROSIDAD",
-        "color": "#2DD4BF"
-      },
-      {
-        "id": "slice-1794436634503-55-n3npc",
-        "text": "HISTORIA",
-        "color": "#F87171"
-      },
-      {
-        "id": "slice-1794436634503-56-lwfaq",
-        "text": "IMAGINACIÓN",
-        "color": "#FACC15"
-      },
-      {
-        "id": "slice-1794436634503-57-rtwdp",
-        "text": "JUGUETE",
-        "color": "#4ADE80"
-      },
-      {
-        "id": "slice-1794436634503-58-5ctjq",
-        "text": "LEALTAD",
-        "color": "#60A5FA"
-      },
-      {
-        "id": "slice-1794436634503-59-rvgel",
-        "text": "MONTAÑA",
+        "id": "slice-1794453194134-83-bx4v5",
+        "text": "ILUMINACIÓN",
+        "cronica": "CRÓNICA #30",
         "color": "#F472B6"
       }
     ]
